@@ -15,7 +15,7 @@ namespace ModMenu
   {
     /// Random magic number representing our fake enum for UiSettingsManager.SettingsScreen
     private const int SettingsScreenValue = 17;
-    private static readonly UISettingsManager.SettingsScreen SettingsScreen =
+    private static readonly UISettingsManager.SettingsScreen SettingsScreenId =
       (UISettingsManager.SettingsScreen)SettingsScreenValue;
 
     private static LocalizedString _menuTitleString;
@@ -25,13 +25,17 @@ namespace ModMenu
       {
         if (_menuTitleString is null)
         {
-          _menuTitleString = new LocalizedString() { m_Key = "MenuTitleString" };
-          LocalizationManager.CurrentPack.PutString(_menuTitleString.m_Key, "Mods");
+          _menuTitleString = Helpers.CreateString("ModsMenu.Title", "Mods");
         }
         return _menuTitleString;
       }
     }
 
+    internal static readonly List<UISettingsGroup> ModSettings = new();
+
+    /// <summary>
+    /// Patch to create the Mods menu screen.
+    /// </summary>
     [HarmonyPatch]
     static class SettingsVM_Constructor
     {
@@ -72,8 +76,25 @@ namespace ModMenu
 
       private static void AddMenuEntity(SettingsVM settings)
       {
-        Main.Logger.Log("Adding mod settings menu.");
-        settings.CreateMenuEntity(MenuTitleString, SettingsScreen);
+        Main.Logger.NativeLog("Adding mod settings menu.");
+        settings.CreateMenuEntity(MenuTitleString, SettingsScreenId);
+      }
+    }
+
+    /// <summary>
+    /// Patch to return the Mods settings list
+    /// </summary>
+    [HarmonyPatch(typeof(UISettingsManager))]
+    static class UISettingsManager_GetSettingsList
+    {
+      [HarmonyPatch(nameof(UISettingsManager.GetSettingsList)), HarmonyPostfix]
+      static void Postfix(UISettingsManager.SettingsScreen? screenId, ref List<UISettingsGroup> __result)
+      {
+        if (screenId is not null && screenId == SettingsScreenId)
+        {
+          Main.Logger.NativeLog("Returning mod settings.");
+          __result = ModSettings;
+        }
       }
     }
   }

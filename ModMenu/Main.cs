@@ -1,4 +1,8 @@
 ﻿using HarmonyLib;
+using Kingmaker.Blueprints.Classes;
+using Kingmaker.Blueprints.JsonSystem;
+using Kingmaker.Blueprints;
+using ModMenu.Settings;
 using System;
 using static UnityModManagerNet.UnityModManager;
 using static UnityModManagerNet.UnityModManager.ModEntry;
@@ -36,5 +40,18 @@ namespace ModMenu
       Harmony?.UnpatchAll();
       return true;
     }
+
+#if DEBUG
+    [HarmonyPatch(typeof(BlueprintsCache))]
+    static class BlueprintsCache_Patches
+    {
+      [HarmonyPriority(Priority.First)]
+      [HarmonyPatch(nameof(BlueprintsCache.Init)), HarmonyPostfix]
+      static void Postfix()
+      {
+        new TestSettings().Initialize();
+      }
+    }
+#endif
   }
 }
