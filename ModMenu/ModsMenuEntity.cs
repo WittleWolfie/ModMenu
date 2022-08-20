@@ -30,7 +30,7 @@ namespace ModMenu
         if (_menuTitleString is null)
         {
           _menuTitleString = new LocalizedString() { m_Key = "MenuTitleString" };
-          LocalizationManager.CurrentPack.PutString(_menuTitleString, "Mods");
+          LocalizationManager.CurrentPack.PutString(_menuTitleString.m_Key, "Mods");
         }
         return _menuTitleString;
       }
