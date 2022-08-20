@@ -1,0 +1,10 @@
+﻿{
+  "Id": "ModMenu",
+  "DisplayName": "ModMenu",
+  "Author": "WittleWolfie",
+  "Version": "0.1.0",
+  "ManagerVersion": "0.21.3",
+  "AssemblyName": "ModMenu.dll",
+  "EntryMethod": "ModMenu.Main.Load",
+  "Requirements": []
+}
