@@ -1,21 +1,17 @@
 ﻿using HarmonyLib;
 using Kingmaker.Settings;
 using Kingmaker.UI.MVVM._PCView.Settings;
-using Kingmaker.UI.MVVM._PCView.Settings.Entities;
-using Kingmaker.UI.MVVM._PCView.Settings.Entities.Decorative;
 using Kingmaker.UI.MVVM._VM.Settings;
 using Kingmaker.UI.MVVM._VM.Settings.Entities.Decorative;
 using Kingmaker.UI.MVVM._VM.Settings.Entities.Difficulty;
 using Kingmaker.UI.MVVM._VM.Settings.Entities;
 using Kingmaker.UI.SettingsUI;
 using ModMenu.NewTypes;
-using Owlcat.Runtime.Core.Utils;
 using Owlcat.Runtime.UI.MVVM;
 using Owlcat.Runtime.UI.VirtualListSystem;
 using System;
 using System.IO;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace ModMenu.Settings
 {
@@ -28,7 +24,7 @@ namespace ModMenu.Settings
   internal class TestSettings
   {
     private readonly UISettingsGroup TestSettingsGroup = ScriptableObject.CreateInstance<UISettingsGroup>();
-    private readonly UISettingsEntityBase[] TestSettingsEntities = new UISettingsEntityBase[4];
+    private readonly UISettingsEntityBase[] TestSettingsEntities = new UISettingsEntityBase[5];
 
     public TestSettings()
     {
@@ -36,6 +32,8 @@ namespace ModMenu.Settings
       TestSettingsGroup.Title = Helpers.CreateString("TestSettings.Title", "Test Settings");
       TestSettingsGroup.SettingsList = TestSettingsEntities;
     }
+
+    private UISettingsEntityImage Image;
 
     private UISettingsEntityBool Toggle;
     private SettingsEntityBool ToggleValue = new("testsettings.toggle", defaultValue: false);
@@ -61,6 +59,9 @@ namespace ModMenu.Settings
 
     internal void Initialize()
     {
+      Image = ScriptableObject.CreateInstance<UISettingsEntityImage>();
+      Image.Sprite = Create();
+
       Toggle = ScriptableObject.CreateInstance<UISettingsEntityBool>();
       Toggle.m_Description = Helpers.CreateString("testsettings.toggle", "This is a toggle");
       Toggle.m_TooltipDescription = Toggle.m_Description;
@@ -107,12 +108,11 @@ namespace ModMenu.Settings
 
       Main.Logger.Log("SliderInt done.");
 
-      var image = ScriptableObject.CreateInstance<UISettingsEntityImage>();
-
-      TestSettingsEntities[0] = image;
+      TestSettingsEntities[0] = Image;
       TestSettingsEntities[1] = DropdownEnum;
       TestSettingsEntities[2] = SliderFloat;
       TestSettingsEntities[3] = SliderInt;
+      TestSettingsEntities[4] = Toggle;
 
       ModsMenuEntity.ModSettings.Add(TestSettingsGroup);
     }
@@ -153,10 +153,10 @@ namespace ModMenu.Settings
       [HarmonyPatch(nameof(SettingsVM.GetVMForSettingsItem)), HarmonyPrefix]
       static bool Prefix(UISettingsEntityBase uiSettingsEntity, ref VirtualListElementVMBase __result)
       {
-        if (uiSettingsEntity is UISettingsEntityImage image)
+        if (uiSettingsEntity is UISettingsEntityImage imageEntity)
         {
           Main.Logger.Log("Returning image VM");
-          __result = new SettingsEntityImageVM();
+          __result = new SettingsEntityImageVM(imageEntity);
           return false;
         }
         return true;
@@ -172,6 +172,8 @@ namespace ModMenu.Settings
         Main.Logger.Log("Initializing image view.");
         var obj = new GameObject("ImageView", typeof(RectTransform));
         var prefabToAddtoList = obj.AddComponent<SettingsEntityImageView>();
+        // Maybe need to do this: UnityEngine.Object.DontDestroyOnLoad(obj); (test by reloading)
+ 
         virtualListComponent.Initialize(new IVirtualListElementTemplate[]
         {
           new VirtualListElementTemplate<SettingsEntityHeaderVM>(__instance.m_SettingsEntityHeaderViewPrefab),

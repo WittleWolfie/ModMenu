@@ -1,7 +1,5 @@
 ﻿using HarmonyLib;
-using Kingmaker.Blueprints.Classes;
 using Kingmaker.Blueprints.JsonSystem;
-using Kingmaker.Blueprints;
 using ModMenu.Settings;
 using System;
 using static UnityModManagerNet.UnityModManager;

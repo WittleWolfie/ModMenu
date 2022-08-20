@@ -1,17 +1,19 @@
 ﻿using Kingmaker.UI.SettingsUI;
-using ModMenu.Settings;
 using Owlcat.Runtime.UI.MVVM;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace ModMenu.NewTypes
 {
   internal class UISettingsEntityImage : UISettingsEntityBase
   {
+    internal Sprite Sprite;
+
+    internal UISettingsEntityImage(Sprite sprite)
+    {
+      Sprite = sprite;
+    }
+
     public override SettingsListItemType? Type
     {
       get
@@ -23,6 +25,13 @@ namespace ModMenu.NewTypes
 
   internal class SettingsEntityImageVM : VirtualListElementVMBase
   {
+    internal Sprite Sprite;
+
+    internal SettingsEntityImageVM(UISettingsEntityImage imageEntity)
+    {
+      Sprite = imageEntity.Sprite;
+    }
+
     protected override void DisposeImplementation()
     {
     }
@@ -32,8 +41,8 @@ namespace ModMenu.NewTypes
   {
     protected override void BindViewImplementation()
     {
-      var image = gameObject.AddComponent<Image>();
-      image.sprite = TestSettings.Create();
+      var image = gameObject.GetComponent<Image>() ?? gameObject.AddComponent<Image>();
+      image.sprite = ViewModel.Sprite;
     }
 
     protected override void DestroyViewImplementation()
