@@ -13,7 +13,7 @@ namespace ModMenu
   /// </summary>
   internal class ModsMenuEntity
   {
-    /// Random number representing our fake enum for UiSettingsManager.SettingsScreen
+    /// Random magic number representing our fake enum for UiSettingsManager.SettingsScreen
     private const int SettingsScreenValue = 17;
     private static readonly UISettingsManager.SettingsScreen SettingsScreen =
       (UISettingsManager.SettingsScreen)SettingsScreenValue;
