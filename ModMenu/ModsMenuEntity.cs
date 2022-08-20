@@ -2,13 +2,9 @@
 using Kingmaker.Localization;
 using Kingmaker.UI.MVVM._VM.Settings;
 using Kingmaker.UI.SettingsUI;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ModMenu
 {
