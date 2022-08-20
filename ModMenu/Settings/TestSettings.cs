@@ -1,8 +1,17 @@
 ﻿using HarmonyLib;
 using Kingmaker.Settings;
+using Kingmaker.UI.MVVM._PCView.Settings;
 using Kingmaker.UI.MVVM._PCView.Settings.Entities;
+using Kingmaker.UI.MVVM._PCView.Settings.Entities.Decorative;
+using Kingmaker.UI.MVVM._VM.Settings;
+using Kingmaker.UI.MVVM._VM.Settings.Entities.Decorative;
+using Kingmaker.UI.MVVM._VM.Settings.Entities.Difficulty;
+using Kingmaker.UI.MVVM._VM.Settings.Entities;
 using Kingmaker.UI.SettingsUI;
+using ModMenu.NewTypes;
 using Owlcat.Runtime.Core.Utils;
+using Owlcat.Runtime.UI.MVVM;
+using Owlcat.Runtime.UI.VirtualListSystem;
 using System;
 using System.IO;
 using UnityEngine;
@@ -98,7 +107,9 @@ namespace ModMenu.Settings
 
       Main.Logger.Log("SliderInt done.");
 
-      TestSettingsEntities[0] = Toggle;
+      var image = ScriptableObject.CreateInstance<UISettingsEntityImage>();
+
+      TestSettingsEntities[0] = image;
       TestSettingsEntities[1] = DropdownEnum;
       TestSettingsEntities[2] = SliderFloat;
       TestSettingsEntities[3] = SliderInt;
@@ -136,21 +147,46 @@ namespace ModMenu.Settings
       return sprite;
     }
 
-    [HarmonyPatch(typeof(SettingsEntitySliderVisualPerceptionWithImagesPCView))]
-    static class ImagesPCView_Patch
+    [HarmonyPatch(typeof(SettingsVM))]
+    static class SettingsVM_Patch
     {
-      [HarmonyPatch(nameof(SettingsEntitySliderVisualPerceptionWithImagesPCView.BindViewImplementation)), HarmonyPostfix]
-      static void Postfix(SettingsEntitySliderVisualPerceptionWithImagesPCView __instance)
+      [HarmonyPatch(nameof(SettingsVM.GetVMForSettingsItem)), HarmonyPrefix]
+      static bool Prefix(UISettingsEntityBase uiSettingsEntity, ref VirtualListElementVMBase __result)
       {
-        Main.Logger.Log($"Has transform: {__instance.transform.childCount}");
-        foreach (var child in __instance.transform.Children())
+        if (uiSettingsEntity is UISettingsEntityImage image)
         {
-          if (child.name.Equals("Images"))
-          {
-            Main.Logger.Log($"Child: {child.name}, grandchild count: {child.childCount}");
-            child.GetChild(0).gameObject.GetComponent<Image>().sprite = Create();
-          }
+          Main.Logger.Log("Returning image VM");
+          __result = new SettingsEntityImageVM();
+          return false;
         }
+        return true;
+      }
+    }
+
+    [HarmonyPatch(typeof(SettingsPCView.SettingsViews))]
+    static class SettingsViews_Patch
+    {
+      [HarmonyPatch(nameof(SettingsPCView.SettingsViews.InitializeVirtualList)), HarmonyPrefix]
+      static bool Prefix(SettingsPCView.SettingsViews __instance, VirtualListComponent virtualListComponent)
+      {
+        Main.Logger.Log("Initializing image view.");
+        var obj = new GameObject("ImageView", typeof(RectTransform));
+        var prefabToAddtoList = obj.AddComponent<SettingsEntityImageView>();
+        virtualListComponent.Initialize(new IVirtualListElementTemplate[]
+        {
+          new VirtualListElementTemplate<SettingsEntityHeaderVM>(__instance.m_SettingsEntityHeaderViewPrefab),
+          new VirtualListElementTemplate<SettingsEntityBoolVM>(__instance.m_SettingsEntityBoolViewPrefab),
+          new VirtualListElementTemplate<SettingsEntityDropdownVM>(__instance.m_SettingsEntityDropdownViewPrefab, 0),
+          new VirtualListElementTemplate<SettingsEntitySliderVM>(__instance.m_SettingsEntitySliderViewPrefab, 0),
+          new VirtualListElementTemplate<SettingEntityKeyBindingVM>(__instance.m_SettingEntityKeyBindingViewPrefab),
+          new VirtualListElementTemplate<SettingsEntityDropdownVM>(__instance.m_SettingsEntityDropdownDisplayModeViewPrefab, 1),
+          new VirtualListElementTemplate<SettingsEntityDropdownGameDifficultyVM>(__instance.m_SettingsEntityDropdownGameDifficultyViewPrefab, 0),
+          new VirtualListElementTemplate<SettingsEntitySliderVM>(__instance.m_SettingsEntitySliderVisualPerceptionViewPrefab, 1),
+          new VirtualListElementTemplate<SettingsEntitySliderVM>(__instance.m_SettingsEntitySliderVisualPerceptionWithImagesViewPrefab, 2),
+          new VirtualListElementTemplate<SettingsEntityStatisticsOptOutVM>(__instance.m_SettingsEntityStatisticsOptOutViewPrefab),
+          new VirtualListElementTemplate<SettingsEntityImageVM>(prefabToAddtoList),
+        });
+        return false;
       }
     }
   }
