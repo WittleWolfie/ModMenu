@@ -1,10 +1,18 @@
 ﻿using HarmonyLib;
 using Kingmaker.Localization;
+using Kingmaker.UI.MVVM._PCView.Settings.Menu;
 using Kingmaker.UI.MVVM._VM.Settings;
+using Kingmaker.UI.MVVM._VM.Settings.Menu;
 using Kingmaker.UI.SettingsUI;
+using Kingmaker.Utility;
+using ModMenu.NewTypes;
+using Owlcat.Runtime.UI.MVVM;
+using Owlcat.Runtime.UI.SelectionGroup;
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
+using UnityEngine;
 
 namespace ModMenu
 {
@@ -23,10 +31,7 @@ namespace ModMenu
     {
       get
       {
-        if (_menuTitleString is null)
-        {
-          _menuTitleString = Helpers.CreateString("ModsMenu.Title", "Mods");
-        }
+        _menuTitleString ??= Helpers.CreateString("ModsMenu.Title", "Mods");
         return _menuTitleString;
       }
     }
@@ -34,7 +39,7 @@ namespace ModMenu
     internal static readonly List<UISettingsGroup> ModSettings = new();
 
     /// <summary>
-    /// Patch to create the Mods menu screen.
+    /// Patch to create the Mods Menu ViewModel.
     /// </summary>
     [HarmonyPatch]
     static class SettingsVM_Constructor
@@ -76,8 +81,44 @@ namespace ModMenu
 
       private static void AddMenuEntity(SettingsVM settings)
       {
-        Main.Logger.NativeLog("Adding mod settings menu.");
-        settings.CreateMenuEntity(MenuTitleString, SettingsScreenId);
+        try
+        {
+          settings.CreateMenuEntity(MenuTitleString, SettingsScreenId);
+          Main.Logger.NativeLog("Added Mods Menu ViewModel.");
+        }
+        catch (Exception e)
+        {
+          Main.Logger.LogException(e);
+        }
+      }
+    }
+
+    /// <summary>
+    /// Patch to create the Mods Menu View. Needed to show the menu in-game.
+    /// </summary>
+    [HarmonyPatch(typeof(SettingsMenuSelectorPCView))]
+    static class SettingsMenuSelectorPCView_Patch
+    {
+      [HarmonyPatch(nameof(SettingsMenuSelectorPCView.Initialize)), HarmonyPrefix]
+      static void Initialize_Prefix(SettingsMenuSelectorPCView __instance)
+      {
+        try
+        {
+          if (!__instance.m_MenuEntities.Any())
+          {
+            __instance.m_MenuEntities = new List<SettingsMenuEntityPCView>();
+            __instance.m_MenuEntities.AddRange(__instance.GetComponentsInChildren<SettingsMenuEntityPCView>());
+            var existingEntity = __instance.m_MenuEntities.LastItem();
+            var newEntity = UnityEngine.Object.Instantiate(existingEntity);
+            newEntity.transform.SetParent(existingEntity.transform.parent);
+            __instance.m_MenuEntities.Add(newEntity);
+            Main.Logger.NativeLog("Added Mods Menu View");
+          }
+        }
+        catch (Exception e)
+        {
+          Main.Logger.LogException(e);
+        }
       }
     }
 
@@ -90,10 +131,17 @@ namespace ModMenu
       [HarmonyPatch(nameof(UISettingsManager.GetSettingsList)), HarmonyPostfix]
       static void Postfix(UISettingsManager.SettingsScreen? screenId, ref List<UISettingsGroup> __result)
       {
-        if (screenId is not null && screenId == SettingsScreenId)
+        try
         {
-          Main.Logger.NativeLog("Returning mod settings.");
-          __result = ModSettings;
+          if (screenId is not null && screenId == SettingsScreenId)
+          {
+            Main.Logger.NativeLog($"Returning mod settings for screen {screenId}.");
+            __result = ModSettings;
+          }
+        }
+        catch (Exception e)
+        {
+          Main.Logger.LogException(e);
         }
       }
     }

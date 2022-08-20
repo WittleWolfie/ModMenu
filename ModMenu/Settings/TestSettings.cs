@@ -169,10 +169,9 @@ namespace ModMenu.Settings
       [HarmonyPatch(nameof(SettingsPCView.SettingsViews.InitializeVirtualList)), HarmonyPrefix]
       static bool Prefix(SettingsPCView.SettingsViews __instance, VirtualListComponent virtualListComponent)
       {
-        Main.Logger.Log("Initializing image view.");
+        Main.Logger.NativeLog("Initializing image view.");
         var obj = new GameObject("ImageView", typeof(RectTransform));
         var prefabToAddtoList = obj.AddComponent<SettingsEntityImageView>();
-        // Maybe need to do this: UnityEngine.Object.DontDestroyOnLoad(obj); (test by reloading)
  
         virtualListComponent.Initialize(new IVirtualListElementTemplate[]
         {
