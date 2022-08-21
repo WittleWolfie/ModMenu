@@ -39,9 +39,6 @@
     <Reference Include="Assembly-CSharp-firstpass.dll">
       <HintPath>$(WrathPath)\Wrath_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
-    <Reference Include="Owlcat.Runtime.Core.dll">
-      <HintPath>$(WrathPath)\Wrath_Data\Managed\Owlcat.Runtime.Core.dll</HintPath>
-    </Reference>
     <Reference Include="Owlcat.Runtime.UI.dll">
       <HintPath>$(WrathPath)\Wrath_Data\Managed\Owlcat.Runtime.UI.dll</HintPath>
     </Reference>
@@ -53,9 +50,6 @@
     </Reference>
     <Reference Include="UnityEngine.UI.dll">
       <HintPath>$(WrathPath)\Wrath_Data\Managed\UnityEngine.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="UniRx.dll">
-      <HintPath>$(WrathPath)\Wrath_Data\Managed\UniRx.dll</HintPath>
     </Reference>
 
     <!-- UMM & Harmony -->
