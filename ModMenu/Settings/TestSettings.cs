@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using Kingmaker.Settings;
 using Kingmaker.UI.MVVM._PCView.Settings;
 using Kingmaker.UI.MVVM._VM.Settings;
 using Kingmaker.UI.MVVM._VM.Settings.Entities.Decorative;
@@ -9,7 +8,6 @@ using Kingmaker.UI.SettingsUI;
 using ModMenu.NewTypes;
 using Owlcat.Runtime.UI.MVVM;
 using Owlcat.Runtime.UI.VirtualListSystem;
-using System;
 using System.IO;
 using UnityEngine;
 
