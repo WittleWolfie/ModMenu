@@ -50,6 +50,11 @@ namespace ModMenu.NewTypes
     {
       var image = gameObject.GetComponent<Image>() ?? gameObject.AddComponent<Image>();
       image.sprite = ViewModel.Sprite;
+      var layout = image.gameObject.AddComponent<LayoutElement>();
+      layout.flexibleHeight = 0;
+      layout.flexibleWidth = 0;
+      layout.preferredHeight = image.sprite.bounds.size.x;
+      layout.preferredWidth = image.sprite.bounds.size.y;
     }
 
     protected override void DestroyViewImplementation()
