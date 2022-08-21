@@ -4,39 +4,97 @@ using Kingmaker.UI.SettingsUI;
 using ModMenu.NewTypes;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UniRx;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace ModMenu.Settings
 {
   /// <summary>
-  /// Represents a group of settings on the Mods menu page.
+  /// Represents a group of settings on the Mods menu page, constructed using a builder API.
   /// </summary>
+  /// 
+  /// <remarks>
+  /// <para>
+  /// All the <c>AddX</c> methods return <c>this</c> to support builder style method chaining. Once your SettingsGroup
+  /// is configured add it to the Mods menu page by calling <see cref="ModMenu.AddSettings(SettingsGroup)"/>.
+  /// </para>
+  /// 
+  /// <para>
+  /// Entries are displayed in the order they are added.
+  /// </para>
+  /// 
+  /// <para>
+  /// Creats a setting group with a single feature toggle:
+  /// </para>
+  /// <example>
+  /// <code>
+  /// ModMenu.AddSettings(
+  ///   SettingsGroup.New("mymod.settingsgroup", MySettingsGroupTitle)
+  ///     .AddImage(MyModBanner)
+  ///     .AddToggle(
+  ///       new(
+  ///         "mymod.feature.toggle",
+  ///         defaultValue: false,
+  ///         MyFeatureToggleDescription)));
+  /// </code>
+  /// </example>
+  /// 
+  /// <para>
+  /// To actually use the settings values you must either handle <c>OnValueChanged</c> events which you can do by
+  /// passing in a <see cref="Setting{T}"/> with <c>onValueChanged</c> specified, or by storing the
+  /// <c>SettingsEntity</c>:
+  /// </para>
+  /// <example>
+  /// <code>
+  /// SettingsEntity&lt;bool&gt; featureToggle;
+  /// SettingsGroup.New("mymod.settingsgroup", MySettingsGroupTitle)
+  ///   .AddToggle(
+  ///     new(
+  ///       "mymod.feature.toggle.using.event",
+  ///       defaultValue: false,
+  ///       MyFeatureToggleDescription,
+  ///       // When toggled this calls HandleMyFeatureToggle(value) where value is the new setting.
+  ///       onValueChanged: value => HandleMyFeatureToggle(value)))
+  ///   .AddToggle(
+  ///     new(
+  ///       "mymod.feature.toggle.using.entity",
+  ///       defaultValue: false,
+  ///       MyFeatureToggleDescription),
+  ///     // When toggled featureToggle updates its value which can be retrieved by calling featureToggle.GetValue()
+  ///     out featureToggle));
+  /// </code>
+  /// </example>
+  /// </remarks>
   public class SettingsGroup
   {
     private readonly UISettingsGroup Group = ScriptableObject.CreateInstance<UISettingsGroup>();
     private readonly List<UISettingsEntityBase> Settings = new();
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="key"></param>
-    /// <param name="title"></param>
+    /// <param name="key">Unique key / name for the settings group. Use only lowercase letters and '.'</param>
+    /// <param name="title">Title of the group, displayed on the settings page</param>
     public SettingsGroup(string key, LocalizedString title)
     {
       Group.name = key.ToLower();
       Group.Title = title;
     }
 
+    /// <inheritdoc cref="SettingsGroup(string, LocalizedString)"/>
+    public static SettingsGroup New(string key, LocalizedString title)
+    {
+      return new(key, title);
+    }
+
+    /// <summary>
+    /// Adds an On / Off setting toggle.
+    /// </summary>
     public SettingsGroup AddToggle(Setting<bool> setting)
     {
       return AddToggle(setting, out _);
     }
 
+    /// <inheritdoc cref="AddToggle(Setting{bool})"/>
+    /// <param name="settingValue">
+    /// Use this parameter to store the resulting <c>SettingsEntityBool</c> which contains the setting value.
+    /// </param>
     public SettingsGroup AddToggle(Setting<bool> setting, out SettingsEntity<bool> settingValue)
     {
       settingValue =
@@ -65,6 +123,34 @@ namespace ModMenu.Settings
       return this;
     }
 
+    /// <summary>
+    /// Adds a dropdown setting populated using an enum.
+    /// </summary>
+    /// 
+    /// <remarks>
+    /// Due to Unity limitations you need to create <paramref name="dropdown"/> yourself:
+    /// 
+    /// <example>
+    /// <code>
+    /// public enum MySettingsEnum { /* ... */ }
+    /// // Declare a non-generic class which inherits from the generic type
+    /// private class UISettingsEntityDropdownMySettingsEnum : UISettingsEntityDropdownEnum&lt;MysettingsEnum&gt; { }
+    /// 
+    /// mySettingsGroup.AddDropdown(
+    ///   new(
+    ///     "mymod.feature.enum",
+    ///     defaultValue: MySettingsEnum.SomeValue,
+    ///     MyEnumFeatureDescription,
+    ///     onValueChanged: value => OnDropdownSelected(value)),
+    ///   ScriptableObject.CreateInstance&lt;UISettingsEntityDropdownMySettingsEnum&gt;());
+    /// </code>
+    /// </example>
+    /// </remarks>
+    /// 
+    /// <typeparam name="T">Enum used to populate values</typeparam>
+    /// <param name="dropdown">
+    /// Instance of class inheriting from <c>UISettingsEntityDropdownEnum&lt;TEnum&gt;</c>, created by calling
+    /// <c>ScriptableObject.CreateInstance&lt;T&gt;()</c></param>
     public SettingsGroup AddDropdown<T>(
       Setting<T> setting,
       UISettingsEntityDropdownEnum<T> dropdown) where T : Enum
@@ -72,6 +158,10 @@ namespace ModMenu.Settings
       return AddDropdown<T>(setting, dropdown, out _);
     }
 
+    /// <inheritdoc cref="AddDropdown{T}(Setting{T}, UISettingsEntityDropdownEnum{T})"/>
+    /// <param name="settingValue">
+    /// Use this parameter to store the resulting <c>SettingsEntityEnum</c> which contains the setting value.
+    /// </param>
     public SettingsGroup AddDropdown<T>(
       Setting<T> setting,
       UISettingsEntityDropdownEnum<T> dropdown,
@@ -106,6 +196,11 @@ namespace ModMenu.Settings
       return this;
     }
 
+    /// <summary>
+    /// Adds a slider based on a float.
+    /// </summary>
+    /// <param name="decimalPlaces">Number of decimal places to use, e.g. 1 would show 2.1 while 2 might show 2.15</param>
+    /// <param name="showValueText">Whether the slider shows the current value on it</param>
     public SettingsGroup AddSliderFloat(
       Setting<float> setting,
       float minValue,
@@ -117,6 +212,10 @@ namespace ModMenu.Settings
       return AddSliderFloat(setting, minValue, maxValue, out _, step, decimalPlaces, showValueText);
     }
 
+    /// <inheritdoc cref="AddSliderFloat(Setting{float}, float, float, float, int, bool)"/>
+    /// <param name="settingValue">
+    /// Use this parameter to store the resulting <c>SettingsEntityFloat</c> which contains the setting value.
+    /// </param>
     public SettingsGroup AddSliderFloat(
       Setting<float> setting,
       float minValue,
@@ -156,6 +255,10 @@ namespace ModMenu.Settings
       return this;
     }
 
+    /// <summary>
+    /// Adds a slider based on an int.
+    /// </summary>
+    /// <param name="showValueText">Whether the slider shows the current value on it</param>
     public SettingsGroup AddSliderInt(
       Setting<int> setting,
       int minValue,
@@ -165,6 +268,10 @@ namespace ModMenu.Settings
       return AddSliderInt(setting, minValue, maxValue, out _, showValueText);
     }
 
+    /// <inheritdoc cref="AddSliderInt(Setting{int}, int, int, bool)"/>
+    /// <param name="settingValue">
+    /// Use this parameter to store the resulting <c>SettingsEntityInt</c> which contains the setting value.
+    /// </param>
     public SettingsGroup AddSliderInt(
       Setting<int> setting,
       int minValue,
@@ -200,6 +307,9 @@ namespace ModMenu.Settings
       return this;
     }
 
+    /// <summary>
+    /// Adds a row contained of just an image. There is no setting tied to this, it is just for decoration.
+    /// </summary>
     public SettingsGroup AddImage(Sprite sprite)
     {
       var image = ScriptableObject.CreateInstance<UISettingsEntityImage>();
