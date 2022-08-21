@@ -2,19 +2,14 @@
 using Kingmaker.Localization;
 using Kingmaker.UI.MVVM._PCView.Settings.Menu;
 using Kingmaker.UI.MVVM._VM.Settings;
-using Kingmaker.UI.MVVM._VM.Settings.Menu;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.Utility;
-using ModMenu.NewTypes;
-using Owlcat.Runtime.UI.MVVM;
-using Owlcat.Runtime.UI.SelectionGroup;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
-using UnityEngine;
 
-namespace ModMenu
+namespace ModMenu.Settings
 {
   /// <summary>
   /// Class containing patches necessary to inject an additional settings screen into the menu.
@@ -31,8 +26,8 @@ namespace ModMenu
     {
       get
       {
-        _menuTitleString ??= Helpers.CreateString("ModsMenu.Title", "Mods");
-        return _menuTitleString;
+          _menuTitleString ??= Helpers.CreateString("ModsMenu.Title", "Mods");
+          return _menuTitleString;
       }
     }
 
@@ -46,9 +41,9 @@ namespace ModMenu
     {
       static MethodBase TargetMethod()
       {
-        // There's only a single constructor so grab the first one and ignore the arguments. Maybe I'll try adding
-        // back the args version later but right now this works.
-        return AccessTools.FirstConstructor(typeof(SettingsVM), c => true);
+          // There's only a single constructor so grab the first one and ignore the arguments. Maybe I'll try adding
+          // back the args version later but right now this works.
+          return AccessTools.FirstConstructor(typeof(SettingsVM), c => true);
       }
 
       private static readonly MethodInfo CreateMenuEntity =
