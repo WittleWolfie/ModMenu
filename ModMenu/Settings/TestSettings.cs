@@ -23,21 +23,6 @@ namespace ModMenu.Settings
   /// </summary>
   internal class TestSettings
   {
-    private readonly UISettingsGroup TestSettingsGroup = ScriptableObject.CreateInstance<UISettingsGroup>();
-    private readonly UISettingsEntityBase[] TestSettingsEntities = new UISettingsEntityBase[5];
-
-    public TestSettings()
-    {
-      TestSettingsGroup.name = "testsettings.group";
-      TestSettingsGroup.Title = Helpers.CreateString("TestSettings.Title", "Test Settings");
-      TestSettingsGroup.SettingsList = TestSettingsEntities;
-    }
-
-    private UISettingsEntityImage Image;
-
-    private UISettingsEntityBool Toggle;
-    private SettingsEntityBool ToggleValue = new("testsettings.toggle", defaultValue: false);
-
     private enum TestEnum
     {
       First,
@@ -45,76 +30,43 @@ namespace ModMenu.Settings
       Third,
       Last
     }
-    private UISettingsEntityDropdownEnum<TestEnum> DropdownEnum;
-    private SettingsEntityEnum<TestEnum> DropdownEnumValue =
-      new("testsettings.dropdownenum", defaultValue: TestEnum.Second);
-
-    private UISettingsEntitySliderFloat SliderFloat;
-    private SettingsEntityFloat SliderFloatValue = new("testsettings.sliderfloat", defaultValue: 1.0f);
-
-    private UISettingsEntitySliderInt SliderInt;
-    private SettingsEntityInt SliderIntValue = new("testsettings.sliderint", defaultValue: 2);
 
     private class UISettingsEntityDropdownTestEnum : UISettingsEntityDropdownEnum<TestEnum> { }
 
     internal void Initialize()
     {
-      Image = ScriptableObject.CreateInstance<UISettingsEntityImage>();
-      Image.Sprite = Create();
-
-      Toggle = ScriptableObject.CreateInstance<UISettingsEntityBool>();
-      Toggle.m_Description = Helpers.CreateString("testsettings.toggle", "This is a toggle");
-      Toggle.m_TooltipDescription = Toggle.m_Description;
-      Toggle.DefaultValue = ToggleValue.DefaultValue;
-      Toggle.LinkSetting(ToggleValue);
-      (ToggleValue as IReadOnlySettingEntity<bool>).OnValueChanged += OnToggle;
-
-      Main.Logger.Log("Toggle done.");
-
-      DropdownEnum = ScriptableObject.CreateInstance<UISettingsEntityDropdownTestEnum>();
-      DropdownEnum.m_Description = Helpers.CreateString("testsettings.dropdownenum", "This is an enum dropdown");
-      DropdownEnum.m_TooltipDescription = DropdownEnum.m_Description;
-      DropdownEnum.m_CashedLocalizedValues ??= new();
-      foreach (var value in Enum.GetValues(typeof(TestEnum)))
-      {
-        DropdownEnum.m_CashedLocalizedValues.Add(value.ToString());
-      }
-      DropdownEnum.LinkSetting(DropdownEnumValue);
-      (DropdownEnumValue as IReadOnlySettingEntity<TestEnum>).OnValueChanged += OnDropdownSelected;
-
-      Main.Logger.Log("Dropdown done.");
-
-      SliderFloat = ScriptableObject.CreateInstance<UISettingsEntitySliderFloat>();
-      SliderFloat.m_Description = Helpers.CreateString("testsettings.sliderfloat", "This is a slider using a float");
-      SliderFloat.m_TooltipDescription = SliderFloat.m_Description;
-      SliderFloat.m_MinValue = 0.2f;
-      SliderFloat.m_MaxValue = 2.6f;
-      SliderFloat.m_Step = 0.1f;
-      SliderFloat.m_ShowValueText = true;
-      SliderFloat.m_DecimalPlaces = 1;
-      SliderFloat.LinkSetting(SliderFloatValue);
-      (SliderFloatValue as IReadOnlySettingEntity<float>).OnValueChanged += OnSliderFloatChanged;
-
-      Main.Logger.Log("SliderFloat done.");
-
-      SliderInt = ScriptableObject.CreateInstance<UISettingsEntitySliderInt>();
-      SliderInt.m_Description = Helpers.CreateString("testsettings.sliderint", "This is a slider using an int");
-      SliderInt.m_TooltipDescription = SliderInt.m_Description;
-      SliderInt.m_MinValue = -5;
-      SliderInt.m_MaxValue = 15;
-      SliderInt.m_ShowValueText = true;
-      SliderInt.LinkSetting(SliderIntValue);
-      (SliderIntValue as IReadOnlySettingEntity<int>).OnValueChanged += OnSliderIntChanged;
-
-      Main.Logger.Log("SliderInt done.");
-
-      TestSettingsEntities[0] = Image;
-      TestSettingsEntities[1] = DropdownEnum;
-      TestSettingsEntities[2] = SliderFloat;
-      TestSettingsEntities[3] = SliderInt;
-      TestSettingsEntities[4] = Toggle;
-
-      ModsMenuEntity.ModSettings.Add(TestSettingsGroup);
+      ModMenu.AddSettings(
+        new SettingsGroup("testsettings.group", Helpers.CreateString("TestSettings.Title", "Test Settings"))
+          .AddImage(CreateSprite())
+          .AddToggle(
+            new(
+              "testsettings.toggle",
+              defaultValue: false,
+              Helpers.CreateString("testsettings.toggle", "This is a toggle"),
+              onValueChanged: OnToggle))
+          .AddDropdown(
+            new(
+              "testsettings.dropdownenum",
+              defaultValue: TestEnum.Third,
+              Helpers.CreateString("testsettings.dropdownenum", "This is an enum dropdown"),
+              onValueChanged: OnDropdownSelected),
+            ScriptableObject.CreateInstance<UISettingsEntityDropdownTestEnum>())
+          .AddSliderFloat(
+            new(
+              "testsettings.sliderfloat",
+              defaultValue: 1.0f,
+              Helpers.CreateString("testsettings.sliderfloat", "This is a slider using a float"),
+              onValueChanged: OnSliderFloatChanged),
+            minValue: 0.2f,
+            maxValue: 2.6f)
+          .AddSliderInt(
+            new(
+              "testsettings.sliderint",
+              defaultValue: 2,
+              Helpers.CreateString("testsettings.sliderint", "This is a slider using an int"),
+              onValueChanged: OnSliderIntChanged),
+            minValue: -5,
+            maxValue: 15));
     }
 
     private void OnToggle(bool value)
@@ -137,7 +89,7 @@ namespace ModMenu.Settings
       Main.Logger.Log($"Int slider changed to {value}");
     }
 
-    public static Sprite Create(int size = 64)
+    public static Sprite CreateSprite(int size = 64)
     {
       var bytes =
         File.ReadAllBytes("D:\\Ithiel\\Documents\\GitHub\\CharacterOptionsPlus\\CharacterOptionsPlus_Unity\\Assets\\Icons\\FuriousFocus.png");
