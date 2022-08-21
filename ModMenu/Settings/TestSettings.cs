@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace ModMenu.Settings
 {
+#if DEBUG
   /// <summary>
   /// Test settings group shown on debug builds to validate usage.
   /// </summary>
@@ -85,4 +86,5 @@ namespace ModMenu.Settings
       return sprite;
     }
   }
+#endif
 }
