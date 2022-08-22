@@ -79,10 +79,10 @@ namespace ModMenu.Settings
     public static Sprite CreateSprite(int size = 64)
     {
       var bytes =
-        File.ReadAllBytes("D:\\Ithiel\\Documents\\GitHub\\CharacterOptionsPlus\\CharacterOptionsPlus_Unity\\Assets\\Icons\\FuriousFocus.png");
-      var texture = new Texture2D(size, size, TextureFormat.RGBA32, false);
+        File.ReadAllBytes("D:\\Ithiel\\Documents\\GitHub\\ModMenu\\Wolf.png");
+      var texture = new Texture2D(563, 368, TextureFormat.RGBA32, false);
       _ = texture.LoadImage(bytes);
-      var sprite = Sprite.Create(texture, new Rect(0, 0, size, size), new Vector2(0, 0));
+      var sprite = Sprite.Create(texture, new Rect(0, 0, 563, 368), new Vector2(0, 0));
       return sprite;
     }
   }
