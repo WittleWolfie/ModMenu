@@ -25,6 +25,12 @@ namespace ModMenu.Settings
       ModMenu.AddSettings(
         new SettingsGroup("testsettings.group", Helpers.CreateString("TestSettings.Title", "Test Settings"))
           .AddImage(CreateSprite())
+          .AddButton(
+            new(
+              description: Helpers.CreateString("testsettings.button.description", "This is a button"),
+              tooltip: Helpers.CreateString("testsettings.button.tooltip", "This is a button that has a bunch more text about it than the main view"),
+              buttonText: Helpers.CreateString("testsettings.button.text", "Click Me!"),
+              onClick: OnClick))
           .AddToggle(
             new(
               "testsettings.toggle",
@@ -56,6 +62,11 @@ namespace ModMenu.Settings
             maxValue: 15));
     }
 
+    private void OnClick()
+    {
+      Main.Logger.Log("Button was clicked");
+    }
+
     private void OnToggle(bool value)
     {
       Main.Logger.Log($"Toggle switched to {value}");
@@ -79,10 +90,10 @@ namespace ModMenu.Settings
     public static Sprite CreateSprite(int size = 64)
     {
       var bytes =
-        File.ReadAllBytes("D:\\Ithiel\\Documents\\GitHub\\ModMenu\\Wolf.png");
-      var texture = new Texture2D(563, 368, TextureFormat.RGBA32, false);
+        File.ReadAllBytes(@"D:\lizard_think.png");
+      var texture = new Texture2D(128, 128, TextureFormat.RGBA32, false);
       _ = texture.LoadImage(bytes);
-      var sprite = Sprite.Create(texture, new Rect(0, 0, 563, 368), new Vector2(0, 0));
+      var sprite = Sprite.Create(texture, new(0, 0, texture.width, texture.height), Vector2.zero);
       return sprite;
     }
   }

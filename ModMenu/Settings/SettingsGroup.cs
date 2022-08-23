@@ -334,6 +334,12 @@ namespace ModMenu.Settings
       return Group;
     }
 
+    internal SettingsGroup AddButton(UISettingsEntityButton button)
+    {
+      Settings.Add(button);
+      return this;
+    }
+
     /// <summary>
     /// Common params for creating (most) settings types.
     /// </summary>
