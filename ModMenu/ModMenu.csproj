@@ -31,7 +31,7 @@
 
   <ItemGroup>
     <!-- Main Wrath Assembly, Publicized -->
-    <Reference Include="Assembly-CSharp">
+    <Reference Include="Assembly-CSharp.dll">
       <HintPath>$(SolutionDir)lib\Assembly-CSharp.dll</HintPath>
     </Reference>
 
@@ -41,6 +41,9 @@
     </Reference>
     <Reference Include="Owlcat.Runtime.UI.dll">
       <HintPath>$(WrathPath)\Wrath_Data\Managed\Owlcat.Runtime.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro.dll">
+      <HintPath>$(WrathPath)\Wrath_Data\Managed\Unity.TextMeshPro.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.CoreModule.dll">
       <HintPath>$(WrathPath)\Wrath_Data\Managed\UnityEngine.CoreModule.dll</HintPath>
