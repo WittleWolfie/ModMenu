@@ -20,18 +20,21 @@ namespace ModMenu.NewTypes
     public readonly string ButtonText;
     public readonly Action OnClick;
 
-    public UISettingsEntityButton(LocalizedString description, LocalizedString tooltip, LocalizedString buttonText, Action onClick)
+    public UISettingsEntityButton(
+      LocalizedString description, LocalizedString tooltip, LocalizedString buttonText, Action onClick)
     {
-      this.m_Description = description;
-      this.m_TooltipDescription = tooltip;
-      this.m_IAmSetHandler = false;
-      this.m_ShowVisualConnection = false;
+      m_Description = description;
+      m_TooltipDescription = tooltip;
+      m_IAmSetHandler = false;
+      m_ShowVisualConnection = false;
 
       ButtonText = buttonText.ToString();
       OnClick = onClick;
     }
-    public override SettingsListItemType? Type => SettingsListItemType.Custom; //Do we want this???
+
+    public override SettingsListItemType? Type => SettingsListItemType.Custom;
   }
+
   internal class SettingsEntityButtonVM : SettingsEntityVM
   {
     private readonly UISettingsEntityButton buttonEntity;
@@ -42,15 +45,19 @@ namespace ModMenu.NewTypes
     {
       this.buttonEntity = buttonEntity;
     }
+
     public void PerformClick()
     {
       buttonEntity.OnClick?.Invoke();
     }
-
   }
-  internal class SettingsEntityButtonView : SettingsEntityView<SettingsEntityButtonVM>, IPointerEnterHandler, IPointerExitHandler
+
+  internal class SettingsEntityButtonView :
+    SettingsEntityView<SettingsEntityButtonVM>, IPointerEnterHandler, IPointerExitHandler
   {
-    private static readonly FieldInfo OverrideType = AccessTools.Field(typeof(VirtualListLayoutElementSettings), "m_OverrideType");
+    private static readonly FieldInfo OverrideType =
+      AccessTools.Field(typeof(VirtualListLayoutElementSettings), "m_OverrideType");
+
     public override VirtualListLayoutElementSettings LayoutSettings
     {
       get
@@ -64,7 +71,9 @@ namespace ModMenu.NewTypes
           OverrideWidth = false,
         };
         if (set_mOverrideType)
+        {
           OverrideType.SetValue(m_LayoutSettings, VirtualListLayoutElementSettings.LayoutOverrideType.UnityLayout);
+        }
 
         return m_LayoutSettings;
       }
@@ -82,12 +91,11 @@ namespace ModMenu.NewTypes
         ViewModel.PerformClick();
       });
 
-      SetupColor(false);
+      SetupColor(isHighlighted: false);
     }
 
     private Color NormalColor = Color.clear;
-    private Color OddColor = new Color(0.77f, 0.75f, 0.69f, 0.29f);
-    private Color HighlightedColor = new Color(0.52f, 0.52f, 0.52f, 0.29f);
+    private Color HighlightedColor = new(0.52f, 0.52f, 0.52f, 0.29f);
     public Image HighlightedImage;
     public TextMeshProUGUI Title;
     public OwlcatButton Button;
@@ -95,31 +103,30 @@ namespace ModMenu.NewTypes
 
     private void SetupColor(bool isHighlighted)
     {
-      Color color = this.NormalColor;
-      if (this.HighlightedImage != null)
+      if (HighlightedImage != null)
       {
-        this.HighlightedImage.color = (isHighlighted ? this.HighlightedColor : color);
+        HighlightedImage.color = isHighlighted ? HighlightedColor : NormalColor;
       }
     }
 
-
     public void OnPointerEnter(PointerEventData eventData)
     {
-      EventBus.RaiseEvent<ISettingsDescriptionUIHandler>(delegate (ISettingsDescriptionUIHandler h)
+      EventBus.RaiseEvent(delegate (ISettingsDescriptionUIHandler h)
       {
-        h.HandleShowSettingsDescription(base.ViewModel.Title, base.ViewModel.Description);
-      }, true);
-      this.SetupColor(true);
+        h.HandleShowSettingsDescription(ViewModel.Title, ViewModel.Description);
+      },
+      true);
+      SetupColor(isHighlighted: true);
     }
 
-    // Token: 0x06005A86 RID: 23174 RVA: 0x0017D98A File Offset: 0x0017BB8A
     public void OnPointerExit(PointerEventData eventData)
     {
-      EventBus.RaiseEvent<ISettingsDescriptionUIHandler>(delegate (ISettingsDescriptionUIHandler h)
+      EventBus.RaiseEvent(delegate (ISettingsDescriptionUIHandler h)
       {
         h.HandleHideSettingsDescription();
-      }, true);
-      this.SetupColor(false);
+      },
+      true);
+      SetupColor(isHighlighted: false);
     }
   }
 

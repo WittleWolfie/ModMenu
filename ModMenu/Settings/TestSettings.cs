@@ -1,5 +1,6 @@
 ﻿using Kingmaker.UI.SettingsUI;
 using System.IO;
+using System.Reflection;
 using UnityEngine;
 
 namespace ModMenu.Settings
@@ -87,10 +88,13 @@ namespace ModMenu.Settings
       Main.Logger.Log($"Int slider changed to {value}");
     }
 
-    public static Sprite CreateSprite(int size = 64)
+    internal static Sprite CreateSprite()
     {
-      var bytes =
-        File.ReadAllBytes(@"D:\lizard_think.png");
+      var assembly = Assembly.GetExecutingAssembly();
+      var embeddedImage = "ModMenu.WittleWolfie.png";
+      using var stream = assembly.GetManifestResourceStream(embeddedImage);
+      byte[] bytes = new byte[stream.Length];
+      stream.Read(bytes, 0, bytes.Length);
       var texture = new Texture2D(128, 128, TextureFormat.RGBA32, false);
       _ = texture.LoadImage(bytes);
       var sprite = Sprite.Create(texture, new(0, 0, texture.width, texture.height), Vector2.zero);

@@ -1,11 +1,8 @@
 ﻿using HarmonyLib;
-using Kingmaker.UI.MVVM._VM.Settings.Entities;
 using Kingmaker.UI.SettingsUI;
 using Owlcat.Runtime.UI.MVVM;
 using Owlcat.Runtime.UI.VirtualListSystem.ElementSettings;
-using System;
 using System.Reflection;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -19,7 +16,8 @@ namespace ModMenu.NewTypes
     {
       Sprite = sprite;
     }
-    public override SettingsListItemType? Type => SettingsListItemType.Custom; //Do we want this????
+
+    public override SettingsListItemType? Type => SettingsListItemType.Custom;
   }
 
   internal class SettingsEntityImageVM : VirtualListElementVMBase
@@ -31,14 +29,14 @@ namespace ModMenu.NewTypes
       Sprite = imageEntity.Sprite;
     }
 
-    protected override void DisposeImplementation()
-    {
-    }
+    protected override void DisposeImplementation() { }
   }
 
   internal class SettingsEntityImageView : VirtualListElementViewBase<SettingsEntityImageVM>
   {
-    private static readonly FieldInfo OverrideType = AccessTools.Field(typeof(VirtualListLayoutElementSettings), "m_OverrideType");
+    private static readonly FieldInfo OverrideType =
+      AccessTools.Field(typeof(VirtualListLayoutElementSettings), "m_OverrideType");
+
     public override VirtualListLayoutElementSettings LayoutSettings
     {
       get
@@ -46,13 +44,19 @@ namespace ModMenu.NewTypes
         bool set_mOverrideType = m_LayoutSettings == null;
         m_LayoutSettings ??= new()
         {
-          Height = 256,
-          Width = 256,
+          Height = 40,
           OverrideHeight = true,
-          OverrideWidth = true,
         };
         if (set_mOverrideType)
+        {
           OverrideType.SetValue(m_LayoutSettings, VirtualListLayoutElementSettings.LayoutOverrideType.UnityLayout);
+        }
+
+        if (ViewModel?.Sprite is not null)
+        {
+          m_LayoutSettings.Height = ViewModel.Sprite.bounds.size.y;
+          m_LayoutSettings.Width = ViewModel.Sprite.bounds.size.x;
+        }
 
         return m_LayoutSettings;
       }
@@ -66,6 +70,7 @@ namespace ModMenu.NewTypes
     {
       Image.sprite = ViewModel.Sprite;
     }
+
     protected override void DestroyViewImplementation() { }
   }
 
