@@ -63,13 +63,7 @@ namespace ModMenu.NewTypes
       get
       {
         bool set_mOverrideType = m_LayoutSettings == null;
-        m_LayoutSettings ??= new()
-        {
-          Height = 64,
-          Width = 64,
-          OverrideHeight = false,
-          OverrideWidth = false,
-        };
+        m_LayoutSettings ??= new();
         if (set_mOverrideType)
         {
           OverrideType.SetValue(m_LayoutSettings, VirtualListLayoutElementSettings.LayoutOverrideType.UnityLayout);
