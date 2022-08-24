@@ -44,10 +44,14 @@ namespace ModMenu.NewTypes
         bool set_mOverrideType = m_LayoutSettings == null;
         m_LayoutSettings ??= new()
         {
-          OverrideHeight = true
+          // If this is set to false the row gets all kinds of wonky. Notably setting height has no impact on anything,
+          // the row just sizes based on the image.
+          OverrideHeight = true,
         };
         if (set_mOverrideType)
         {
+          // Note that m_LayoutSettings is largely ignored by using UnityLayout. If it is set to Custom then the height
+          // and width parameters in m_LayoutSettings are used.
           OverrideType.SetValue(m_LayoutSettings, VirtualListLayoutElementSettings.LayoutOverrideType.UnityLayout);
         }
 
