@@ -26,8 +26,8 @@ namespace ModMenu.Settings
     {
       get
       {
-          _menuTitleString ??= Helpers.CreateString("ModsMenu.Title", "Mods");
-          return _menuTitleString;
+        _menuTitleString ??= Helpers.CreateString("ModsMenu.Title", "Mods");
+        return _menuTitleString;
       }
     }
 
@@ -41,9 +41,9 @@ namespace ModMenu.Settings
     {
       static MethodBase TargetMethod()
       {
-          // There's only a single constructor so grab the first one and ignore the arguments. Maybe I'll try adding
-          // back the args version later but right now this works.
-          return AccessTools.FirstConstructor(typeof(SettingsVM), c => true);
+        // There's only a single constructor so grab the first one and ignore the arguments. Maybe I'll try adding
+        // back the args version later but right now this works.
+        return AccessTools.FirstConstructor(typeof(SettingsVM), c => true);
       }
 
       private static readonly MethodInfo CreateMenuEntity =
