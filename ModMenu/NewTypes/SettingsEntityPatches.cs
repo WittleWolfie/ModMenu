@@ -11,7 +11,6 @@ using UnityEngine;
 using Kingmaker.UI.MVVM._PCView.Settings.Entities;
 using TMPro;
 using UnityEngine.UI;
-using System;
 using Owlcat.Runtime.UI.Controls.Button;
 
 namespace ModMenu.NewTypes
@@ -57,8 +56,9 @@ namespace ModMenu.NewTypes
         // Copy the bool settings jobbie
         var copyFrom = __instance.m_SettingsEntityBoolViewPrefab.gameObject;
         var imageTemplate = CreateImageTemplate(GameObject.Instantiate(copyFrom));
-        Main.Logger.Log($"presecption view prefab {__instance.m_SettingsEntitySliderVisualPerceptionViewPrefab != null}");
-        var buttonTemplate = CreateButtonTemplate(GameObject.Instantiate(copyFrom), __instance.m_SettingsEntitySliderVisualPerceptionViewPrefab?.m_ResetButton);
+        var buttonTemplate =
+          CreateButtonTemplate(GameObject.Instantiate(copyFrom),
+          __instance.m_SettingsEntitySliderVisualPerceptionViewPrefab?.m_ResetButton);
 
         virtualListComponent.Initialize(new IVirtualListElementTemplate[]
         {
@@ -81,9 +81,9 @@ namespace ModMenu.NewTypes
       private static SettingsEntityButtonView CreateButtonTemplate(GameObject prefab, OwlcatButton buttonPrefab)
       {
         // Destroy the stuff we don't want from the source prefab
-        GameObject.DestroyImmediate(prefab.GetComponent<SettingsEntityBoolPCView>());
-        GameObject.DestroyImmediate(prefab.transform.Find("MultiButton").gameObject);
-        GameObject.DontDestroyOnLoad(prefab);
+        Object.DestroyImmediate(prefab.GetComponent<SettingsEntityBoolPCView>());
+        Object.DestroyImmediate(prefab.transform.Find("MultiButton").gameObject);
+        Object.DontDestroyOnLoad(prefab);
 
         OwlcatButton buttonControl = null;
         TextMeshProUGUI buttonLabel = null;
@@ -91,7 +91,7 @@ namespace ModMenu.NewTypes
         // Add in our own button
         if (buttonPrefab != null)
         {
-          var button = GameObject.Instantiate(buttonPrefab.gameObject, prefab.transform);
+          var button = Object.Instantiate(buttonPrefab.gameObject, prefab.transform);
           buttonControl = button.GetComponent<OwlcatButton>();
           buttonLabel = button.GetComponentInChildren<TextMeshProUGUI>();
 
@@ -112,8 +112,10 @@ namespace ModMenu.NewTypes
         var templatePrefab = prefab.AddComponent<SettingsEntityButtonView>();
 
         // Wire up the fields that would have been deserialized if coming from a bundle
-        templatePrefab.HighlightedImage = prefab.transform.Find("HighlightedImage").gameObject.GetComponent<Image>();
-        templatePrefab.Title = prefab.transform.Find("HorizontalLayoutGroup/Text").gameObject.GetComponent<TextMeshProUGUI>();
+        templatePrefab.HighlightedImage =
+          prefab.transform.Find("HighlightedImage").gameObject.GetComponent<Image>();
+        templatePrefab.Title =
+          prefab.transform.Find("HorizontalLayoutGroup/Text").gameObject.GetComponent<TextMeshProUGUI>();
         templatePrefab.Button = buttonControl;
         templatePrefab.ButtonLabel = buttonLabel;
 
@@ -123,11 +125,11 @@ namespace ModMenu.NewTypes
       private static SettingsEntityImageView CreateImageTemplate(GameObject prefab)
       {
         //Destroy the stuff we don't want from the source prefab
-        GameObject.DestroyImmediate(prefab.GetComponent<SettingsEntityBoolPCView>());
-        GameObject.DestroyImmediate(prefab.transform.Find("MultiButton").gameObject);
-        GameObject.DestroyImmediate(prefab.transform.Find("HorizontalLayoutGroup").gameObject);
-        GameObject.DestroyImmediate(prefab.transform.Find("HighlightedImage").gameObject);
-        GameObject.DontDestroyOnLoad(prefab);
+        Object.DestroyImmediate(prefab.GetComponent<SettingsEntityBoolPCView>());
+        Object.DestroyImmediate(prefab.transform.Find("MultiButton").gameObject);
+        Object.DestroyImmediate(prefab.transform.Find("HorizontalLayoutGroup").gameObject);
+        Object.DestroyImmediate(prefab.transform.Find("HighlightedImage").gameObject);
+        Object.DontDestroyOnLoad(prefab);
 
         // Add our own View (after destroying the Bool one)
         var templatePrefab = prefab.AddComponent<SettingsEntityImageView>();
