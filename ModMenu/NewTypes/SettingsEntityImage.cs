@@ -44,18 +44,11 @@ namespace ModMenu.NewTypes
         bool set_mOverrideType = m_LayoutSettings == null;
         m_LayoutSettings ??= new()
         {
-          Height = 40,
-          OverrideHeight = true,
+          OverrideHeight = true
         };
         if (set_mOverrideType)
         {
           OverrideType.SetValue(m_LayoutSettings, VirtualListLayoutElementSettings.LayoutOverrideType.UnityLayout);
-        }
-
-        if (ViewModel?.Sprite is not null)
-        {
-          m_LayoutSettings.Height = ViewModel.Sprite.bounds.size.y;
-          m_LayoutSettings.Width = ViewModel.Sprite.bounds.size.x;
         }
 
         return m_LayoutSettings;
@@ -73,7 +66,5 @@ namespace ModMenu.NewTypes
 
     protected override void DestroyViewImplementation() { }
   }
-
-
 }
 
