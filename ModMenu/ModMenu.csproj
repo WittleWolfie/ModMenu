@@ -23,6 +23,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="WittleWolfie.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="WittleWolfie.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AssemblyPublicizer" Version="*">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
