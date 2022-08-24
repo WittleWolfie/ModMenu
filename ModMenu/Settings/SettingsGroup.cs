@@ -8,6 +8,10 @@ using UnityEngine;
 
 namespace ModMenu.Settings
 {
+  // TODO: Create a settings object, probably add builders per setting type, and then don't bother with the out or
+  // returning the settings, just handle the settings internally. i.e. SettingsGroup.Build() returns Settings, then 
+  // Settings[key] or Settings.GetBool(key) returns the value for that particular one. Maybe even expose the handlers?
+
   /// <summary>
   /// Represents a group of settings on the Mods menu page, constructed using a builder API.
   /// </summary>
