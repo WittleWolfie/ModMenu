@@ -95,6 +95,7 @@ namespace ModMenu.Settings
 
     private bool CheckToggle()
     {
+      Main.Logger.NativeLog("Checking toggle");
       return ModMenu.GetSettingValue<bool>(GetKey("toggle"));
     }
 
