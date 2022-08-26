@@ -1,6 +1,7 @@
-﻿using Kingmaker.UI.SettingsUI;
-using System.IO;
+﻿using Kingmaker.Localization;
+using Kingmaker.UI.SettingsUI;
 using System.Reflection;
+using System.Text;
 using UnityEngine;
 
 namespace ModMenu.Settings
@@ -11,6 +12,7 @@ namespace ModMenu.Settings
   /// </summary>
   internal class TestSettings
   {
+    private static string RootKey = "mod-menu.test-settings";
     private enum TestEnum
     {
       First,
@@ -24,48 +26,76 @@ namespace ModMenu.Settings
     internal void Initialize()
     {
       ModMenu.AddSettings(
-        new SettingsGroup("testsettings.group", Helpers.CreateString("TestSettings.Title", "Test Settings"))
+        SettingsBuilder.New(RootKey, CreateString("title", "Testing settings"))
           .AddImage(CreateSprite())
           .AddButton(
-            new(
-              description: Helpers.CreateString("testsettings.button.description", "This is a button"),
-              tooltip: Helpers.CreateString("testsettings.button.tooltip", "This is a button that has a bunch more text about it than the main view"),
-              buttonText: Helpers.CreateString("testsettings.button.text", "Click Me!"),
-              onClick: OnClick))
+            Button.New(
+              CreateString("button-desc", "This is a button"), CreateString("button-text", "Click Me!"), OnClick))
           .AddToggle(
-            new(
-              "testsettings.toggle",
-              defaultValue: false,
-              Helpers.CreateString("testsettings.toggle", "This is a toggle"),
-              onValueChanged: OnToggle))
+            Toggle.New(GetKey("toggle"), defaultValue: true, CreateString("toggle-desc", "This is a toggle"))
+              .ShowVisualConnection()
+              .OnValueChanged(OnToggle))
           .AddDropdown(
-            new(
-              "testsettings.dropdownenum",
-              defaultValue: TestEnum.Third,
-              Helpers.CreateString("testsettings.dropdownenum", "This is an enum dropdown"),
-              onValueChanged: OnDropdownSelected),
-            ScriptableObject.CreateInstance<UISettingsEntityDropdownTestEnum>())
+            Dropdown<TestEnum>.New(
+                GetKey("dropdown"),
+                TestEnum.Second,
+                CreateString("dropdown-desc", "This is a dropdown"),
+                ScriptableObject.CreateInstance<UISettingsEntityDropdownTestEnum>())
+              .ShowVisualConnection()
+              .IsModificationAllowed(CheckToggle)
+              .DependsOnSave())
           .AddSliderFloat(
-            new(
-              "testsettings.sliderfloat",
+            SliderFloat.New(
+              GetKey("float-default"),
               defaultValue: 1.0f,
-              Helpers.CreateString("testsettings.sliderfloat", "This is a slider using a float"),
-              onValueChanged: OnSliderFloatChanged),
-            minValue: 0.2f,
-            maxValue: 2.6f)
+              CreateString("float-default-desc", "This is a default float slider"),
+              minValue: 0.0f,
+              maxValue: 2.6f))
+          .AddSliderFloat(
+            SliderFloat.New(
+                GetKey("float"),
+                defaultValue: 0.05f,
+                CreateString("float-desc", "This is a custom float slider"),
+                minValue: 0.05f,
+                maxValue: 1.00f)
+              .WithStep(0.05f)
+              .WithDecimalPlaces(2)
+              .HideValueText()
+              .OnTempValueChanged(OnSliderFloatChanged))
           .AddSliderInt(
-            new(
-              "testsettings.sliderint",
-              defaultValue: 2,
-              Helpers.CreateString("testsettings.sliderint", "This is a slider using an int"),
-              onValueChanged: OnSliderIntChanged),
-            minValue: -5,
-            maxValue: 15));
+            SliderInt.New(
+              GetKey("int-default"),
+              defaultValue: 1,
+              CreateString("int-default-desc", "This is a default int slider"),
+              minValue: 0,
+              maxValue: 5))
+          .AddSliderInt(
+            SliderInt.New(
+                GetKey("int"),
+                defaultValue: 2,
+                CreateString("int-desc", "This is a custom int slider"),
+                minValue: 1,
+                maxValue: 6)
+              .HideValueText()));
     }
 
     private void OnClick()
     {
-      Main.Logger.Log("Button was clicked");
+      var log = new StringBuilder();
+      log.AppendLine("Current settings: ");
+      log.AppendLine($"-Toggle: {CheckToggle()}");
+      log.AppendLine($"-Dropdown: {ModMenu.GetSettingValue<TestEnum>(GetKey("dropdown"))}");
+      log.AppendLine($"-Default Slider Float: {ModMenu.GetSettingValue<float>(GetKey("float-default"))}");
+      log.AppendLine($"-Slider Float: {ModMenu.GetSettingValue<float>(GetKey("float"))}");
+      log.AppendLine($"-Default Slider Int: {ModMenu.GetSettingValue<int>(GetKey("int-default"))}");
+      log.AppendLine($"-Slider Int: {ModMenu.GetSettingValue<int>(GetKey("int"))}");
+      Main.Logger.Log(log.ToString());
+
+    }
+
+    private bool CheckToggle()
+    {
+      return ModMenu.GetSettingValue<bool>(GetKey("toggle"));
     }
 
     private void OnToggle(bool value)
@@ -73,22 +103,22 @@ namespace ModMenu.Settings
       Main.Logger.Log($"Toggle switched to {value}");
     }
 
-    private void OnDropdownSelected(TestEnum value)
-    {
-      Main.Logger.Log($"Dropdown changed to {value}");
-    }
-
     private void OnSliderFloatChanged(float value)
     {
       Main.Logger.Log($"Float slider changed to {value}");
     }
 
-    private void OnSliderIntChanged(int value)
+    private static LocalizedString CreateString(string partialKey, string text)
     {
-      Main.Logger.Log($"Int slider changed to {value}");
+      return Helpers.CreateString(GetKey(partialKey), text);
     }
 
-    internal static Sprite CreateSprite()
+    private static string GetKey(string partialKey)
+    {
+      return $"{RootKey}.{partialKey}";
+    }
+
+    private static Sprite CreateSprite()
     {
       var assembly = Assembly.GetExecutingAssembly();
       var embeddedImage = "ModMenu.WittleWolfie.png";
