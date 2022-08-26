@@ -51,7 +51,7 @@ namespace ModMenu.NewTypes
       [HarmonyPatch(nameof(SettingsPCView.SettingsViews.InitializeVirtualList)), HarmonyPrefix]
       static bool Prefix(SettingsPCView.SettingsViews __instance, VirtualListComponent virtualListComponent)
       {
-        Main.Logger.NativeLog("Adding SettingsEntityImageVM.");
+        Main.Logger.NativeLog("Adding new type prefabs.");
 
         // Copy the bool settings
         var copyFrom = __instance.m_SettingsEntityBoolViewPrefab.gameObject;
@@ -80,6 +80,8 @@ namespace ModMenu.NewTypes
 
       private static SettingsEntityButtonView CreateButtonTemplate(GameObject prefab, OwlcatButton buttonPrefab)
       {
+        Main.Logger.NativeLog("Creating button template.");
+
         // Destroy the stuff we don't want from the source prefab
         Object.DestroyImmediate(prefab.GetComponent<SettingsEntityBoolPCView>());
         Object.DestroyImmediate(prefab.transform.Find("MultiButton").gameObject);
@@ -124,6 +126,8 @@ namespace ModMenu.NewTypes
 
       private static SettingsEntityImageView CreateImageTemplate(GameObject prefab)
       {
+        Main.Logger.NativeLog("Creating image template.");
+
         //Destroy the stuff we don't want from the source prefab
         Object.DestroyImmediate(prefab.GetComponent<SettingsEntityBoolPCView>());
         Object.DestroyImmediate(prefab.transform.Find("MultiButton").gameObject);
