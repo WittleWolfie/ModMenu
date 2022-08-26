@@ -145,5 +145,29 @@ namespace ModMenu.Settings
         }
       }
     }
+
+    /// <summary>
+    /// Patch to enable default button.
+    /// </summary>
+    [HarmonyPatch(typeof(SettingsVM))]
+    static class SettingsVM_Patch
+    {
+      [HarmonyPatch(nameof(SettingsVM.SetSettingsList)), HarmonyPostfix]
+      static void Postfix(SettingsVM __instance, UISettingsManager.SettingsScreen settingsScreen)
+      {
+        try
+        {
+          if (settingsScreen == SettingsScreenId)
+          {
+            Main.Logger.NativeLog($"Enabling default button for {settingsScreen}.");
+            __instance.IsDefaultButtonInteractable.Value = true;
+          }
+        }
+        catch (Exception e)
+        {
+          Main.Logger.LogException(e);
+        }
+      }
+    }
   }
 }
