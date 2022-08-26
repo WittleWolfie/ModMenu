@@ -269,7 +269,9 @@ namespace ModMenu.Settings
     protected Func<bool> ModificationAllowed;
 
     /// <inheritdoc cref="BaseSetting{TUIEntity, TBuilder}.BaseSetting(LocalizedString)"/>
-    /// <param name="key">Globally unique key for the setting.</param>
+    /// <param name="key">
+    /// Globally unique key / name for the setting. Use only lowercase letters, numbers, '-', and '.'
+    /// </param>
     /// <param name="defaultValue">Default value for the setting.</param>
     protected BaseSettingWithValue(string key, T defaultValue, LocalizedString description) : base(description)
     {
