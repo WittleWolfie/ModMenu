@@ -43,7 +43,7 @@ namespace ModMenu.NewTypes
     }
 
     /// <summary>
-    /// Patch to add <see cref="SettingsEntityImageVM"/> as an available ViewModel.
+    /// Patch to add new setting type prefabs.
     /// </summary>
     [HarmonyPatch(typeof(SettingsPCView.SettingsViews))]
     static class SettingsViews_Patch
@@ -53,11 +53,11 @@ namespace ModMenu.NewTypes
       {
         Main.Logger.NativeLog("Adding SettingsEntityImageVM.");
 
-        // Copy the bool settings jobbie
+        // Copy the bool settings
         var copyFrom = __instance.m_SettingsEntityBoolViewPrefab.gameObject;
-        var imageTemplate = CreateImageTemplate(GameObject.Instantiate(copyFrom));
+        var imageTemplate = CreateImageTemplate(Object.Instantiate(copyFrom));
         var buttonTemplate =
-          CreateButtonTemplate(GameObject.Instantiate(copyFrom),
+          CreateButtonTemplate(Object.Instantiate(copyFrom),
           __instance.m_SettingsEntitySliderVisualPerceptionViewPrefab?.m_ResetButton);
 
         virtualListComponent.Initialize(new IVirtualListElementTemplate[]
