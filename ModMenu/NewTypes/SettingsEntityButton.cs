@@ -15,20 +15,18 @@ using UnityEngine.UI;
 
 namespace ModMenu.NewTypes
 {
-  internal class UISettingsEntityButton : UISettingsEntityBase
+  public class UISettingsEntityButton : UISettingsEntityBase
   {
-    public readonly string ButtonText;
-    public readonly Action OnClick;
+    internal readonly LocalizedString ButtonText;
+    internal readonly Action OnClick;
 
     public UISettingsEntityButton(
-      LocalizedString description, LocalizedString tooltip, LocalizedString buttonText, Action onClick)
+      LocalizedString description, LocalizedString longDescription, LocalizedString buttonText, Action onClick)
     {
       m_Description = description;
-      m_TooltipDescription = tooltip;
-      m_IAmSetHandler = false;
-      m_ShowVisualConnection = false;
+      m_TooltipDescription = longDescription;
 
-      ButtonText = buttonText.ToString();
+      ButtonText = buttonText;
       OnClick = onClick;
     }
 
@@ -39,7 +37,8 @@ namespace ModMenu.NewTypes
   {
     private readonly UISettingsEntityButton buttonEntity;
 
-    public string Text => buttonEntity.ButtonText;
+    public string Text =>
+      buttonEntity.ButtonText.LoadString(LocalizationManager.CurrentPack, LocalizationManager.CurrentLocale);
 
     internal SettingsEntityButtonVM(UISettingsEntityButton buttonEntity) : base(buttonEntity)
     {
@@ -52,8 +51,8 @@ namespace ModMenu.NewTypes
     }
   }
 
-  internal class SettingsEntityButtonView :
-    SettingsEntityView<SettingsEntityButtonVM>, IPointerEnterHandler, IPointerExitHandler
+  internal class SettingsEntityButtonView
+    : SettingsEntityView<SettingsEntityButtonVM>, IPointerEnterHandler, IPointerExitHandler
   {
     private static readonly FieldInfo OverrideType =
       AccessTools.Field(typeof(VirtualListLayoutElementSettings), "m_OverrideType");
@@ -90,10 +89,11 @@ namespace ModMenu.NewTypes
 
     private Color NormalColor = Color.clear;
     private Color HighlightedColor = new(0.52f, 0.52f, 0.52f, 0.29f);
-    public Image HighlightedImage;
-    public TextMeshProUGUI Title;
-    public OwlcatButton Button;
-    public TextMeshProUGUI ButtonLabel;
+
+    internal Image HighlightedImage;
+    internal TextMeshProUGUI Title;
+    internal OwlcatButton Button;
+    internal TextMeshProUGUI ButtonLabel;
 
     private void SetupColor(bool isHighlighted)
     {
@@ -123,7 +123,5 @@ namespace ModMenu.NewTypes
       SetupColor(isHighlighted: false);
     }
   }
-
-
 }
 
