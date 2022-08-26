@@ -317,6 +317,11 @@ namespace ModMenu.Settings
     /// <summary>
     /// When the menu is displayed, the provided function is checked to determine if the setting can be changed.
     /// </summary>
+    /// 
+    /// <remarks>
+    /// This is only checked when the Mods menu page is opened. As a result you cannot use this to create dependencies
+    /// between settings.
+    /// </remarks>
     public TBuilder IsModificationAllowed(Func<bool> isModificationAllowed)
     {
       ModificationAllowed = isModificationAllowed;
