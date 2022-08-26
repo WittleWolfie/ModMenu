@@ -16,7 +16,7 @@ File an [issue on GitHub](https://github.com/WittleWolfie/ModMenu/issues/new) or
 
 ## Usage for Mod Developers
 
-The screenshot above was generated using [TestSettings](https://github.com/WittleWolfie/ModMenu/blob/main/ModMenu/Settings/TestSettings.cs). That exercises every function supported.
+The screenshot above was generated using [TestSettings](https://github.com/WittleWolfie/ModMenu/blob/main/ModMenu/Settings/TestSettings.cs). That exercises every function supported. The API is documented and generally self-explanatory.
 
 In your mod's `Info.json` add `ModMenu` as a requirement:
 
@@ -29,6 +29,8 @@ You can optionally specify a minimum version:
 ```json
 "Requirements": ["ModMenu-1.1.0"]
 ```
+
+Install ModMenu then in your mod's project add `%WrathPath%/Mods/ModMenu/ModMenu.dll` as an assembly reference.
 
 ### Best Practices
 
