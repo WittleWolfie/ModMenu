@@ -6,5 +6,6 @@
   "ManagerVersion": "0.21.3",
   "AssemblyName": "ModMenu.dll",
   "EntryMethod": "ModMenu.Main.Load",
-  "Requirements": []
+  "Requirements": [],
+  "LoadAfter": [ "MewsiferConsole.Mod" ]
 }
