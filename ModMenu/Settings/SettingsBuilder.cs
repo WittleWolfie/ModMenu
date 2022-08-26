@@ -189,7 +189,8 @@ namespace ModMenu.Settings
     }
 
     /// <summary>
-    /// Changes the setting bullet point to a visual connection line. See the game's visual settings for an example.
+    /// Changes the setting bullet point to a visual connection line. See the game's visual perception settings for an
+    /// example.
     /// </summary>
     public TBuilder ShowVisualConnection()
     {
@@ -224,6 +225,7 @@ namespace ModMenu.Settings
     public TUIEntity Build()
     {
       UIEntity ??= CreateUIEntity();
+      UIEntity.m_ShowVisualConnection = VisualConnection;
       return UIEntity;
     }
     protected abstract TUIEntity CreateUIEntity();
@@ -346,6 +348,7 @@ namespace ModMenu.Settings
         UIEntity.m_Description = Description;
         UIEntity.m_TooltipDescription = LongDescription;
         UIEntity.ModificationAllowedCheck = ModificationAllowed;
+        UIEntity.m_ShowVisualConnection = VisualConnection;
         UIEntity.LinkSetting(Entity);
       }
       return (Entity, UIEntity);
