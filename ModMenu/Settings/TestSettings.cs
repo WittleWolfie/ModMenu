@@ -12,7 +12,7 @@ namespace ModMenu.Settings
   /// </summary>
   internal class TestSettings
   {
-    private static string RootKey = "mod-menu.test-settings";
+    private static readonly string RootKey = "mod-menu.test-settings";
     private enum TestEnum
     {
       First,
@@ -43,6 +43,11 @@ namespace ModMenu.Settings
                 ScriptableObject.CreateInstance<UISettingsEntityDropdownTestEnum>())
               .ShowVisualConnection()
               .IsModificationAllowed(CheckToggle)
+              .WithLongDescription(
+                CreateString(
+                  "dropdown-long-desc",
+                  "This is a dropdown based on TestEnum. In order to change the value the connected toggle must be on."
+                  +" After switching it on or off exit and enter the menu again to lock/unlock it."))
               .DependsOnSave())
           .AddSliderFloat(
             SliderFloat.New(
