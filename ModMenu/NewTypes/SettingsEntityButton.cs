@@ -37,8 +37,7 @@ namespace ModMenu.NewTypes
   {
     private readonly UISettingsEntityButton buttonEntity;
 
-    public string Text =>
-      buttonEntity.ButtonText.LoadString(LocalizationManager.CurrentPack, LocalizationManager.CurrentLocale);
+    public string Text => buttonEntity.ButtonText;
 
     internal SettingsEntityButtonVM(UISettingsEntityButton buttonEntity) : base(buttonEntity)
     {
@@ -90,10 +89,11 @@ namespace ModMenu.NewTypes
     private Color NormalColor = Color.clear;
     private Color HighlightedColor = new(0.52f, 0.52f, 0.52f, 0.29f);
 
-    internal Image HighlightedImage;
-    internal TextMeshProUGUI Title;
-    internal OwlcatButton Button;
-    internal TextMeshProUGUI ButtonLabel;
+    // These must be public or they'll be null
+    public Image HighlightedImage;
+    public TextMeshProUGUI Title;
+    public OwlcatButton Button;
+    public TextMeshProUGUI ButtonLabel;
 
     private void SetupColor(bool isHighlighted)
     {
