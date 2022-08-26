@@ -92,7 +92,7 @@ namespace ModMenu.Settings
     /// <summary>
     /// Adds a row containing a button. There is no setting tied to this, only an event handler.
     /// </summary>
-    public SettingsBuilder AddButton(ButtonBuilder button)
+    public SettingsBuilder AddButton(Button button)
     {
       var uiEntity = button.Build();
       Settings.Add(uiEntity);
@@ -102,7 +102,7 @@ namespace ModMenu.Settings
     /// <summary>
     /// Adds an On / Off setting toggle.
     /// </summary>
-    public SettingsBuilder AddToggle(ToggleBuilder toggle)
+    public SettingsBuilder AddToggle(Toggle toggle)
     {
       var (entity, uiEntity) = toggle.Build();
       return Add(entity.Key, entity, uiEntity);
@@ -111,7 +111,7 @@ namespace ModMenu.Settings
     /// <summary>
     /// Adds a dropdown setting populated using an enum.
     /// </summary>
-    public SettingsBuilder AddDropdown<T>(DropdownBuilder<T> dropdown) where T : Enum
+    public SettingsBuilder AddDropdown<T>(Dropdown<T> dropdown) where T : Enum
     {
       var (entity, uiEntity) = dropdown.Build();
       return Add(entity.Key, entity, uiEntity);
@@ -120,7 +120,7 @@ namespace ModMenu.Settings
     /// <summary>
     /// Adds a slider based on a float.
     /// </summary>
-    public SettingsBuilder AddSliderFloat(SliderFloatBuilder sliderFloat)
+    public SettingsBuilder AddSliderFloat(SliderFloat sliderFloat)
     {
       var (entity, uiEntity) = sliderFloat.Build();
       return Add(entity.Key, entity, uiEntity);
@@ -129,7 +129,7 @@ namespace ModMenu.Settings
     /// <summary>
     /// Adds a slider based on an int.
     /// </summary>
-    public SettingsBuilder AddSliderInt(SliderIntBuilder sliderInt)
+    public SettingsBuilder AddSliderInt(SliderInt sliderInt)
     {
       var (entity, uiEntity) = sliderInt.Build();
       return Add(entity.Key, entity, uiEntity);
@@ -162,7 +162,7 @@ namespace ModMenu.Settings
       return this;
     }
 
-    private SettingsBuilder(string key, LocalizedString title)
+    public SettingsBuilder(string key, LocalizedString title)
     {
       Group.name = key.ToLower();
       Group.Title = title;
@@ -229,21 +229,29 @@ namespace ModMenu.Settings
     protected abstract TUIEntity CreateUIEntity();
   }
 
-  public class ButtonBuilder : BaseSettingBuilder<UISettingsEntityButton, ButtonBuilder>
+  public class Button : BaseSettingBuilder<UISettingsEntityButton, Button>
   {
     private readonly LocalizedString ButtonText;
     private readonly Action OnClick;
 
-    /// <inheritdoc cref="BaseSettingBuilder{TUIEntity, TBuilder}.BaseSettingBuilder(LocalizedString)"/>
-    public ButtonBuilder(LocalizedString description, LocalizedString buttonText, Action onClick) : base(description)
+    /// <inheritdoc cref="Button(LocalizedString, LocalizedString, Action)"/>
+    public static Button New(LocalizedString description, LocalizedString buttonText, Action onClick)
     {
-      ButtonText = buttonText;
-      OnClick = onClick;
+      return new(description, buttonText, onClick);
     }
 
     protected override UISettingsEntityButton CreateUIEntity()
     {
       return new(Description, LongDescription, ButtonText, OnClick);
+    }
+
+    /// <inheritdoc cref="BaseSettingBuilder{TUIEntity, TBuilder}.BaseSettingBuilder(LocalizedString)"/>
+    /// <param name="buttonText">Text displayed on the button</param>
+    /// <param name="onClick">Action invoked when the button is clicked</param>
+    public Button(LocalizedString description, LocalizedString buttonText, Action onClick) : base(description)
+    {
+      ButtonText = buttonText;
+      OnClick = onClick;
     }
   }
 
@@ -341,11 +349,13 @@ namespace ModMenu.Settings
     protected abstract TUIEntity CreateUIEntity();
   }
 
-  public class ToggleBuilder : BaseSettingWithValue<bool, SettingsEntityBool, UISettingsEntityBool, ToggleBuilder>
+  public class Toggle : BaseSettingWithValue<bool, SettingsEntityBool, UISettingsEntityBool, Toggle>
   {
-    /// <inheritdoc cref="BaseSettingWithValue{T, TEntity, TUIEntity, TBuilder}.BaseSettingWithValue(string, T, LocalizedString)"/>
-    public ToggleBuilder(string key, bool defaultValue, LocalizedString description)
-      : base(key, defaultValue, description) { }
+    /// <inheritdoc cref="Toggle(string, bool, LocalizedString)"/>
+    public static Toggle New(string key, bool defaultValue, LocalizedString description)
+    {
+      return new(key, defaultValue, description);
+    }
 
     protected override SettingsEntityBool CreateEntity()
     {
@@ -358,13 +368,40 @@ namespace ModMenu.Settings
       uiEntity.DefaultValue = DefaultValue;
       return uiEntity;
     }
+
+    /// <inheritdoc cref="BaseSettingWithValue{T, TEntity, TUIEntity, TBuilder}.BaseSettingWithValue(string, T, LocalizedString)"/>
+    public Toggle(string key, bool defaultValue, LocalizedString description)
+      : base(key, defaultValue, description) { }
   }
 
-  public class DropdownBuilder<T>
-    : BaseSettingWithValue<T, SettingsEntityEnum<T>, UISettingsEntityDropdownEnum<T>, DropdownBuilder<T>>
+  public class Dropdown<T>
+    : BaseSettingWithValue<T, SettingsEntityEnum<T>, UISettingsEntityDropdownEnum<T>, Dropdown<T>>
     where T : Enum
   {
-    private readonly UISettingsEntityDropdownEnum<T> Dropdown;
+    private readonly UISettingsEntityDropdownEnum<T> DropdownEntity;
+
+    /// <inheritdoc cref="Dropdown{T}.Dropdown(string, T, LocalizedString, UISettingsEntityDropdownEnum{T})"/>
+    public static Dropdown<T> New(
+      string key, T defaultValue, LocalizedString description, UISettingsEntityDropdownEnum<T> dropdown)
+    {
+      return new(key, defaultValue, description, dropdown);
+    }
+
+    protected override SettingsEntityEnum<T> CreateEntity()
+    {
+      return new SettingsEntityEnum<T>(Key, DefaultValue, SaveDependent, RebootRequired);
+    }
+
+    protected override UISettingsEntityDropdownEnum<T> CreateUIEntity()
+    {
+      var values = new List<string>();
+      foreach (var value in Enum.GetValues(typeof(T)))
+      {
+        values.Add(value.ToString());
+      }
+      DropdownEntity.m_CashedLocalizedValues = values;
+      return DropdownEntity;
+    }
 
     /// <inheritdoc cref="BaseSettingWithValue{T, TEntity, TUIEntity, TBuilder}.BaseSettingWithValue(string, T, LocalizedString)"/>
     /// 
@@ -390,32 +427,16 @@ namespace ModMenu.Settings
     /// Instance of class inheriting from <c>UISettingsEntityDropdownEnum&lt;TEnum&gt;</c>, created by calling
     /// <c>ScriptableObject.CreateInstance&lt;T&gt;()</c>
     /// </param>
-    public DropdownBuilder(
+    public Dropdown(
       string key, T defaultValue, LocalizedString description, UISettingsEntityDropdownEnum<T> dropdown)
       : base(key, defaultValue, description)
     {
-      Dropdown = dropdown;
-    }
-
-    protected override SettingsEntityEnum<T> CreateEntity()
-    {
-      return new SettingsEntityEnum<T>(Key, DefaultValue, SaveDependent, RebootRequired);
-    }
-
-    protected override UISettingsEntityDropdownEnum<T> CreateUIEntity()
-    {
-      var values = new List<string>();
-      foreach (var value in Enum.GetValues(typeof(T)))
-      {
-        values.Add(value.ToString());
-      }
-      Dropdown.m_CashedLocalizedValues = values;
-      return Dropdown;
+      DropdownEntity = dropdown;
     }
   }
 
-  public class SliderFloatBuilder
-    : BaseSettingWithValue<float, SettingsEntityFloat, UISettingsEntitySliderFloat, SliderFloatBuilder>
+  public class SliderFloat
+    : BaseSettingWithValue<float, SettingsEntityFloat, UISettingsEntitySliderFloat, SliderFloat>
   {
     private readonly float MinValue;
     private readonly float MaxValue;
@@ -424,37 +445,17 @@ namespace ModMenu.Settings
     private int DecimalPlaces = 1;
     private bool ShowValueText = true;
 
-    /// <inheritdoc cref="BaseSettingWithValue{T, TEntity, TUIEntity, TBuilder}.BaseSettingWithValue(string, T, LocalizedString)"/>
-    /// 
-    /// <remarks>
-    /// <c>UISettingsEntitySliderFloat</c> Defaults:
-    /// <list type="bullet">
-    /// <item>
-    ///   <term><c>m_Step</c></term>
-    ///   <description><c>0.1f</c></description>
-    /// </item>
-    /// <item>
-    ///   <term><c>m_DecimalPlaces</c></term>
-    ///   <description><c>1</c></description>
-    /// </item>
-    /// <item>
-    ///   <term><c>m_ShowValueText</c></term>
-    ///   <description><c>true</c></description>
-    /// </item>
-    /// </list>
-    /// </remarks>
-    public SliderFloatBuilder(
+    /// <inheritdoc cref="SliderFloat(string, float, LocalizedString, float, float)"/>
+    public static SliderFloat New(
       string key, float defaultValue, LocalizedString description, float minValue, float maxValue)
-      : base(key, defaultValue, description)
     {
-      MinValue = minValue;
-      MaxValue = maxValue;
+      return new(key, defaultValue, description, minValue, maxValue);
     }
 
     /// <summary>
     /// Sets the size of a single step on the slider.
     /// </summary>
-    public SliderFloatBuilder WithStep(float step)
+    public SliderFloat WithStep(float step)
     {
       Step = step;
       return this;
@@ -463,7 +464,7 @@ namespace ModMenu.Settings
     /// <summary>
     /// Sets the number of decimal places tracked on the slider.
     /// </summary>
-    public SliderFloatBuilder WithDecimalPlaces(int decimalPlaces)
+    public SliderFloat WithDecimalPlaces(int decimalPlaces)
     {
       DecimalPlaces = decimalPlaces;
       return this;
@@ -472,7 +473,7 @@ namespace ModMenu.Settings
     /// <summary>
     /// Hides the text showing the slider value.
     /// </summary>
-    public SliderFloatBuilder HideValueText()
+    public SliderFloat HideValueText()
     {
       ShowValueText = false;
       return this;
@@ -493,39 +494,54 @@ namespace ModMenu.Settings
       uiEntity.m_ShowValueText = ShowValueText;
       return uiEntity;
     }
-  }
-
-  public class SliderIntBuilder
-    : BaseSettingWithValue<int, SettingsEntityInt, UISettingsEntitySliderInt, SliderIntBuilder>
-  {
-    private readonly int MinValue;
-    private readonly int MaxValue;
-
-    private bool ShowValueText = true;
 
     /// <inheritdoc cref="BaseSettingWithValue{T, TEntity, TUIEntity, TBuilder}.BaseSettingWithValue(string, T, LocalizedString)"/>
     /// 
     /// <remarks>
-    /// <c>UISettingsEntitySliderInt</c> Defaults:
+    /// <c>UISettingsEntitySliderFloat</c> Defaults:
     /// <list type="bullet">
+    /// <item>
+    ///   <term><c>m_Step</c></term>
+    ///   <description><c>0.1f</c></description>
+    /// </item>
+    /// <item>
+    ///   <term><c>m_DecimalPlaces</c></term>
+    ///   <description><c>1</c></description>
+    /// </item>
     /// <item>
     ///   <term><c>m_ShowValueText</c></term>
     ///   <description><c>true</c></description>
     /// </item>
     /// </list>
     /// </remarks>
-    public SliderIntBuilder(
-      string key, int defaultValue, LocalizedString description, int minValue, int maxValue)
+    public SliderFloat(
+      string key, float defaultValue, LocalizedString description, float minValue, float maxValue)
       : base(key, defaultValue, description)
     {
       MinValue = minValue;
       MaxValue = maxValue;
     }
+  }
+
+  public class SliderInt
+    : BaseSettingWithValue<int, SettingsEntityInt, UISettingsEntitySliderInt, SliderInt>
+  {
+    private readonly int MinValue;
+    private readonly int MaxValue;
+
+    private bool ShowValueText = true;
+
+    /// <inheritdoc cref="SliderInt(string, int, LocalizedString, int, int)"/>
+    public static SliderInt New(
+      string key, int defaultValue, LocalizedString description, int minValue, int maxValue)
+    {
+      return new(key, defaultValue, description, minValue, maxValue);
+    }
 
     /// <summary>
     /// Hides the text showing the slider value.
     /// </summary>
-    public SliderIntBuilder HideValueText()
+    public SliderInt HideValueText()
     {
       ShowValueText = false;
       return this;
@@ -543,6 +559,25 @@ namespace ModMenu.Settings
       uiEntity.m_MaxValue = MaxValue;
       uiEntity.m_ShowValueText = ShowValueText;
       return uiEntity;
+    }
+
+    /// <inheritdoc cref="BaseSettingWithValue{T, TEntity, TUIEntity, TBuilder}.BaseSettingWithValue(string, T, LocalizedString)"/>
+    /// 
+    /// <remarks>
+    /// <c>UISettingsEntitySliderInt</c> Defaults:
+    /// <list type="bullet">
+    /// <item>
+    ///   <term><c>m_ShowValueText</c></term>
+    ///   <description><c>true</c></description>
+    /// </item>
+    /// </list>
+    /// </remarks>
+    public SliderInt(
+      string key, int defaultValue, LocalizedString description, int minValue, int maxValue)
+      : base(key, defaultValue, description)
+    {
+      MinValue = minValue;
+      MaxValue = maxValue;
     }
   }
 }
