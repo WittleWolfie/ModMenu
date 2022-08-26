@@ -16,7 +16,7 @@ namespace ModMenu.Settings
   /// </summary>
   internal class ModsMenuEntity
   {
-    /// Random magic number representing our fake enum for UiSettingsManager.SettingsScreen
+    // Random magic number representing our fake enum for UiSettingsManager.SettingsScreen
     private const int SettingsScreenValue = 17;
     private static readonly UISettingsManager.SettingsScreen SettingsScreenId =
       (UISettingsManager.SettingsScreen)SettingsScreenValue;
@@ -31,7 +31,12 @@ namespace ModMenu.Settings
       }
     }
 
-    internal static readonly List<UISettingsGroup> ModSettings = new();
+    private static readonly List<UISettingsGroup> ModSettings = new();
+
+    internal static void Add(UISettingsGroup uiSettingsGroup)
+    {
+      ModSettings.Add(uiSettingsGroup);
+    }
 
     /// <summary>
     /// Patch to create the Mods Menu ViewModel.
