@@ -14,6 +14,12 @@ Adds a new page to the game options for mods. This allows mods to easily impleme
 
 File an [issue on GitHub](https://github.com/WittleWolfie/ModMenu/issues/new) or reach out to me (@WittleWolfie) on [Discord](https://discord.com/invite/wotr) in #mod-dev-technical or #mod-user-general channel.
 
+## Mods Using ModMenu
+
+This is a non-exhaustive list, let me know if you want your mod added here!
+
+* [MewsiferConsole](https://github.com/Pathfinder-WOTR-Modding-Community/MewsiferConsole)
+
 ## Usage for Mod Developers
 
 The screenshot above was generated using [TestSettings](https://github.com/WittleWolfie/ModMenu/blob/main/ModMenu/Settings/TestSettings.cs). That exercises every function supported. The API is documented and generally self-explanatory.
