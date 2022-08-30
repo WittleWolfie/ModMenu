@@ -45,7 +45,7 @@ namespace ModMenu.NewTypes
     {
       get
       {
-        if (ViewModel is null)
+        if (m_LayoutSettings is null)
         {
           Main.Logger.NativeLog($"Instantiating layout settings.");
           m_LayoutSettings = new()
