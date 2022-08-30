@@ -76,6 +76,7 @@ namespace ModMenu.NewTypes
     private VirtualListLayoutElementSettings m_LayoutSettings;
 
     public Image Icon;
+    public GameObject TopBorder;
 
     protected override void BindViewImplementation()
     {
@@ -86,7 +87,16 @@ namespace ModMenu.NewTypes
         var spriteHeight = Icon.sprite.bounds.size.y * Icon.sprite.pixelsPerUnit;
         float scaling = ViewModel.Height / spriteHeight;
 
-        Icon.transform.localScale = new Vector3(scaling, scaling);
+        // The height of the row is determined by the vertical height of the sprite, regardless of its scaling. To
+        // prevent the row from being too-tall, scale the height of everything.
+        gameObject.transform.localScale = new Vector3(gameObject.transform.localScale.x, scaling);
+        // Just scaling the height of the image would break the aspect ratio, so scale its width.
+        Icon.transform.localScale = new Vector3(scaling, Icon.transform.localScale.y);
+
+        // Height scaling on the top bar changes its thickness, so invert it to counteract the row scaling.
+        float inverseScaling = 1 / scaling;
+        TopBorder.transform.localScale = new Vector3(TopBorder.transform.localScale.x, inverseScaling);
+
         OverrideHeight();
       }
     }

@@ -145,6 +145,8 @@ namespace ModMenu.NewTypes
         // Wire up the fields that would have been deserialized if coming from a bundle
         templatePrefab.Icon = imagePrefab.AddComponent<Image>();
         templatePrefab.Icon.preserveAspect = true;
+        templatePrefab.TopBorder = prefab.transform.Find("TopBorderImage").gameObject;
+
         return templatePrefab;
       }
     }
