@@ -6,13 +6,21 @@ Adds a new page to the game options for mods. This allows mods to easily impleme
 
 ## Installation
 
-1. Download and install [Unity Mod Manager](https://github.com/newman55/unity-mod-manager) (min v0.23)
-2. Download the [latest release](https://github.com/WittleWolfie/ModMenu/releases)
-3. Drag the zip file from from step #3 into the Unity Mod Manager window under the Mods tab
+1. Install [Unity Mod Manager](https://github.com/newman55/unity-mod-manager) (UMM), minimum version 0.23.0, and configure for use with Wrath
+2. Install [ModFinder](https://github.com/Pathfinder-WOTR-Modding-Community/ModFinder) and use it to search for Mewsifer Console
+3. Click "Install"
+
+If you don't want to use ModFinder you can download the [latest release](https://github.com/WittleWolfie/ModMenu/releases/latest) and install normally using UMM.
 
 ## Problems or Suggestions
 
 File an [issue on GitHub](https://github.com/WittleWolfie/ModMenu/issues/new) or reach out to me (@WittleWolfie) on [Discord](https://discord.com/invite/wotr) in #mod-dev-technical or #mod-user-general channel.
+
+## Mods Using ModMenu
+
+This is a non-exhaustive list, let me know if you want your mod added here!
+
+* [MewsiferConsole](https://github.com/Pathfinder-WOTR-Modding-Community/MewsiferConsole)
 
 ## Usage for Mod Developers
 
