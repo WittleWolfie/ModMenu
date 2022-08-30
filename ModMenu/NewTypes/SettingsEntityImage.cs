@@ -11,10 +11,12 @@ namespace ModMenu.NewTypes
   internal class UISettingsEntityImage : UISettingsEntityBase
   {
     internal Sprite Sprite;
+    internal int Height;
 
-    internal UISettingsEntityImage(Sprite sprite)
+    internal UISettingsEntityImage(Sprite sprite, int height)
     {
       Sprite = sprite;
+      Height = height;
     }
 
     public override SettingsListItemType? Type => SettingsListItemType.Custom;
@@ -23,10 +25,12 @@ namespace ModMenu.NewTypes
   internal class SettingsEntityImageVM : VirtualListElementVMBase
   {
     internal Sprite Sprite;
+    internal int Height;
 
     internal SettingsEntityImageVM(UISettingsEntityImage imageEntity)
     {
       Sprite = imageEntity.Sprite;
+      Height = imageEntity.Height;
     }
 
     protected override void DisposeImplementation() { }
@@ -41,31 +45,50 @@ namespace ModMenu.NewTypes
     {
       get
       {
-        bool set_mOverrideType = m_LayoutSettings == null;
-        m_LayoutSettings ??= new()
+        if (ViewModel is null)
         {
-          // If this is set to false the row gets all kinds of wonky. Notably setting height has no impact on anything,
-          // the row just sizes based on the image.
-          OverrideHeight = true,
-        };
-        if (set_mOverrideType)
-        {
-          // Note that m_LayoutSettings is largely ignored by using UnityLayout. If it is set to Custom then the height
-          // and width parameters in m_LayoutSettings are used.
+          Main.Logger.NativeLog($"Instantiating layout settings.");
+          m_LayoutSettings = new()
+          {
+            // For some reason it breaks if this isn't set. It doesn't work if you set the height without
+            // LayoutOverrideType.Custom, but if this is false things are no good.
+            OverrideHeight = true,
+          };
           OverrideType.SetValue(m_LayoutSettings, VirtualListLayoutElementSettings.LayoutOverrideType.UnityLayout);
         }
-
         return m_LayoutSettings;
       }
     }
 
+    private void OverrideHeight()
+    {
+      Main.Logger.NativeLog($"Overriding layout height: {ViewModel.Height}");
+      m_LayoutSettings = new()
+      {
+        OverrideHeight = true,
+        Height = ViewModel.Height,
+      };
+
+      // Without setting to custom the height is ignored.
+      OverrideType.SetValue(m_LayoutSettings, VirtualListLayoutElementSettings.LayoutOverrideType.Custom);
+    }
+
     private VirtualListLayoutElementSettings m_LayoutSettings;
 
-    public Image Image;
+    public Image Icon;
 
     protected override void BindViewImplementation()
     {
-      Image.sprite = ViewModel.Sprite;
+      Icon.sprite = ViewModel.Sprite;
+      if (ViewModel.Height > 0)
+      {
+        // You can't set height to pixels directly so instead you have to scale.
+        var spriteHeight = Icon.sprite.bounds.size.y * Icon.sprite.pixelsPerUnit;
+        float scaling = ViewModel.Height / spriteHeight;
+
+        Icon.transform.localScale = new Vector3(scaling, scaling);
+        OverrideHeight();
+      }
     }
 
     protected override void DestroyViewImplementation() { }

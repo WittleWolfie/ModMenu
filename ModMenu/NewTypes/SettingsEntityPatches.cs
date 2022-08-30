@@ -138,9 +138,13 @@ namespace ModMenu.NewTypes
         // Add our own View (after destroying the Bool one)
         var templatePrefab = prefab.AddComponent<SettingsEntityImageView>();
 
+        // Create an imagePrefab as a child of the view so it can be scaled independently
+        var imagePrefab = new GameObject("banner", typeof(RectTransform));
+        imagePrefab.transform.SetParent(templatePrefab.transform, false);
+
         // Wire up the fields that would have been deserialized if coming from a bundle
-        templatePrefab.Image = prefab.AddComponent<Image>();
-        templatePrefab.Image.preserveAspect = true;
+        templatePrefab.Icon = imagePrefab.AddComponent<Image>();
+        templatePrefab.Icon.preserveAspect = true;
         return templatePrefab;
       }
     }
