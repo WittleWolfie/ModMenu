@@ -165,6 +165,21 @@ namespace ModMenu.Settings
       return this;
     }
 
+    /// <summary>
+    /// Adds a sub-header marking the start of collapsible group of settings.
+    /// </summary>
+    /// 
+    /// <remarks>
+    /// The sub-header applies to every view following it until another sub-header is added.
+    /// </remarks>
+    /// 
+    /// <param name="startExpanded">If true, the sub-header starts expanded.</param>
+    public SettingsBuilder AddSubHeader(LocalizedString title, bool startExpanded = false)
+    {
+      Settings.Add(new UISettingsEntitySubHeader(title, startExpanded));
+      return this;
+    }
+
     internal (UISettingsGroup group, Dictionary<string, ISettingsEntity> settings) Build()
     {
       Group.SettingsList = Settings.ToArray();

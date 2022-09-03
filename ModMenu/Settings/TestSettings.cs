@@ -49,6 +49,7 @@ namespace ModMenu.Settings
                   "This is a dropdown based on TestEnum. In order to change the value the connected toggle must be on."
                   +" After switching it on or off exit and enter the menu again to lock/unlock it."))
               .DependsOnSave())
+          .AddSubHeader(CreateString("sub-header", "Test Sliders"))
           .AddSliderFloat(
             SliderFloat.New(
               GetKey("float-default"),

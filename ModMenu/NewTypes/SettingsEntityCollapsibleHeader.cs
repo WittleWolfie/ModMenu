@@ -4,11 +4,8 @@ using Kingmaker.UI.MVVM._VM.Settings.Entities.Decorative;
 using Owlcat.Runtime.UI.Controls.Button;
 using Owlcat.Runtime.UI.MVVM;
 using Owlcat.Runtime.UI.VirtualListSystem.ElementSettings;
-using System;
 using System.Collections.Generic;
-using System.Runtime.Remoting.Messaging;
 using TMPro;
-using UniRx;
 
 namespace ModMenu.NewTypes
 {
@@ -16,7 +13,12 @@ namespace ModMenu.NewTypes
   {
     internal readonly List<VirtualListElementVMBase> SettingsInGroup = new();
 
-    public SettingsEntityCollapsibleHeaderVM(string title) : base(title) { }
+    internal bool Expanded { get; private set; }
+
+    public SettingsEntityCollapsibleHeaderVM(string title, bool expanded = false) : base(title)
+    {
+      Expanded = expanded;
+    }
 
     internal void Collapse()
     {
@@ -33,6 +35,18 @@ namespace ModMenu.NewTypes
         entityVM.Active.Value = true;
       }
     }
+
+    internal void Toggle(ExpandableCollapseMultiButtonPC button, bool update = true)
+    {
+      if (update)
+        Expanded = !Expanded;
+
+      button.SetValue(Expanded, true);
+      if (Expanded)
+        Expand();
+      else
+        Collapse();
+    }
   }
 
   internal class SettingsEntityCollapsibleHeaderView : VirtualListElementViewBase<SettingsEntityCollapsibleHeaderVM>
@@ -46,8 +60,9 @@ namespace ModMenu.NewTypes
           new()
           {
             // This is the typical header height
-            Height = 55,
+            Height = 65,
             OverrideHeight = true,
+            Padding = new() { Top = 10 }
           };
         if (set_mOverrideType)
         {
@@ -64,26 +79,16 @@ namespace ModMenu.NewTypes
     public OwlcatMultiButton Button;
     public ExpandableCollapseMultiButtonPC ButtonPC;
 
-    private bool Enabled = true;
-
     protected override void BindViewImplementation()
     {
-      Title.text = UIUtility.GetSaberBookFormat(ViewModel.Tittle, default, 140, null, 0f);
+      Title.text = UIUtility.GetSaberBookFormat(ViewModel.Tittle, size: GetFontSize());
       Button.OnLeftClick.RemoveAllListeners();
-      Button.OnLeftClick.AddListener(Toggle);
-      Toggle(); // start collapsed
+      Button.OnLeftClick.AddListener(() => ViewModel.Toggle(ButtonPC));
+      ViewModel.Toggle(ButtonPC, update: false);
     }
+
+    protected virtual int GetFontSize() { return 140; }
 
     protected override void DestroyViewImplementation() { }
-
-    private void Toggle()
-    {
-      Enabled = !Enabled;
-      ButtonPC.SetValue(Enabled, true);
-      if (Enabled)
-        ViewModel.Expand();
-      else
-        ViewModel.Collapse();
-    }
   }
 }

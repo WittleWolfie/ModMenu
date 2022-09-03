@@ -11,14 +11,10 @@ using Kingmaker.UI.SettingsUI;
 using Kingmaker.Utility;
 using ModMenu.Settings;
 using Owlcat.Runtime.UI.Controls.Button;
-using Owlcat.Runtime.UI.Controls.Selectable;
-using Owlcat.Runtime.UI.Controls.SelectableState;
 using Owlcat.Runtime.UI.MVVM;
 using Owlcat.Runtime.UI.VirtualListSystem;
 using Owlcat.Runtime.UI.VirtualListSystem.ElementSettings;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using TMPro;
 using UnityEngine;
@@ -40,7 +36,7 @@ namespace ModMenu.NewTypes
     {
       [HarmonyPatch(nameof(SettingsVM.GetVMForSettingsItem)), HarmonyPrefix]
       static bool Prefix(
-        UISettingsEntityBase uiSettingsEntity, SettingsVM __instance, ref VirtualListElementVMBase __result)
+        UISettingsEntityBase uiSettingsEntity, ref VirtualListElementVMBase __result)
       {
         try
         {
@@ -54,6 +50,12 @@ namespace ModMenu.NewTypes
           {
             Main.Logger.NativeLog("Returning SettingsEntityButtonVM.");
             __result = new SettingsEntityButtonVM(buttonEntity);
+            return false;
+          }
+          if (uiSettingsEntity is UISettingsEntitySubHeader subHeaderEntity)
+          {
+            Main.Logger.NativeLog("Returning SettingsEntitySubHeaderVM.");
+            __result = new SettingsEntitySubHeaderVM(subHeaderEntity);
             return false;
           }
         }
@@ -74,18 +76,29 @@ namespace ModMenu.NewTypes
 
           // Add all settings in each group to the corresponding expand/collapse button
           SettingsEntityCollapsibleHeaderVM headerVM = null;
+          SettingsEntitySubHeaderVM subHeaderVM = null;
           for (int i = 0; i < __instance.m_SettingEntities.Count; i++)
           {
             var entity = __instance.m_SettingEntities[i];
-            if (entity is SettingsEntityHeaderVM header)
+            if (entity is SettingsEntitySubHeaderVM subHeader)
+            {
+              subHeaderVM = subHeader;
+              if (headerVM is not null)
+                headerVM.SettingsInGroup.Add(subHeaderVM); // Sub headers are nested in headers
+              continue;
+            }
+            else if (entity is SettingsEntityHeaderVM header)
             {
               headerVM = new SettingsEntityCollapsibleHeaderVM(header.Tittle);
               __instance.m_SettingEntities[i] = headerVM;
+              subHeaderVM = null; // Make sure we stop counting sub header entries
+              continue;
             }
-            else if (headerVM is not null)
-            {
+
+            if (headerVM is not null)
               headerVM.SettingsInGroup.Add(entity);
-            }
+            if (subHeaderVM is not null)
+              subHeaderVM.SettingsInGroup.Add(entity);
           }
         }
         catch (Exception e)
@@ -118,6 +131,7 @@ namespace ModMenu.NewTypes
           var headerTemplate =
             CreateCollapsibleHeaderTemplate(
               Object.Instantiate(__instance.m_SettingsEntityHeaderViewPrefab.gameObject));
+          var subHeaderTemplate = CreateSubHeaderTemplate(Object.Instantiate(headerTemplate.gameObject));
 
           virtualListComponent.Initialize(new IVirtualListElementTemplate[]
           {
@@ -134,6 +148,8 @@ namespace ModMenu.NewTypes
             new VirtualListElementTemplate<SettingsEntityImageVM>(imageTemplate),
             new VirtualListElementTemplate<SettingsEntityButtonVM>(buttonTemplate),
             new VirtualListElementTemplate<SettingsEntityCollapsibleHeaderVM>(headerTemplate),
+            new VirtualListElementTemplate<SettingsEntitySubHeaderVM>(subHeaderTemplate),
+
           });
         }
         catch (Exception e)
@@ -229,11 +245,28 @@ namespace ModMenu.NewTypes
         var button = buttonPrefab.GetComponent<OwlcatMultiButton>();
         button.Interactable = true;
 
-        // Add our own View (after destroying the Bool one)
+        // Add our own View
         var templatePrefab = prefab.AddComponent<SettingsEntityCollapsibleHeaderView>();
         templatePrefab.Title = prefab.transform.FindRecursive("Label").GetComponent<TextMeshProUGUI>();
         templatePrefab.Button = button;
         templatePrefab.ButtonPC = buttonPC;
+        return templatePrefab;
+      }
+
+      // Prefab from the SettingsEntityCollapsibleHeaderView
+      private static SettingsEntitySubHeaderView CreateSubHeaderTemplate(GameObject prefab)
+      {
+        Main.Logger.NativeLog("Creating sub header template.");
+
+        // Destroy the stuff we don't want from the source prefab
+        Object.DestroyImmediate(prefab.GetComponent<SettingsEntityCollapsibleHeaderView>());
+        Object.DontDestroyOnLoad(prefab);
+
+        // Add our own view
+        var templatePrefab = prefab.AddComponent<SettingsEntitySubHeaderView>();
+        templatePrefab.Title = prefab.transform.FindRecursive("Label").GetComponent<TextMeshProUGUI>();
+        templatePrefab.Button = prefab.GetComponentInChildren<OwlcatMultiButton>();
+        templatePrefab.ButtonPC = prefab.GetComponentInChildren<ExpandableCollapseMultiButtonPC>();
         return templatePrefab;
       }
     }
