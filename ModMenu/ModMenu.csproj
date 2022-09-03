@@ -29,15 +29,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Assets\CollapsedButton.png" />
-    <None Remove="Assets\ExpandedButton.png" />
-    <None Remove="Assets\HoverButton.png" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="Assets\CollapsedButton.png" />
-    <EmbeddedResource Include="Assets\ExpandedButton.png" />
-    <EmbeddedResource Include="Assets\HoverButton.png" />
     <EmbeddedResource Include="WittleWolfie.png" />
   </ItemGroup>
 
@@ -90,6 +81,10 @@
     <None Update="Info.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Assets\" />
   </ItemGroup>
 
   <!-- Generates Assembly-CSharp_public.dll -->

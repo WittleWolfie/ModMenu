@@ -53,9 +53,6 @@ namespace ModMenu.NewTypes
   internal class SettingsEntityButtonView
     : SettingsEntityView<SettingsEntityButtonVM>, IPointerEnterHandler, IPointerExitHandler
   {
-    private static readonly FieldInfo OverrideType =
-      AccessTools.Field(typeof(VirtualListLayoutElementSettings), "m_OverrideType");
-
     public override VirtualListLayoutElementSettings LayoutSettings
     {
       get
@@ -64,7 +61,8 @@ namespace ModMenu.NewTypes
         m_LayoutSettings ??= new();
         if (set_mOverrideType)
         {
-          OverrideType.SetValue(m_LayoutSettings, VirtualListLayoutElementSettings.LayoutOverrideType.UnityLayout);
+          SettingsEntityPatches.OverrideType.SetValue(
+            m_LayoutSettings, VirtualListLayoutElementSettings.LayoutOverrideType.UnityLayout);
         }
 
         return m_LayoutSettings;

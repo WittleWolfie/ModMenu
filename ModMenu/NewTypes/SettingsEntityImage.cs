@@ -38,9 +38,6 @@ namespace ModMenu.NewTypes
 
   internal class SettingsEntityImageView : VirtualListElementViewBase<SettingsEntityImageVM>
   {
-    private static readonly FieldInfo OverrideType =
-      AccessTools.Field(typeof(VirtualListLayoutElementSettings), "m_OverrideType");
-
     public override VirtualListLayoutElementSettings LayoutSettings
     {
       get
@@ -54,7 +51,8 @@ namespace ModMenu.NewTypes
             // LayoutOverrideType.Custom, but if this is false things are no good.
             OverrideHeight = true,
           };
-          OverrideType.SetValue(m_LayoutSettings, VirtualListLayoutElementSettings.LayoutOverrideType.UnityLayout);
+          SettingsEntityPatches.OverrideType.SetValue(
+            m_LayoutSettings, VirtualListLayoutElementSettings.LayoutOverrideType.UnityLayout);
         }
         return m_LayoutSettings;
       }
@@ -70,7 +68,8 @@ namespace ModMenu.NewTypes
       };
 
       // Without setting to custom the height is ignored.
-      OverrideType.SetValue(m_LayoutSettings, VirtualListLayoutElementSettings.LayoutOverrideType.Custom);
+      SettingsEntityPatches.OverrideType.SetValue(
+        m_LayoutSettings, VirtualListLayoutElementSettings.LayoutOverrideType.Custom);
     }
 
     private VirtualListLayoutElementSettings m_LayoutSettings;
