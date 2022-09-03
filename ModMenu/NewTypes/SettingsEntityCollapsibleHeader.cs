@@ -64,24 +64,26 @@ namespace ModMenu.NewTypes
     public OwlcatMultiButton Button;
     public ExpandableCollapseMultiButtonPC ButtonPC;
 
-    private bool Enabled = false;
+    private bool Enabled = true;
 
     protected override void BindViewImplementation()
     {
       Title.text = UIUtility.GetSaberBookFormat(ViewModel.Tittle, default, 140, null, 0f);
       Button.OnLeftClick.RemoveAllListeners();
-      Button.OnLeftClick.AddListener(
-        () =>
-        {
-          Enabled = !Enabled;
-          ButtonPC.SetValue(Enabled, true);
-          if (Enabled)
-            ViewModel.Expand();
-          else
-            ViewModel.Collapse();
-        });
+      Button.OnLeftClick.AddListener(Toggle);
+      Toggle(); // start collapsed
     }
 
     protected override void DestroyViewImplementation() { }
+
+    private void Toggle()
+    {
+      Enabled = !Enabled;
+      ButtonPC.SetValue(Enabled, true);
+      if (Enabled)
+        ViewModel.Expand();
+      else
+        ViewModel.Collapse();
+    }
   }
 }
