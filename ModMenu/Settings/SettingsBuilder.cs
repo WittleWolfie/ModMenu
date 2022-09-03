@@ -182,6 +182,7 @@ namespace ModMenu.Settings
     {
       Group.name = key.ToLower();
       Group.Title = title;
+      Settings.Add(new UISettingsEntityHeaderButton());
     }
   }
 

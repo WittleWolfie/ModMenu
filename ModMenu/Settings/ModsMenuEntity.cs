@@ -18,7 +18,7 @@ namespace ModMenu.Settings
   {
     // Random magic number representing our fake enum for UiSettingsManager.SettingsScreen
     private const int SettingsScreenValue = 17;
-    private static readonly UISettingsManager.SettingsScreen SettingsScreenId =
+    internal static readonly UISettingsManager.SettingsScreen SettingsScreenId =
       (UISettingsManager.SettingsScreen)SettingsScreenValue;
 
     private static LocalizedString _menuTitleString;
