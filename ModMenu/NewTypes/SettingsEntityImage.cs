@@ -60,13 +60,13 @@ namespace ModMenu.NewTypes
       }
     }
 
-    private void OverrideHeight()
+    private void SetHeight(float height)
     {
-      Main.Logger.NativeLog($"Overriding layout height: {ViewModel.Height}");
+      Main.Logger.NativeLog($"Setting layout height: {height}");
       m_LayoutSettings = new()
       {
         OverrideHeight = true,
-        Height = ViewModel.Height,
+        Height = height,
       };
 
       // Without setting to custom the height is ignored.
@@ -81,24 +81,33 @@ namespace ModMenu.NewTypes
     protected override void BindViewImplementation()
     {
       Icon.sprite = ViewModel.Sprite;
+
+      var spriteHeight = Icon.sprite.bounds.size.y * Icon.sprite.pixelsPerUnit;
+
+      // You can't set height to pixels directly so instead you have to scale.
+      float height, scaling;
       if (ViewModel.Height > 0)
       {
-        // You can't set height to pixels directly so instead you have to scale.
-        var spriteHeight = Icon.sprite.bounds.size.y * Icon.sprite.pixelsPerUnit;
-        float scaling = ViewModel.Height / spriteHeight;
-
-        // The height of the row is determined by the vertical height of the sprite, regardless of its scaling. To
-        // prevent the row from being too-tall, scale the height of everything.
-        gameObject.transform.localScale = new Vector3(gameObject.transform.localScale.x, scaling);
-        // Just scaling the height of the image would break the aspect ratio, so scale its width.
-        Icon.transform.localScale = new Vector3(scaling, Icon.transform.localScale.y);
-
-        // Height scaling on the top bar changes its thickness, so invert it to counteract the row scaling.
-        float inverseScaling = 1 / scaling;
-        TopBorder.transform.localScale = new Vector3(TopBorder.transform.localScale.x, inverseScaling);
-
-        OverrideHeight();
+        height = ViewModel.Height;
+        scaling = ViewModel.Height / spriteHeight;
       }
+      else
+      {
+        height = spriteHeight;
+        scaling = 1;
+      }
+
+      // The height of the row is determined by the vertical height of the sprite, regardless of its scaling. To
+      // prevent the row from being too-tall, scale the height of everything.
+      gameObject.transform.localScale = new Vector3(gameObject.transform.localScale.x, scaling);
+      // Just scaling the height of the image would break the aspect ratio, so scale its width.
+      Icon.transform.localScale = new Vector3(scaling, Icon.transform.localScale.y);
+
+      // Height scaling on the top bar changes its thickness, so invert it to counteract the row scaling.
+      float inverseScaling = 1 / scaling;
+      TopBorder.transform.localScale = new Vector3(TopBorder.transform.localScale.x, inverseScaling);
+
+      SetHeight(height);
     }
 
     protected override void DestroyViewImplementation() { }
