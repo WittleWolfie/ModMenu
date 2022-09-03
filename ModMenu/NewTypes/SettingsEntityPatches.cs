@@ -251,8 +251,8 @@ namespace ModMenu.NewTypes
           buttonRect.anchorMax = new(0, 0);
           buttonRect.pivot = new(0, 0);
 
-          buttonRect.anchoredPosition = new(30, 50);
-          buttonRect.sizeDelta = new(40, 40);
+          buttonRect.anchoredPosition = new(33, 33);
+          buttonRect.sizeDelta = new(35, 35);
 
           // Replace Button icons
           var commonLayer = (List<OwlcatSelectableLayerPart>)CommonLayer.GetValue(buttonControl);

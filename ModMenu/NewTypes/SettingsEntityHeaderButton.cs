@@ -54,10 +54,16 @@ namespace ModMenu.NewTypes
       get
       {
         bool set_mOverrideType = m_LayoutSettings == null;
-        m_LayoutSettings ??= new();
+        m_LayoutSettings ??=
+          new()
+          {
+            // Set the height to 0 so it doesn't actually take a row.
+            Height = 0,
+            OverrideHeight = true,
+          };
         if (set_mOverrideType)
         {
-          OverrideType.SetValue(m_LayoutSettings, VirtualListLayoutElementSettings.LayoutOverrideType.UnityLayout);
+          OverrideType.SetValue(m_LayoutSettings, VirtualListLayoutElementSettings.LayoutOverrideType.Custom);
         }
 
         return m_LayoutSettings;
