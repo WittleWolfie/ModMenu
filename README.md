@@ -22,7 +22,17 @@ This is a non-exhaustive list, let me know if you want your mod added here!
 
 * [MewsiferConsole](https://github.com/Pathfinder-WOTR-Modding-Community/MewsiferConsole)
 
-## Usage for Mod Developers
+## Mod Developers
+
+### Why should you use it?
+
+* It looks nice!
+* Automatically persists your settings
+* Handles restoring defaults
+* Automatically persists per-save settings
+* Super easy to use
+
+### How to use it
 
 The screenshot above was generated using [TestSettings](https://github.com/WittleWolfie/ModMenu/blob/main/ModMenu/Settings/TestSettings.cs). That exercises every function supported. The API is documented and generally self-explanatory.
 
@@ -32,19 +42,19 @@ In your mod's `Info.json` add `ModMenu` as a requirement:
 "Requirements": ["ModMenu"]
 ```
 
-You can optionally specify a minimum version:
+You should specify a minimum version:
 
 ```json
 "Requirements": ["ModMenu-1.1.0"]
 ```
+
+It's safest to just specify the version you build against as the minimum version, but methods added after 1.0 do specify the version in their remarks.
 
 Install ModMenu then in your mod's project add `%WrathPath%/Mods/ModMenu/ModMenu.dll` as an assembly reference.
 
 ### Best Practices
 
 * **Do not add settings during mod load,** without additional handling you cannot create a `LocalizedString`. I recommend adding settings before, during, or after `BlueprintsCache.Init()`.
-* Keep the number of settings to a minimum since the page is shared by all mods. If you have a large number of settings, e.g. ToyBox, it may be better to keep them in UMM.
-* Consider adding your own "Default" option using the [Button](https://github.com/WittleWolfie/ModMenu/blob/main/ModMenu/Settings/SettingsBuilder.cs#L95) type. The default button at the bottom of the page applies to every setting on the Mods page.
 * Don't use `IsModificationAllowed` to enable/disable a setting based on another setting. This is checked when the page is opened so it won't apply immediately.
 * Indicate settings which require reboot using `WithLongDescription()`. The game's setting boolean `RequireReboot` does nothing.
 
