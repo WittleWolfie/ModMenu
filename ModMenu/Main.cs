@@ -47,7 +47,14 @@ namespace ModMenu
       [HarmonyPatch(nameof(BlueprintsCache.Init)), HarmonyPostfix]
       static void Postfix()
       {
-        new TestSettings().Initialize();
+        try
+        {
+          new TestSettings().Initialize();
+        }
+        catch (Exception e)
+        {
+          Logger.LogException("BlueprintsCache.Init", e);
+        }
       }
     }
 #endif
