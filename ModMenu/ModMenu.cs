@@ -87,5 +87,65 @@ namespace ModMenu
       var setting = GetSetting<SettingsEntity<T>, T>(key);
       return setting is null ? default : setting.GetValue();
     }
+
+    /// <summary>
+    /// Attempts to set the value of a setting.
+    /// </summary>
+    /// 
+    /// <returns>True if the setting was set, false otherwise.</returns>
+    public static bool SetSetting<T, TValue>(string key, TValue value) where T : SettingsEntity<TValue>
+    {
+      Main.Logger.Log($"Attempting to set {key} to {value}");
+      var setting = GetSetting<T, TValue>(key);
+      if (setting is null)
+        return false;
+
+      setting.SetValueAndConfirm(value);
+      return true;
+    }
+
+    /// <summary>
+    /// Convenience method for <see cref="SetSetting{T, TValue}(string, TValue)"/> with
+    /// <c>&lt;SettingsEntityBool, bool&gt;</c>.
+    /// </summary>
+    /// 
+    /// <inheritdoc cref="SetSetting{T, TValue}(string, TValue)"/>
+    public static bool SetSetting(string key, bool value)
+    {
+      return SetSetting<SettingsEntityBool, bool>(key, value);
+    }
+
+    /// <summary>
+    /// Convenience method for <see cref="SetSetting{T, TValue}(string, TValue)"/> with
+    /// <c>&lt;SettingsEntityEnum&lt;T&gt;, T&gt;</c>.
+    /// </summary>
+    /// 
+    /// <inheritdoc cref="SetSetting{T, TValue}(string, TValue)"/>
+    public static bool SetSetting<T>(string key, T value) where T : Enum
+    {
+      return SetSetting<SettingsEntityEnum<T>, T>(key, value);
+    }
+
+    /// <summary>
+    /// Convenience method for <see cref="SetSetting{T, TValue}(string, TValue)"/> with
+    /// <c>&lt;SettingsEntityFloat, float&gt;</c>.
+    /// </summary>
+    /// 
+    /// <inheritdoc cref="SetSetting{T, TValue}(string, TValue)"/>
+    public static bool SetSetting(string key, float value)
+    {
+      return SetSetting<SettingsEntityFloat, float>(key, value);
+    }
+
+    /// <summary>
+    /// Convenience method for <see cref="SetSetting{T, TValue}(string, TValue)"/> with
+    /// <c>&lt;SettingsEntityInt, int&gt;</c>.
+    /// </summary>
+    /// 
+    /// <inheritdoc cref="SetSetting{T, TValue}(string, TValue)"/>
+    public static bool SetSetting(string key, int value)
+    {
+      return SetSetting<SettingsEntityInt, int>(key, value);
+    }
   }
 }
