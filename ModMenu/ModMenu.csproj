@@ -52,6 +52,9 @@
     <Reference Include="Owlcat.Runtime.UI.dll">
       <HintPath>$(WrathPath)\Wrath_Data\Managed\Owlcat.Runtime.UI.dll</HintPath>
     </Reference>
+    <Reference Include="Owlcat.Runtime.Validation.dll">
+      <HintPath>$(WrathPath)\Wrath_Data\Managed\Owlcat.Runtime.Validation.dll</HintPath>
+    </Reference>
     <Reference Include="Unity.TextMeshPro.dll">
       <HintPath>$(WrathPath)\Wrath_Data\Managed\Unity.TextMeshPro.dll</HintPath>
     </Reference>

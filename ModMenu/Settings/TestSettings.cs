@@ -28,6 +28,7 @@ namespace ModMenu.Settings
       ModMenu.AddSettings(
         SettingsBuilder.New(RootKey, CreateString("title", "Testing settings"))
           .AddImage(Helpers.CreateSprite("ModMenu.WittleWolfie.png"))
+          .AddDefaultButton(OnDefaultsApplied)
           .AddButton(
             Button.New(
               CreateString("button-desc", "This is a button"), CreateString("button-text", "Click Me!"), OnClick))
@@ -83,6 +84,12 @@ namespace ModMenu.Settings
                 minValue: 1,
                 maxValue: 6)
               .HideValueText()));
+
+      ModMenu.AddSettings(
+        SettingsBuilder.New(GetKey("extra"), CreateString("extra-title", "More Test Settings"))
+          .AddToggle(
+            Toggle.New(
+              GetKey("empty-toggle"), defaultValue: false, CreateString("empty-toggle-desc", "A useless toggle"))));
     }
 
     private void OnClick()
@@ -96,7 +103,11 @@ namespace ModMenu.Settings
       log.AppendLine($"-Default Slider Int: {ModMenu.GetSettingValue<int>(GetKey("int-default"))}");
       log.AppendLine($"-Slider Int: {ModMenu.GetSettingValue<int>(GetKey("int"))}");
       Main.Logger.Log(log.ToString());
+    }
 
+    private void OnDefaultsApplied()
+    {
+      Main.Logger.NativeLog("Defaults were applied!");
     }
 
     private bool CheckToggle()

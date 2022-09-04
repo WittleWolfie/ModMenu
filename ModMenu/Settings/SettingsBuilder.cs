@@ -1,5 +1,8 @@
-﻿using Kingmaker.Localization;
+﻿using Kingmaker;
+using Kingmaker.Localization;
+using Kingmaker.PubSubSystem;
 using Kingmaker.Settings;
+using Kingmaker.UI;
 using Kingmaker.UI.SettingsUI;
 using ModMenu.NewTypes;
 using System;
@@ -69,6 +72,7 @@ namespace ModMenu.Settings
     private readonly UISettingsGroup Group = ScriptableObject.CreateInstance<UISettingsGroup>();
     private readonly List<UISettingsEntityBase> Settings = new();
     private readonly Dictionary<string, ISettingsEntity> SettingsEntities = new();
+    private Action OnDefaultsApplied;
 
     /// <param name="key">
     /// Globally unique key / name for the settings group. Use only lowercase letters, numbers, '-', and '.'
@@ -77,6 +81,12 @@ namespace ModMenu.Settings
     public static SettingsBuilder New(string key, LocalizedString title)
     {
       return new(key, title);
+    }
+
+    public SettingsBuilder(string key, LocalizedString title)
+    {
+      Group.name = key.ToLower();
+      Group.Title = title;
     }
 
     /// <summary>
@@ -112,6 +122,22 @@ namespace ModMenu.Settings
     {
       var uiEntity = button.Build();
       Settings.Add(uiEntity);
+      return this;
+    }
+
+    /// <summary>
+    /// Adds a button which resets the value of each setting in this group to its default. Triggers a confirmation
+    /// prompt before executing.
+    /// </summary>
+    /// 
+    /// <param name="onDefaultsApplied">Invoked after default settings are applied.</param>
+    public SettingsBuilder AddDefaultButton(Action onDefaultsApplied = null)
+    {
+      OnDefaultsApplied = onDefaultsApplied;
+      Settings.Add(
+        Button.New(DefaultDescription, DefaultButtonLabel, OpenDefaultSettingsDialog)
+          .WithLongDescription(DefaultDescriptionLong)
+          .Build());
       return this;
     }
 
@@ -180,12 +206,6 @@ namespace ModMenu.Settings
       return this;
     }
 
-    internal (UISettingsGroup group, Dictionary<string, ISettingsEntity> settings) Build()
-    {
-      Group.SettingsList = Settings.ToArray();
-      return (Group, SettingsEntities);
-    }
-
     private SettingsBuilder Add(string key, ISettingsEntity entity, UISettingsEntityBase uiEntity)
     {
       SettingsEntities.Add(key, entity);
@@ -193,10 +213,74 @@ namespace ModMenu.Settings
       return this;
     }
 
-    public SettingsBuilder(string key, LocalizedString title)
+    internal (UISettingsGroup group, Dictionary<string, ISettingsEntity> settings) Build()
     {
-      Group.name = key.ToLower();
-      Group.Title = title;
+      Group.SettingsList = Settings.ToArray();
+      return (Group, SettingsEntities);
+    }
+
+    private void OpenDefaultSettingsDialog()
+    {
+      string text =
+        string.Format(
+          Game.Instance.BlueprintRoot.LocalizedTexts.UserInterfacesText.SettingsUI.RestoreAllDefaultsMessage,
+          Group.Title);
+      EventBus.RaiseEvent(delegate (IMessageModalUIHandler w)
+      {
+        w.HandleOpen(
+          text,
+          MessageModalBase.ModalType.Dialog,
+          new Action<MessageModalBase.ButtonType>(OnDefaultDialogAnswer));
+      },
+      true);
+    }
+
+    public void OnDefaultDialogAnswer(MessageModalBase.ButtonType buttonType)
+    {
+      if (buttonType != MessageModalBase.ButtonType.Yes)
+        return;
+
+      foreach (var setting in SettingsEntities.Values)
+        setting.ResetToDefault(true);
+
+      OnDefaultsApplied();
+    }
+
+    private LocalizedString _defaultDescription;
+    private LocalizedString DefaultDescription
+    {
+      get
+      {
+        _defaultDescription ??=
+          Helpers.CreateString("mod-menu.default-description", $"Restore all settings {Group.Title} to their defaults");
+        return _defaultDescription;
+      }
+    }
+
+    private LocalizedString _defaultDescriptionLong;
+    private LocalizedString DefaultDescriptionLong
+    {
+      get
+      {
+        _defaultDescriptionLong ??=
+          Helpers.CreateString(
+            "mod-menu.default-description-long",
+            $"Sets each settings under {Group.Title} to its default value. Your current settings will be lost."
+            + $" Settings in other groups are not affected. Keep in mind this will apply to sub-groups under"
+            + $" {Group.Title} as well (anything that is hidden when the group is collapsed).");
+
+        return _defaultDescriptionLong;
+      }
+    }
+
+    private static LocalizedString _defaultButtonLabel;
+    private static LocalizedString DefaultButtonLabel
+    {
+      get
+      {
+        _defaultButtonLabel ??= Helpers.CreateString("mod-menu.default-button-label", "Default");
+        return _defaultButtonLabel;
+      }
     }
   }
 
