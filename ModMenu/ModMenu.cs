@@ -92,6 +92,8 @@ namespace ModMenu
     /// Attempts to set the value of a setting.
     /// </summary>
     /// 
+    /// <remarks>Added in v1.1.0</remarks>
+    /// 
     /// <returns>True if the setting was set, false otherwise.</returns>
     public static bool SetSetting<T, TValue>(string key, TValue value) where T : SettingsEntity<TValue>
     {

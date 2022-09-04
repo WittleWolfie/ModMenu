@@ -93,6 +93,8 @@ namespace ModMenu.Settings
     /// Adds a row containing an image. There is no setting tied to this, it is just for decoration.
     /// </summary>
     /// 
+    /// <remarks>Height added in v1.1.0</remarks>
+    /// 
     /// <param name="height">
     /// Sets the row height. Keep in mind the scaling is relative to resolution; a standard row has a height of 40. The
     /// image width will be scaled to preserve the aspect ratio.
@@ -129,6 +131,8 @@ namespace ModMenu.Settings
     /// Adds a button which resets the value of each setting in this group to its default. Triggers a confirmation
     /// prompt before executing.
     /// </summary>
+    /// 
+    /// <remarks>Added in v1.1.0</remarks>
     /// 
     /// <param name="onDefaultsApplied">Invoked after default settings are applied.</param>
     public SettingsBuilder AddDefaultButton(Action onDefaultsApplied = null)
