@@ -27,7 +27,7 @@ namespace ModMenu.Settings
     {
       ModMenu.AddSettings(
         SettingsBuilder.New(RootKey, CreateString("title", "Testing settings"))
-          .AddImage(Helpers.CreateSprite("ModMenu.WittleWolfie.png"))
+          .AddImage(Helpers.CreateSprite("ModMenu.WittleWolfie.png"), 250)
           .AddDefaultButton(OnDefaultsApplied)
           .AddButton(
             Button.New(
