@@ -256,7 +256,7 @@ namespace ModMenu.Settings
       get
       {
         _defaultDescription ??=
-          Helpers.CreateString("mod-menu.default-description", $"Restore all settings {Group.Title} to their defaults");
+          Helpers.CreateString("mod-menu.default-description", $"Restore all settings in {Group.Title} to their defaults");
         return _defaultDescription;
       }
     }
