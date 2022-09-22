@@ -112,8 +112,7 @@ namespace ModMenu.Settings
 
     private SettingsBuilder AddImageInternal(Sprite sprite, int height = -1)
     {
-      var image = new UISettingsEntityImage(sprite, height);
-      Settings.Add(image);
+      Settings.Add(UISettingsEntityImage.Create(sprite, height));
       return this;
     }
 
@@ -206,7 +205,7 @@ namespace ModMenu.Settings
     /// <param name="startExpanded">If true, the sub-header starts expanded.</param>
     public SettingsBuilder AddSubHeader(LocalizedString title, bool startExpanded = false)
     {
-      Settings.Add(new UISettingsEntitySubHeader(title, startExpanded));
+      Settings.Add(UISettingsEntitySubHeader.Create(title, startExpanded));
       return this;
     }
 

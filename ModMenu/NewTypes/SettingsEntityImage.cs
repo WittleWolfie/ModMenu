@@ -1,8 +1,6 @@
-﻿using HarmonyLib;
-using Kingmaker.UI.SettingsUI;
+﻿using Kingmaker.UI.SettingsUI;
 using Owlcat.Runtime.UI.MVVM;
 using Owlcat.Runtime.UI.VirtualListSystem.ElementSettings;
-using System.Reflection;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -13,10 +11,12 @@ namespace ModMenu.NewTypes
     internal Sprite Sprite;
     internal int Height;
 
-    internal UISettingsEntityImage(Sprite sprite, int height)
+    internal static UISettingsEntityImage Create(Sprite sprite, int height)
     {
-      Sprite = sprite;
-      Height = height;
+      var image = ScriptableObject.CreateInstance<UISettingsEntityImage>();
+      image.Sprite = sprite;
+      image.Height = height;
+      return image;
     }
 
     public override SettingsListItemType? Type => SettingsListItemType.Custom;

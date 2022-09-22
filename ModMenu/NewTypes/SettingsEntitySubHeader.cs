@@ -1,19 +1,21 @@
 ﻿using Kingmaker.Localization;
-using Kingmaker.UI.Common;
 using Kingmaker.UI.SettingsUI;
 using Owlcat.Runtime.UI.VirtualListSystem.ElementSettings;
+using UnityEngine;
 
 namespace ModMenu.NewTypes
 {
   internal class UISettingsEntitySubHeader : UISettingsEntityBase
   {
-    internal readonly LocalizedString Title;
-    internal readonly bool Expanded;
+    internal LocalizedString Title;
+    internal bool Expanded;
 
-    public UISettingsEntitySubHeader(LocalizedString title, bool expanded)
+    internal static UISettingsEntitySubHeader Create(LocalizedString title, bool expanded)
     {
-      Title = title;
-      Expanded = expanded;
+      var subHeader = ScriptableObject.CreateInstance<UISettingsEntitySubHeader>();
+      subHeader.Title = title;
+      subHeader.Expanded = expanded;
+      return subHeader;
     }
 
     public override SettingsListItemType? Type => SettingsListItemType.Custom;
