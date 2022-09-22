@@ -88,7 +88,19 @@ namespace ModMenu.Settings
         SettingsBuilder.New(GetKey("extra"), CreateString("extra-title", "More Test Settings"))
           .AddToggle(
             Toggle.New(
-              GetKey("empty-toggle"), defaultValue: false, CreateString("empty-toggle-desc", "A useless toggle"))));
+              GetKey("empty-toggle"), defaultValue: false, CreateString("empty-toggle-desc", "A useless toggle")))
+          .AddDropdownList(
+            DropdownList.New(
+                GetKey("dropdown-list"),
+                2,
+                CreateString("dropdown-list", "A dropdown list"),
+                new()
+                {
+                  CreateString("dropdown-list-1", "Value is 0"),
+                  CreateString("dropdown-list-2", "Value is 1"),
+                  CreateString("dropdown-list-3", "Value is 2"),
+                })
+              .OnTempValueChanged(value => Main.Logger.Log($"Currently selected dropdown in list is {value}"))));
     }
 
     private void OnClick()

@@ -7,6 +7,7 @@ using Kingmaker.UI.SettingsUI;
 using ModMenu.NewTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace ModMenu.Settings
@@ -157,6 +158,15 @@ namespace ModMenu.Settings
     /// Adds a dropdown setting populated using an enum.
     /// </summary>
     public SettingsBuilder AddDropdown<T>(Dropdown<T> dropdown) where T : Enum
+    {
+      var (entity, uiEntity) = dropdown.Build();
+      return Add(entity.Key, entity, uiEntity);
+    }
+
+    /// <summary>
+    /// Adds a dropdown populated using a list of strings. The value of the setting is the index in the list.
+    /// </summary>
+    public SettingsBuilder AddDropdownList(DropdownList dropdown)
     {
       var (entity, uiEntity) = dropdown.Build();
       return Add(entity.Key, entity, uiEntity);
@@ -561,7 +571,43 @@ namespace ModMenu.Settings
     }
   }
 
-  public class SliderFloat
+  public class DropdownList
+    : BaseSettingWithValue<int, SettingsEntityInt, UISettingsEntityDropdownInt, DropdownList>
+  {
+    private readonly List<LocalizedString> DropdownValues;
+
+    /// <inheritdoc cref="DropdownList(string, int, LocalizedString, List{LocalizedString})"/>
+    public static DropdownList New(
+      string key, int defaultSelected, LocalizedString description, List<LocalizedString> values)
+    {
+      return new(key, defaultSelected, description, values);
+    }
+
+    protected override SettingsEntityInt CreateEntity()
+    {
+      return new SettingsEntityInt(Key, DefaultValue, SaveDependent, RebootRequired);
+    }
+
+    protected override UISettingsEntityDropdownInt CreateUIEntity()
+    {
+      var dropdown = ScriptableObject.CreateInstance<UISettingsEntityDropdownInt>();
+      dropdown.m_LocalizedValues = DropdownValues.Select(value => value.ToString()).ToList();
+      return dropdown;
+    }
+
+    /// <inheritdoc cref="BaseSettingWithValue{T, TEntity, TUIEntity, TBuilder}.BaseSettingWithValue(string, T, LocalizedString)"/>
+    /// 
+    /// <param name="defaultSelected">Index of the default selected value in <paramref name="values"/></param>
+    /// <param name="values">List of values to display</param>
+    public DropdownList(
+      string key, int defaultSelected, LocalizedString description, List<LocalizedString> values)
+      : base(key, defaultSelected, description)
+    {
+      DropdownValues = values;
+    }
+  }
+
+    public class SliderFloat
     : BaseSettingWithValue<float, SettingsEntityFloat, UISettingsEntitySliderFloat, SliderFloat>
   {
     private readonly float MinValue;
