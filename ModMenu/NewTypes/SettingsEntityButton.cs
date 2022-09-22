@@ -27,6 +27,7 @@ namespace ModMenu.NewTypes
 
       button.ButtonText = buttonText;
       button.OnClick = onClick;
+      return button;
     }
 
     public override SettingsListItemType? Type => SettingsListItemType.Custom;

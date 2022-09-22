@@ -362,7 +362,7 @@ namespace ModMenu.Settings
 
     protected override UISettingsEntityButton CreateUIEntity()
     {
-      return new(Description, LongDescription, ButtonText, OnClick);
+      return UISettingsEntityButton.Create(Description, LongDescription, ButtonText, OnClick);
     }
 
     /// <inheritdoc cref="BaseSettingBuilder{TUIEntity, TBuilder}.BaseSettingBuilder(LocalizedString)"/>
