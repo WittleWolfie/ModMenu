@@ -1,5 +1,4 @@
-﻿using HarmonyLib;
-using Kingmaker.Localization;
+﻿using Kingmaker.Localization;
 using Kingmaker.PubSubSystem;
 using Kingmaker.UI.MVVM._PCView.Settings.Entities;
 using Kingmaker.UI.MVVM._VM.Settings.Entities;
@@ -7,7 +6,6 @@ using Kingmaker.UI.SettingsUI;
 using Owlcat.Runtime.UI.Controls.Button;
 using Owlcat.Runtime.UI.VirtualListSystem.ElementSettings;
 using System;
-using System.Reflection;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -17,17 +15,18 @@ namespace ModMenu.NewTypes
 {
   public class UISettingsEntityButton : UISettingsEntityBase
   {
-    internal readonly LocalizedString ButtonText;
-    internal readonly Action OnClick;
+    internal LocalizedString ButtonText;
+    internal Action OnClick;
 
-    public UISettingsEntityButton(
+    internal static UISettingsEntityButton Create(
       LocalizedString description, LocalizedString longDescription, LocalizedString buttonText, Action onClick)
     {
-      m_Description = description;
-      m_TooltipDescription = longDescription;
+      var button = ScriptableObject.CreateInstance<UISettingsEntityButton>();
+      button.m_Description = description;
+      button.m_TooltipDescription = longDescription;
 
-      ButtonText = buttonText;
-      OnClick = onClick;
+      button.ButtonText = buttonText;
+      button.OnClick = onClick;
     }
 
     public override SettingsListItemType? Type => SettingsListItemType.Custom;
