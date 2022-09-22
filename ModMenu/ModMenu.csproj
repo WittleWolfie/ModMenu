@@ -16,6 +16,8 @@
     <RootNamespace>ModMenu</RootNamespace>
     
     <Version>1.1.1</Version>
+    
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
