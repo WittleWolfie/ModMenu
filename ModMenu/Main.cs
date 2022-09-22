@@ -1,4 +1,6 @@
 ﻿using HarmonyLib;
+using Kingmaker.Blueprints.JsonSystem;
+using ModMenu.Settings;
 using System;
 using static UnityModManagerNet.UnityModManager;
 using static UnityModManagerNet.UnityModManager.ModEntry;

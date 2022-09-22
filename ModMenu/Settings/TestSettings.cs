@@ -1,4 +1,9 @@
-﻿namespace ModMenu.Settings
+﻿using Kingmaker.Localization;
+using Kingmaker.UI.SettingsUI;
+using System.Text;
+using UnityEngine;
+
+namespace ModMenu.Settings
 {
 #if DEBUG
   /// <summary>
