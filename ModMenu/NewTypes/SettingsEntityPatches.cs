@@ -58,6 +58,12 @@ namespace ModMenu.NewTypes
             __result = new SettingsEntitySubHeaderVM(subHeaderEntity);
             return false;
           }
+          if (uiSettingsEntity is UISettingsEntityDropdownButton dropdownButton)
+          {
+            Main.Logger.NativeLog("Returning SettingsEntityDropdownButtonVM.");
+            __result = new SettingsEntityDropdownButtonVM(dropdownButton);
+            return false;
+          }
         }
         catch (Exception e)
         {
@@ -133,6 +139,12 @@ namespace ModMenu.NewTypes
               Object.Instantiate(__instance.m_SettingsEntityHeaderViewPrefab.gameObject));
           var subHeaderTemplate = CreateSubHeaderTemplate(Object.Instantiate(headerTemplate.gameObject));
 
+          // Copy dropdown since you know, it seems like close to dropdown button right?
+          var dropdownButtonTemplate =
+            CreateDropdownButtonTemplate(
+              __instance.m_SettingsEntityDropdownViewPrefab.gameObject,
+              __instance.m_SettingsEntitySliderVisualPerceptionViewPrefab?.m_ResetButton);
+
           virtualListComponent.Initialize(new IVirtualListElementTemplate[]
           {
             new VirtualListElementTemplate<SettingsEntityHeaderVM>(__instance.m_SettingsEntityHeaderViewPrefab),
@@ -149,7 +161,7 @@ namespace ModMenu.NewTypes
             new VirtualListElementTemplate<SettingsEntityButtonVM>(buttonTemplate),
             new VirtualListElementTemplate<SettingsEntityCollapsibleHeaderVM>(headerTemplate),
             new VirtualListElementTemplate<SettingsEntitySubHeaderVM>(subHeaderTemplate),
-
+            new VirtualListElementTemplate<SettingsEntityDropdownButtonVM>(dropdownButtonTemplate),
           });
         }
         catch (Exception e)
@@ -267,6 +279,51 @@ namespace ModMenu.NewTypes
         templatePrefab.Title = prefab.transform.FindRecursive("Label").GetComponent<TextMeshProUGUI>();
         templatePrefab.Button = prefab.GetComponentInChildren<OwlcatMultiButton>();
         templatePrefab.ButtonPC = prefab.GetComponentInChildren<ExpandableCollapseMultiButtonPC>();
+        return templatePrefab;
+      }
+
+      private static SettingsEntityDropdownButtonView CreateDropdownButtonTemplate(
+        GameObject prefab, OwlcatButton buttonPrefab)
+      {
+        Main.Logger.NativeLog("Creating dropdown button template.");
+
+        // Destroy the stuff we don't want from the source prefab
+        Object.DestroyImmediate(prefab.GetComponent<SettingsEntityDropdownPCView>());
+        Object.DestroyImmediate(prefab.transform.Find("HorizontalLayoutGroup").gameObject);
+        Object.DontDestroyOnLoad(prefab);
+
+        OwlcatButton buttonControl = null;
+        TextMeshProUGUI buttonLabel = null;
+
+        // Add in our own button
+        if (buttonPrefab != null)
+        {
+          var button = Object.Instantiate(buttonPrefab.gameObject, prefab.transform);
+          buttonControl = button.GetComponent<OwlcatButton>();
+          buttonLabel = button.GetComponentInChildren<TextMeshProUGUI>();
+
+          var layout = button.AddComponent<LayoutElement>();
+          layout.ignoreLayout = true;
+
+          var rect = button.transform as RectTransform;
+
+          rect.anchorMin = new(1, 0.5f);
+          rect.anchorMax = new(1, 0.5f);
+          rect.pivot = new(1, 0.5f);
+
+          rect.anchoredPosition = new(-55, 0);
+          rect.sizeDelta = new(430, 45);
+        }
+
+        // Add our own View (after destroying the Bool one)
+        var templatePrefab = prefab.AddComponent<SettingsEntityDropdownButtonView>();
+
+        // Wire up the fields that would have been deserialized if coming from a bundle
+        templatePrefab.HighlightedImage =
+          prefab.transform.Find("HighlightedImage").gameObject.GetComponent<Image>();
+        templatePrefab.Button = buttonControl;
+        templatePrefab.ButtonLabel = buttonLabel;
+
         return templatePrefab;
       }
     }
