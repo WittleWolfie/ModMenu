@@ -117,7 +117,21 @@ namespace ModMenu.Settings
                 CreateString(GetKey("key-binding-default-desc"), "This binding is pre-set"))
               .SetPrimaryBinding(KeyCode.W, withCtrl: true, withAlt: true)
               .SetSecondaryBinding(KeyCode.M, withAlt: true, withShift: true),
-            OnKeyPress));
+            OnKeyPress)
+          .AddDropdownButton(
+            DropdownButton.New(
+                GetKey("dropdown-button"),
+                defaultSelected: 2,
+                CreateString("dropdown-button", "A dropdown button"),
+                CreateString("dropdown-button-text", "Apply"),
+                selected => Main.Logger.Log($"Dropdown button clicked: {selected}"),
+                new()
+                {
+                  CreateString("dropdown-button-1", "Button calls onClick(0)"),
+                  CreateString("dropdown-button-2", "Button calls onClick(1)"),
+                  CreateString("dropdown-button-3", "Button calls onClick(2)"),
+                })
+              .OnTempValueChanged(value => Main.Logger.Log($"Currently selected dropdown button is {value}"))));
     }
 
     private void OnKeyPress()
