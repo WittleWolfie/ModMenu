@@ -289,6 +289,7 @@ namespace ModMenu.NewTypes
 
         // Destroy the stuff we don't want from the source prefab
         Object.DestroyImmediate(prefab.GetComponent<SettingsEntityDropdownPCView>());
+        Object.DestroyImmediate(prefab.transform.Find("SetConnectionMarkerIamSet").gameObject);
         Object.DontDestroyOnLoad(prefab);
 
         OwlcatButton buttonControl = null;
