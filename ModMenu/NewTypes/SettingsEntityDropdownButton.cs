@@ -16,10 +16,10 @@ namespace ModMenu.NewTypes
   public class UISettingsEntityDropdownButton : UISettingsEntityDropdownInt
   {
     internal LocalizedString ButtonText;
-    internal Action OnClick;
+    internal Action<int> OnClick;
 
     internal static UISettingsEntityDropdownButton Create(
-      LocalizedString description, LocalizedString longDescription, LocalizedString buttonText, Action onClick)
+      LocalizedString description, LocalizedString longDescription, LocalizedString buttonText, Action<int> onClick)
     {
       var button = ScriptableObject.CreateInstance<UISettingsEntityDropdownButton>();
       button.m_Description = description;
@@ -44,9 +44,9 @@ namespace ModMenu.NewTypes
       this.buttonEntity = buttonEntity;
     }
 
-    public void PerformClick()
+    public void PerformClick(int selectedIndex)
     {
-      buttonEntity.OnClick?.Invoke();
+      buttonEntity.OnClick?.Invoke(selectedIndex);
     }
   }
 
@@ -75,12 +75,13 @@ namespace ModMenu.NewTypes
 
     public override void BindViewImplementation()
     {
-      Title.text = ViewModel.Title;
+      base.BindViewImplementation();
+      Title.text = VM.Title;
       ButtonLabel.text = VM.Text;
       Button.OnLeftClick.RemoveAllListeners();
       Button.OnLeftClick.AddListener(() =>
       {
-        VM.PerformClick();
+        VM.PerformClick(VM.GetTempValue());
       });
 
       SetupColor(isHighlighted: false);
