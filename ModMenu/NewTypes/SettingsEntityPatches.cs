@@ -142,7 +142,7 @@ namespace ModMenu.NewTypes
           // Copy dropdown since you know, it seems like close to dropdown button right?
           var dropdownButtonTemplate =
             CreateDropdownButtonTemplate(
-              __instance.m_SettingsEntityDropdownViewPrefab.gameObject,
+              Object.Instantiate(__instance.m_SettingsEntityDropdownViewPrefab.gameObject),
               __instance.m_SettingsEntitySliderVisualPerceptionViewPrefab?.m_ResetButton);
 
           virtualListComponent.Initialize(new IVirtualListElementTemplate[]
@@ -161,7 +161,7 @@ namespace ModMenu.NewTypes
             new VirtualListElementTemplate<SettingsEntityButtonVM>(buttonTemplate),
             new VirtualListElementTemplate<SettingsEntityCollapsibleHeaderVM>(headerTemplate),
             new VirtualListElementTemplate<SettingsEntitySubHeaderVM>(subHeaderTemplate),
-            new VirtualListElementTemplate<SettingsEntityDropdownButtonVM>(dropdownButtonTemplate),
+            new VirtualListElementTemplate<SettingsEntityDropdownButtonVM>(dropdownButtonTemplate, 0),
           });
         }
         catch (Exception e)
@@ -289,7 +289,6 @@ namespace ModMenu.NewTypes
 
         // Destroy the stuff we don't want from the source prefab
         Object.DestroyImmediate(prefab.GetComponent<SettingsEntityDropdownPCView>());
-        Object.DestroyImmediate(prefab.transform.Find("HorizontalLayoutGroup").gameObject);
         Object.DontDestroyOnLoad(prefab);
 
         OwlcatButton buttonControl = null;
@@ -311,8 +310,8 @@ namespace ModMenu.NewTypes
           rect.anchorMax = new(1, 0.5f);
           rect.pivot = new(1, 0.5f);
 
-          rect.anchoredPosition = new(-55, 0);
-          rect.sizeDelta = new(430, 45);
+          rect.anchoredPosition = new(-200, 0);
+          rect.sizeDelta = new(215, 45);
         }
 
         // Add our own View (after destroying the Bool one)
@@ -321,6 +320,9 @@ namespace ModMenu.NewTypes
         // Wire up the fields that would have been deserialized if coming from a bundle
         templatePrefab.HighlightedImage =
           prefab.transform.Find("HighlightedImage").gameObject.GetComponent<Image>();
+        templatePrefab.Title =
+          prefab.transform.Find("HorizontalLayoutGroup/Text").gameObject.GetComponent<TextMeshProUGUI>();
+        templatePrefab.Dropdown = prefab.GetComponentInChildren<TMP_Dropdown>();
         templatePrefab.Button = buttonControl;
         templatePrefab.ButtonLabel = buttonLabel;
 
