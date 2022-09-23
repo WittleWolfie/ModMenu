@@ -4,6 +4,8 @@ Adds a new page to the game options for mods. This allows mods to easily impleme
 
 ![Test settings screenshot](https://github.com/WittleWolfie/ModMenu/blob/main/test_settings.png)
 
+![More settings screenshot](https://github.com/WittleWolfie/ModMenu/blob/main/more_settings.png)
+
 ## Installation
 
 1. Install [Unity Mod Manager](https://github.com/newman55/unity-mod-manager) (UMM), minimum version 0.23.0, and configure for use with Wrath
