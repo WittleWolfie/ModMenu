@@ -311,7 +311,7 @@ namespace ModMenu.NewTypes
           rect.anchorMax = new(1, 0.5f);
           rect.pivot = new(1, 0.5f);
 
-          rect.anchoredPosition = new(-200, 0);
+          rect.anchoredPosition = new(-510, 0);
           rect.sizeDelta = new(215, 45);
         }
 
