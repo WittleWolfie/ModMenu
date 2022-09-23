@@ -175,6 +175,12 @@ namespace ModMenu.Settings
       return Add(entity.Key, entity, uiEntity);
     }
 
+    public SettingsBuilder AddDropdownButton(DropdownButton dropdown)
+    {
+      var (entity, uiEntity) = dropdown.Build();
+      return Add(entity.Key, entity, uiEntity);
+    }
+
     /// <summary>
     /// Adds a slider based on a float.
     /// </summary>
@@ -647,6 +653,56 @@ namespace ModMenu.Settings
       string key, int defaultSelected, LocalizedString description, List<LocalizedString> values)
       : base(key, defaultSelected, description)
     {
+      DropdownValues = values;
+    }
+  }
+
+  public class DropdownButton
+    : BaseSettingWithValue<int, SettingsEntityInt, UISettingsEntityDropdownButton, DropdownButton>
+  {
+    private readonly LocalizedString ButtonText;
+    private readonly Action<int> OnClick;
+    private readonly List<LocalizedString> DropdownValues;
+
+    /// <inheritdoc cref="DropdownButton(string, int, LocalizedString, LocalizedString, Action{int}, List{LocalizedString})"/>
+    public static DropdownButton New(
+      string key,
+      int defaultSelected,
+      LocalizedString description,
+      LocalizedString buttonText,
+      Action<int> onClick,
+      List<LocalizedString> values)
+    {
+      return new(key, defaultSelected, description, buttonText, onClick, values);
+    }
+
+    protected override SettingsEntityInt CreateEntity()
+    {
+      return new SettingsEntityInt(Key, DefaultValue, SaveDependent, RebootRequired);
+    }
+
+    protected override UISettingsEntityDropdownButton CreateUIEntity()
+    {
+      var dropdown = UISettingsEntityDropdownButton.Create(Description, LongDescription, ButtonText, OnClick);
+      dropdown.m_LocalizedValues = DropdownValues.Select(value => value.ToString()).ToList();
+      return dropdown;
+    }
+
+    /// <inheritdoc cref="BaseSettingWithValue{T, TEntity, TUIEntity, TBuilder}.BaseSettingWithValue(string, T, LocalizedString)"/>
+    /// 
+    /// <param name="defaultSelected">Index of the default selected value in <paramref name="values"/></param>
+    /// <param name="values">List of values to display</param>
+    public DropdownButton(
+        string key,
+        int defaultSelected,
+        LocalizedString description,
+        LocalizedString buttonText,
+        Action<int> onClick,
+        List<LocalizedString> values)
+      : base(key, defaultSelected, description)
+    {
+      ButtonText = buttonText;
+      OnClick = onClick;
       DropdownValues = values;
     }
   }
