@@ -2,6 +2,7 @@
 using Kingmaker.UI.SettingsUI;
 using System.Text;
 using UnityEngine;
+using static Kingmaker.UI.KeyboardAccess;
 
 namespace ModMenu.Settings
 {
@@ -86,13 +87,14 @@ namespace ModMenu.Settings
 
       ModMenu.AddSettings(
         SettingsBuilder.New(GetKey("extra"), CreateString("extra-title", "More Test Settings"))
+          .AddDefaultButton()
           .AddToggle(
             Toggle.New(
               GetKey("empty-toggle"), defaultValue: false, CreateString("empty-toggle-desc", "A useless toggle")))
           .AddDropdownList(
             DropdownList.New(
                 GetKey("dropdown-list"),
-                2,
+                defaultSelected: 2,
                 CreateString("dropdown-list", "A dropdown list"),
                 new()
                 {
@@ -100,7 +102,27 @@ namespace ModMenu.Settings
                   CreateString("dropdown-list-2", "Value is 1"),
                   CreateString("dropdown-list-3", "Value is 2"),
                 })
-              .OnTempValueChanged(value => Main.Logger.Log($"Currently selected dropdown in list is {value}"))));
+              .OnTempValueChanged(value => Main.Logger.Log($"Currently selected dropdown in list is {value}")))
+          .AddKeyBinding(
+            KeyBinding.New(
+                GetKey("key-binding"),
+                GameModesGroup.All,
+                CreateString(GetKey("key-binding-desc"), "This sets a key binding"))
+              .SetPrimaryBinding(KeyCode.W, withCtrl: true, withAlt: true),
+            OnKeyPress)
+          .AddKeyBinding(
+            KeyBinding.New(
+                GetKey("key-binding-default"),
+                GameModesGroup.All,
+                CreateString(GetKey("key-binding-default-desc"), "This binding is pre-set"))
+              .SetPrimaryBinding(KeyCode.W, withCtrl: true, withAlt: true)
+              .SetSecondaryBinding(KeyCode.M, withAlt: true, withShift: true),
+            OnKeyPress));
+    }
+
+    private void OnKeyPress()
+    {
+      Main.Logger.Log($"Key was pressed!");
     }
 
     private void OnClick()
