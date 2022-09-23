@@ -96,6 +96,24 @@ namespace ModMenu.Settings
     /// Adds a row containing an image. There is no setting tied to this, it is just for decoration.
     /// </summary>
     /// 
+    /// <remarks>Height added in v1.2.1</remarks>
+    /// 
+    /// <param name="height">
+    /// Sets the row height. Keep in mind the scaling is relative to resolution; a standard row has a height of 40. The
+    /// image width will be scaled to preserve the aspect ratio.
+    /// </param>
+    /// <param name="imageScale">
+    /// Adjust the size of the image. Use this if the default logic doesn't get the size of the image correct.
+    /// </param>
+    public SettingsBuilder AddImage(Sprite sprite, int height, float imageScale)
+    {
+      return AddImageInternal(sprite, height, imageScale);
+    }
+
+    /// <summary>
+    /// Adds a row containing an image. There is no setting tied to this, it is just for decoration.
+    /// </summary>
+    /// 
     /// <remarks>Height added in v1.1.0</remarks>
     /// 
     /// <param name="height">
@@ -113,9 +131,9 @@ namespace ModMenu.Settings
       return AddImageInternal(sprite);
     }
 
-    private SettingsBuilder AddImageInternal(Sprite sprite, int height = -1)
+    private SettingsBuilder AddImageInternal(Sprite sprite, int height = -1, float imageScale = 1.0f)
     {
-      Settings.Add(UISettingsEntityImage.Create(sprite, height));
+      Settings.Add(UISettingsEntityImage.Create(sprite, height, imageScale));
       return this;
     }
 

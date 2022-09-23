@@ -10,12 +10,14 @@ namespace ModMenu.NewTypes
   {
     internal Sprite Sprite;
     internal int Height;
+    internal float ImageScale;
 
-    internal static UISettingsEntityImage Create(Sprite sprite, int height)
+    internal static UISettingsEntityImage Create(Sprite sprite, int height, float imageScale)
     {
       var image = ScriptableObject.CreateInstance<UISettingsEntityImage>();
       image.Sprite = sprite;
       image.Height = height;
+      image.ImageScale = imageScale;
       return image;
     }
 
@@ -26,11 +28,13 @@ namespace ModMenu.NewTypes
   {
     internal Sprite Sprite;
     internal int Height;
+    internal float ImageScale;
 
     internal SettingsEntityImageVM(UISettingsEntityImage imageEntity)
     {
       Sprite = imageEntity.Sprite;
       Height = imageEntity.Height;
+      ImageScale = imageEntity.ImageScale;
     }
 
     protected override void DisposeImplementation() { }
@@ -89,6 +93,7 @@ namespace ModMenu.NewTypes
       {
         height = ViewModel.Height;
         scaling = ViewModel.Height / spriteHeight;
+        scaling *= ViewModel.ImageScale;
       }
       else
       {
