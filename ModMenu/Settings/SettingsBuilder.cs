@@ -8,20 +8,18 @@ using ModMenu.NewTypes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
-using static Kingmaker.UI.KeyboardAccess;
 
 namespace ModMenu.Settings
 {
   /// <summary>
-  /// Builder API for constructing <see cref="SettingsGroup"/>.
+  /// Builder API for constructing settings.
   /// </summary>
   /// 
   /// <remarks>
   /// <para>
   /// All the <c>AddX</c> methods return <c>this</c> to support builder style method chaining. Once your SettingsGroup
-  /// is configured add it to the Mods menu page by calling <see cref="ModMenu.AddSettings(SettingsGroup)"/>.
+  /// is configured add it to the Mods menu page by calling <see cref="ModMenu.AddSettings(SettingsBuilder)"/>.
   /// </para>
   /// 
   /// <para>
@@ -240,21 +238,7 @@ namespace ModMenu.Settings
     public SettingsBuilder AddKeyBinding(KeyBinding keyBinding, Action onPress)
     {
       var (entity, uiEntity) = keyBinding.Build();
-
-      // First register the binding, then associate it with onPress
-      var binding = entity.GetValue();
-      if (!uiEntity.TrySetBinding(binding.Binding1, 0))
-      {
-        Main.Logger.Warning($"Unable to set binding: {entity.Key} - {binding.Binding1}");
-        entity.SetKeyBindingDataAndConfirm(default, 0);
-      }
-      if (!uiEntity.TrySetBinding(binding.Binding2, 1))
-      {
-        Main.Logger.Warning($"Unable to set binding: {entity.Key} - {binding.Binding2}");
-        entity.SetKeyBindingDataAndConfirm(default, 1);
-      }
-      Game.Instance.Keyboard.Bind(entity.Key, onPress);
-
+      KeyboardAccess_Patch.RegisterBinding(entity, uiEntity, onPress);
       return Add(entity.Key, entity, uiEntity);
     }
 
@@ -868,107 +852,6 @@ namespace ModMenu.Settings
     {
       MinValue = minValue;
       MaxValue = maxValue;
-    }
-  }
-
-  public class KeyBinding
-    : BaseSettingWithValue<KeyBindingPair, SettingsEntityKeyBindingPair, UISettingsEntityKeyBinding, KeyBinding>
-  {
-    private GameModesGroup GameModesGroup;
-    private string PrimaryBinding = null;
-    private string SecondaryBinding = null;
-    private KeyBindingPair DefaultOverride;
-    private bool IsHoldTrigger = false;
-
-    /// <inheritdoc cref="KeyBinding(string, GameModesGroup, LocalizedString)"/>
-    public static KeyBinding New(string key, GameModesGroup gameModesGroup, LocalizedString description)
-    {
-      return new(key, gameModesGroup, description);
-    }
-
-    protected override SettingsEntityKeyBindingPair CreateEntity()
-    {
-      DefaultOverride = DefaultValue;
-      if (!string.IsNullOrEmpty(PrimaryBinding))
-      {
-        var bindingString = new StringBuilder($"!{PrimaryBinding}");
-        if (!string.IsNullOrEmpty(SecondaryBinding))
-          bindingString.Append($";{SecondaryBinding}");
-
-        DefaultOverride = new(bindingString.ToString(), GameModesGroup);
-      }
-      return new SettingsEntityKeyBindingPair(Key, DefaultOverride, SaveDependent, RebootRequired);
-    }
-
-    protected override UISettingsEntityKeyBinding CreateUIEntity()
-    {
-      var uiEntity = ScriptableObject.CreateInstance<UISettingsEntityKeyBinding>();
-      uiEntity.name = Key;
-      uiEntity.IsHoldTrigger = IsHoldTrigger;
-      return uiEntity;
-    }
-
-    /// <summary>
-    /// If true, the key binding is activated only when held down rather than just pressed.
-    /// </summary>
-    public KeyBinding SetIsHoldTrigger(bool isHoldTrigger = true)
-    {
-      IsHoldTrigger = isHoldTrigger;
-      return this;
-    }
-
-    /// <summary>
-    /// Sets the default key binding.
-    /// </summary>
-    /// 
-    /// <param name="keyCode">Unity's key code for the binding</param>
-    /// <param name="withCtrl">If true, the binding includes the Ctrl key</param>
-    /// <param name="withAlt">If true, the binding includes the Alt key</param>
-    /// <param name="withShift">If true, the binding includes the Shift key</param>
-    public KeyBinding SetPrimaryBinding(
-      KeyCode keyCode, bool withCtrl = false, bool withAlt = false, bool withShift = false)
-    {
-      PrimaryBinding = Create(keyCode, withCtrl, withAlt, withShift);
-      return this;
-    }
-
-    /// <summary>
-    /// Sets the default alternate binding. This is just a second key combination for the same binding. Ignored if
-    /// there is no primary binding, see <see cref="SetPrimaryBinding(KeyCode, bool, bool, bool)"/>.
-    /// </summary>
-    /// 
-    /// <param name="keyCode">Unity's key code for the binding</param>
-    /// <param name="withCtrl">If true, the binding includes the Ctrl key</param>
-    /// <param name="withAlt">If true, the binding includes the Alt key</param>
-    /// <param name="withShift">If true, the binding includes the Shift key</param>
-    public KeyBinding SetSecondaryBinding(
-      KeyCode keyCode, bool withCtrl = false, bool withAlt = false, bool withShift = false)
-    {
-      SecondaryBinding = Create(keyCode, withCtrl, withAlt, withShift);
-      return this;
-    }
-
-    /// <inheritdoc cref="BaseSettingWithValue{T, TEntity, TUIEntity, TBuilder}.BaseSettingWithValue(string, T, LocalizedString)"/>
-    /// 
-    /// <param name="gameModesGroup">Indicates in which game modes the key binding functions</param>
-    public KeyBinding(string key, GameModesGroup gameModesGroup, LocalizedString description)
-      : base(key, new("", gameModesGroup), description)
-    {
-      GameModesGroup = gameModesGroup;
-    }
-
-    private static string Create(KeyCode keyCode, bool withCtrl, bool withAlt, bool withShift)
-    {
-      var keyBinding = new StringBuilder();
-      if (withCtrl)
-        keyBinding.Append("%");
-      if (withAlt)
-        keyBinding.Append("&");
-      if (withShift)
-        keyBinding.Append("#");
-      keyBinding.Append(keyCode.ToString());
-
-      return keyBinding.ToString();
     }
   }
 }
