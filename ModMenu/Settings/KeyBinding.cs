@@ -168,33 +168,6 @@ namespace ModMenu.Settings
       }
     }
 
-    [HarmonyPatch(nameof(KeyboardAccess.Bind)), HarmonyPrefix]
-    static void Bind(string bindingName)
-    {
-      Main.Logger.Log($"Binding {bindingName}");
-    }
-
-    [HarmonyPatch(nameof(KeyboardAccess.Unbind)), HarmonyPrefix]
-    static void Unbind(string bindingName)
-    {
-      Main.Logger.Log($"Unbinding {bindingName}");
-    }
-
-    [HarmonyPatch(nameof(KeyboardAccess.UnregisterBinding)), HarmonyPrefix]
-    static void UnregisterBinding(string name)
-    {
-      Main.Logger.Log($"Unregistering {name}");
-    }
-
-    [HarmonyPatch(
-      nameof(KeyboardAccess.RegisterBinding),
-      new Type[] { typeof(string), typeof(KeyCode), typeof(GameModeType), typeof(bool), typeof(bool), typeof(bool), typeof(KeyboardAccess.TriggerType), typeof(KeyboardAccess.ModificationSide) }),
-    HarmonyPrefix]
-    static void RegisterBinding(string name)
-    {
-      Main.Logger.Log($"Registering {name}");
-    }
-
     private struct KeyBinding
     {
       public readonly SettingsEntityKeyBindingPair Entity;
