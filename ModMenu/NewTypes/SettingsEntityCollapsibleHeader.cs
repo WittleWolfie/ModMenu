@@ -13,11 +13,20 @@ namespace ModMenu.NewTypes
   {
     internal readonly List<VirtualListElementVMBase> SettingsInGroup = new();
 
+    private bool Initialized = false;
     internal bool Expanded { get; private set; }
 
     public SettingsEntityCollapsibleHeaderVM(string title, bool expanded = false) : base(title)
     {
       Expanded = expanded;
+    }
+
+    private void UpdateView()
+    {
+      if (Expanded)
+        Expand();
+      else
+        Collapse();
     }
 
     internal void Collapse()
@@ -36,16 +45,21 @@ namespace ModMenu.NewTypes
       }
     }
 
-    internal void Toggle(ExpandableCollapseMultiButtonPC button, bool update = true)
+    internal void Init(ExpandableCollapseMultiButtonPC button)
     {
-      if (update)
-        Expanded = !Expanded;
-
       button.SetValue(Expanded, true);
-      if (Expanded)
-        Expand();
-      else
-        Collapse();
+      if (Initialized)
+        return;
+
+      UpdateView();
+      Initialized = true;
+    }
+
+    internal void Toggle(ExpandableCollapseMultiButtonPC button)
+    {
+      Expanded = !Expanded;
+      button.SetValue(Expanded, true);
+      UpdateView();
     }
   }
 
@@ -84,7 +98,7 @@ namespace ModMenu.NewTypes
       Title.text = UIUtility.GetSaberBookFormat(ViewModel.Tittle, size: GetFontSize());
       Button.OnLeftClick.RemoveAllListeners();
       Button.OnLeftClick.AddListener(() => ViewModel.Toggle(ButtonPC));
-      ViewModel.Toggle(ButtonPC, update: false);
+      ViewModel.Init(ButtonPC);
     }
 
     protected virtual int GetFontSize() { return 140; }
