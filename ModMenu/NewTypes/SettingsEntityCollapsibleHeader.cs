@@ -39,9 +39,16 @@ namespace ModMenu.NewTypes
 
     internal void Expand()
     {
+      bool expanded = true;
       foreach (var entityVM in SettingsInGroup)
       {
-        entityVM.Active.Value = true;
+        if (entityVM is SettingsEntitySubHeaderVM subHeader)
+        {
+          subHeader.Active.Value = true;
+          expanded = subHeader.Expanded;
+        }
+        else
+          entityVM.Active.Value = expanded;
       }
     }
 
