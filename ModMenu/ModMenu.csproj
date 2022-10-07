@@ -15,7 +15,7 @@
     <AssemblyName>ModMenu</AssemblyName>
     <RootNamespace>ModMenu</RootNamespace>
     
-    <Version>1.2.4</Version>
+    <Version>1.2.5</Version>
     
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
   </PropertyGroup>
