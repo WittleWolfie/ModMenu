@@ -36,7 +36,7 @@ This is a non-exhaustive list, let me know if you want your mod added here!
 
 ### How to use it
 
-The screenshot above was generated using [TestSettings](https://github.com/WittleWolfie/ModMenu/blob/main/ModMenu/Settings/TestSettings.cs). That exercises every function supported. The API is documented and generally self-explanatory.
+The screenshot above was generated using [TestSettings](https://github.com/WittleWolfie/ModMenu/blob/main/ModMenu/Settings/TestSettings.cs). That exercises every function supported. The API is documented and generally self-explanatory. For quick reference [this is how you fetch a setting value](https://github.com/WittleWolfie/ModMenu/blob/main/ModMenu/Settings/TestSettings.cs#L163).
 
 In your mod's `Info.json` add `ModMenu` as a requirement:
 
