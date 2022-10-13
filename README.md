@@ -36,7 +36,7 @@ This is a non-exhaustive list, let me know if you want your mod added here!
 
 ### How to use it
 
-The screenshot above was generated using [TestSettings](https://github.com/WittleWolfie/ModMenu/blob/main/ModMenu/Settings/TestSettings.cs). That exercises every function supported. The API is documented and generally self-explanatory. For quick reference [this is how you fetch a setting value](https://github.com/WittleWolfie/ModMenu/blob/main/ModMenu/Settings/TestSettings.cs#L163).
+The screenshot above was generated using [TestSettings](https://github.com/WittleWolfie/ModMenu/blob/main/ModMenu/Settings/TestSettings.cs). That exercises every function supported. The API is documented and generally self-explanatory.
 
 In your mod's `Info.json` add `ModMenu` as a requirement:
 
@@ -54,11 +54,59 @@ It's safest to just specify the version you build against as the minimum version
 
 Install ModMenu then in your mod's project add `%WrathPath%/Mods/ModMenu/ModMenu.dll` as an assembly reference.
 
+### Basic Usage
+
+Create a setting:
+
+```C#
+ModMenu.AddSettings(
+  SettingsBuilder.New("mymod-settings, SettingsTitle)
+    .AddToggle(Toggle.New("mymod-settings-toggle", defaultValue: true, MyToggleTitle)
+      .OnValueChanged(OnToggle)));
+      
+private static void OnToggle(bool toggleValue) {
+  // The user just changed the toggle, toggleValue is the new setting.
+  // If you need to react to it changing then you can do that here.
+  // If you don't need to do something whenever the value changes, you can skip OnValueChanged()
+}
+```
+
+Get the setting value:
+
+```C#
+ModMenu.GetSettingValue<bool>("mymod-settings-toggle");
+```
+
+**The game handles the setting value for you.** You do not need to save the setting, or set the setting to a specific value. You *can* set it if necessary but most of the time it isn't necessary. This includes saving settings that you flag as per-save using `DependsOnSave()`.
+
+For more examples see [TestSettings](https://github.com/WittleWolfie/ModMenu/blob/main/ModMenu/Settings/TestSettings.cs).
+
 ### Best Practices
 
 * **Do not add settings during mod load,** without additional handling you cannot create a `LocalizedString`. I recommend adding settings before, during, or after `BlueprintsCache.Init()`.
 * Don't use `IsModificationAllowed` to enable/disable a setting based on another setting. This is checked when the page is opened so it won't apply immediately.
 * Indicate settings which require reboot using `WithLongDescription()`. The game's setting boolean `RequireReboot` does nothing.
+
+Define a "root" key unique to your mod to make sure there are no key conflicts:
+
+```C#
+private const string RootKey = "mymod-settings";
+```
+
+You can then prepend this to all of your settings keys:
+
+```C#
+
+// Results in a settings key "mymod-settings-key"
+var toggle = Toggle.New(GetKey("toggle"), MyToggleTitle);
+
+private static string GetKey(string key)
+{
+  return $"{RootKey}-{key}";
+}
+```
+
+Just make sure you always get the key the same way when getting a setting value.
 
 ### Settings Behavior
 
