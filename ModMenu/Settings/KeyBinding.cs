@@ -143,7 +143,7 @@ namespace ModMenu.Settings
         keyBinding.Entity.SetKeyBindingDataAndConfirm(default, 1);
       }
 
-      if (Game.Instance.Keyboard.m_BindingCallbacks.TryGetValue(keyBinding.Entity.Key, out var callbacks))
+      if (Game.Instance.Keyboard.m_BindingCallbacks.TryGetValue(keyBinding.Entity.Key, out var callbacks) && callbacks.Count > 0)
       {
 #if DEBUG
         Main.Logger.Log($"Callback binding found: {keyBinding.Entity.Key}");
