@@ -142,6 +142,18 @@ namespace ModMenu.Settings
         Main.Logger.Warning($"Unable to set binding: {keyBinding.Entity.Key} - {binding.Binding2}");
         keyBinding.Entity.SetKeyBindingDataAndConfirm(default, 1);
       }
+
+      if (Game.Instance.Keyboard.m_BindingCallbacks.TryGetValue(keyBinding.Entity.Key, out var callbacks))
+      {
+#if DEBUG
+        Main.Logger.Log($"Callback binding found: {keyBinding.Entity.Key}");
+#endif
+        return;
+      }
+
+#if DEBUG
+      Main.Logger.Log($"Binding callback: {keyBinding.Entity.Key}");
+#endif
       Game.Instance.Keyboard.Bind(keyBinding.Entity.Key, keyBinding.OnPress);
     }
 
