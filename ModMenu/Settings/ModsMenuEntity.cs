@@ -26,7 +26,8 @@ namespace ModMenu.Settings
     {
       get
       {
-        _menuTitleString ??= Helpers.CreateString("ModsMenu.Title", "Mods");
+        _menuTitleString ??= Helpers.CreateString(
+          "ModsMenu.Title", "Mods", ruRU: "Моды");
         return _menuTitleString;
       }
     }

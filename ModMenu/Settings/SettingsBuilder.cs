@@ -158,8 +158,8 @@ namespace ModMenu.Settings
       // Make sure OnDefaultsApplied is not null or the dialog doesn't close
       OnDefaultsApplied = onDefaultsApplied ?? new(() => { });
       Settings.Add(
-        Button.New(DefaultDescription, DefaultButtonLabel, OpenDefaultSettingsDialog)
-          .WithLongDescription(DefaultDescriptionLong)
+        Button.New(DefaultDescription(), DefaultButtonLabel, OpenDefaultSettingsDialog)
+          .WithLongDescription(DefaultDescriptionLong())
           .Build());
       return this;
     }
@@ -311,31 +311,27 @@ namespace ModMenu.Settings
       OnDefaultsApplied();
     }
 
-    private LocalizedString _defaultDescription;
-    private LocalizedString DefaultDescription
+    private LocalizedString DefaultDescription()
     {
-      get
-      {
-        _defaultDescription ??=
-          Helpers.CreateString("mod-menu.default-description", $"Restore all settings in {Group.Title} to their defaults");
-        return _defaultDescription;
-      }
+      return
+        Helpers.CreateString(
+          $"mod-menu.default-description.{Group.name}",
+          $"Restore all settings in {Group.Title} to their defaults",
+          ruRU: $"Вернуть все настройки в группе {Group.Title} к значениям по умолчанию");
     }
 
-    private LocalizedString _defaultDescriptionLong;
-    private LocalizedString DefaultDescriptionLong
+    private LocalizedString DefaultDescriptionLong()
     {
-      get
-      {
-        _defaultDescriptionLong ??=
-          Helpers.CreateString(
-            "mod-menu.default-description-long",
-            $"Sets each settings under {Group.Title} to its default value. Your current settings will be lost."
-            + $" Settings in other groups are not affected. Keep in mind this will apply to sub-groups under"
-            + $" {Group.Title} as well (anything that is hidden when the group is collapsed).");
-
-        return _defaultDescriptionLong;
-      }
+      return
+        Helpers.CreateString(
+          $"mod-menu.default-description-long.{Group.name}",
+          $"Sets each settings under {Group.Title} to its default value. Your current settings will be lost."
+          + $" Settings in other groups are not affected. Keep in mind this will apply to sub-groups under"
+          + $" {Group.Title} as well (anything that is hidden when the group is collapsed).",
+          ruRU: $"При нажатии на кнопку все настройки в группе {Group.Title} примут значения по умолчанию." +
+          $" Ваши текущие настройки будут потеряны. Настройки из других групп затронуты не будут. Обратите внимание," +
+          $" что изменения коснутся в том числе настроек из подгрупп, вложенных в {Group.Title}" +
+          $"  (т.е. все те настройки, которые оказываются скрыты, когда вы сворачиваете группу).");
     }
 
     private static LocalizedString _defaultButtonLabel;
@@ -343,7 +339,8 @@ namespace ModMenu.Settings
     {
       get
       {
-        _defaultButtonLabel ??= Helpers.CreateString("mod-menu.default-button-label", "Default");
+        _defaultButtonLabel ??= Helpers.CreateString(
+          "mod-menu.default-button-label", "Default", ruRU: "По умолчанию");
         return _defaultButtonLabel;
       }
     }
