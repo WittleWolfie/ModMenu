@@ -1,4 +1,8 @@
-﻿using Kingmaker.Localization;
+﻿using HarmonyLib;
+using Kingmaker.Localization;
+using Kingmaker.Localization.Shared;
+using System;
+using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
@@ -9,11 +13,14 @@ namespace ModMenu
   /// </summary>
   internal static class Helpers
   {
-    internal static LocalizedString CreateString(string key, string value)
+    private static readonly List<LocalString> Strings = new();
+
+    internal static LocalizedString CreateString(string key, string enGB, string ruRU = "")
     {
-      var localizedString = new LocalizedString() { m_Key = key };
-      LocalizationManager.CurrentPack.PutString(key, value);
-      return localizedString;
+      var localString = new LocalString(key, enGB, ruRU);
+      Strings.Add(localString);
+      localString.Register();
+      return localString.LocalizedString;
     }
 
     internal static Sprite CreateSprite(string embeddedImage)
@@ -26,6 +33,50 @@ namespace ModMenu
       _ = texture.LoadImage(bytes);
       var sprite = Sprite.Create(texture, new(0, 0, texture.width, texture.height), Vector2.zero);
       return sprite;
+    }
+
+    private class LocalString
+    {
+      public readonly LocalizedString LocalizedString;
+      private readonly string enGB;
+      private readonly string ruRU;
+
+      public LocalString(string key, string enGB, string ruRU)
+      {
+        LocalizedString = new LocalizedString() { m_Key = key };
+        this.enGB = enGB;
+        this.ruRU = ruRU;
+      }
+
+      public void Register()
+      {
+        var localized = enGB;
+        switch (LocalizationManager.CurrentPack.Locale)
+        {
+          case Locale.ruRU:
+            if (!string.IsNullOrEmpty(ruRU))
+              localized = ruRU;
+            break;
+        }
+        LocalizationManager.CurrentPack.PutString(LocalizedString.m_Key, localized);
+      }
+    }
+
+    [HarmonyPatch(typeof(LocalizationManager))]
+    static class LocalizationManager_Patch
+    {
+      [HarmonyPatch(nameof(LocalizationManager.OnLocaleChanged)), HarmonyPostfix]
+      static void Postfix()
+      {
+        try
+        {
+          Strings.ForEach(str => str.Register());
+        }
+        catch (Exception e)
+        {
+          Main.Logger.LogException("Failed to handle locale change.", e);
+        }
+      }
     }
   }
 }
