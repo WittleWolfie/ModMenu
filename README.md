@@ -22,6 +22,9 @@ File an [issue on GitHub](https://github.com/WittleWolfie/ModMenu/issues/new) or
 
 This is a non-exhaustive list, let me know if you want your mod added here!
 
+* [Added Feats](https://github.com/Telyl/AddedFeats)
+* [BOAT BOAT BOAT](https://github.com/Balkoth-dev/WOTR_BOAT_BOAT_BOAT)
+* [Character Options+](https://github.com/WittleWolfie/CharacterOptionsPlus)
 * [MewsiferConsole](https://github.com/Pathfinder-WOTR-Modding-Community/MewsiferConsole)
 
 ## Mod Developers
