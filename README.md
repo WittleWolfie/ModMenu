@@ -18,6 +18,10 @@ If you don't want to use ModFinder you can download the [latest release](https:/
 
 File an [issue on GitHub](https://github.com/WittleWolfie/ModMenu/issues/new) or reach out to me (@WittleWolfie) on [Discord](https://discord.com/invite/wotr) in #mod-dev-technical or #mod-user-general channel.
 
+### Controller Support
+
+**This does not support controllers**. It's a lot of work to support, but let me know if you need this. If there is enough demand I will add it.
+
 ## Mods Using ModMenu
 
 This is a non-exhaustive list, let me know if you want your mod added here!
