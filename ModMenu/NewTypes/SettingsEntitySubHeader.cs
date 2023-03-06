@@ -51,7 +51,7 @@ namespace ModMenu.NewTypes
     }
     private VirtualListLayoutElementSettings m_LayoutSettings;
 
-    protected override int GetFontSize()
+    public override int GetFontSize()
     {
       return 110;
     }
