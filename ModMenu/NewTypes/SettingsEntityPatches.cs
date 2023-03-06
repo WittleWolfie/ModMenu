@@ -72,7 +72,47 @@ namespace ModMenu.NewTypes
         return true;
       }
 
-      [HarmonyPatch(nameof(SettingsVM.SwitchSettingsScreen)), HarmonyPostfix]
+      [HarmonyPatch(nameof(SettingsVM.SwitchSettingsScreen)), HarmonyPrefix]
+      static bool Prefix(UISettingsManager.SettingsScreen settingsScreen, SettingsVM __instance)
+      {
+        if (settingsScreen != ModsMenuEntity.SettingsScreenId) return true;
+        try
+        {
+        Main.Logger.NativeLog("Collecting setting entities.");
+
+        __instance.m_SettingEntities.Clear();
+        __instance.m_SettingEntities.Add(__instance.AddDisposableAndReturn(SettingsVM.GetVMForSettingsItem(UISettingsEntityDropdownModsmenuEntry.instance)));
+        __instance.m_SettingEntities.Add(__instance.AddDisposableAndReturn(SettingsVM.GetVMForSettingsItem(new UISettingsEntitySeparator())));
+
+          //Here should be a toggle for mod disabling, but do we need it?
+          SettingsEntitySubHeaderVM subheader;
+          foreach (var uisettingsGroup in ModsMenuEntity.CollectSettingGroups)
+          {
+            __instance.m_SettingEntities.Add(__instance.AddDisposableAndReturn(new SettingsEntityCollapsibleHeaderVM(uisettingsGroup.Title)));
+            subheader = null;
+            foreach (UISettingsEntityBase uisettingsEntityBase in uisettingsGroup.VisibleSettingsList)
+            {
+              if (uisettingsEntityBase is UISettingsEntitySubHeader sub)
+              {
+                subheader = new SettingsEntitySubHeaderVM(sub);
+                __instance.m_SettingEntities.Add(__instance.AddDisposableAndReturn(subheader));
+                continue;
+              }
+              VirtualListElementVMBase element = __instance.AddDisposableAndReturn(SettingsVM.GetVMForSettingsItem(uisettingsEntityBase));
+              __instance.m_SettingEntities.Add(element);
+              subheader?.SettingsInGroup.Add(element);
+            }
+          }
+
+        }
+        catch (Exception e)
+        {
+          Main.Logger.LogException("SettingsVM.SwitchSettingsScreen", e);
+        }
+        return false;
+      }
+
+      /*[HarmonyPatch(nameof(SettingsVM.SwitchSettingsScreen)), HarmonyPostfix]
       static void Postfix(UISettingsManager.SettingsScreen settingsScreen, SettingsVM __instance)
       {
         try
@@ -111,7 +151,7 @@ namespace ModMenu.NewTypes
         {
           Main.Logger.LogException("SettingsVM.SwitchSettingsScreen", e);
         }
-      }
+      }*/
     }
 
     /// <summary>
