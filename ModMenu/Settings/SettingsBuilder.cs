@@ -1,5 +1,6 @@
 ﻿using Kingmaker;
 using Kingmaker.Localization;
+using Kingmaker.Modding;
 using Kingmaker.PubSubSystem;
 using Kingmaker.Settings;
 using Kingmaker.UI;
@@ -70,7 +71,15 @@ namespace ModMenu.Settings
   /// </remarks>
   public class SettingsBuilder
   {
-    private readonly UISettingsGroup Group = ScriptableObject.CreateInstance<UISettingsGroup>();
+    private object mod;
+    private bool allowDisabling;
+    private LocalizedString modName;
+    private LocalizedString modDescription;
+    private string Author = "";
+    private string Version = "";
+    private Sprite modIllustration;
+    private readonly List<UISettingsGroup> GroupList = new();
+    private UISettingsGroup Group; // it will be now initialized by the instance constructor through a call to AddAnotherSettingsGroup.
     private readonly List<UISettingsEntityBase> Settings = new();
     private readonly Dictionary<string, ISettingsEntity> SettingsEntities = new();
     private Action OnDefaultsApplied;
@@ -81,13 +90,99 @@ namespace ModMenu.Settings
     /// <param name="title">Title of the settings group, displayed on the settings page</param>
     public static SettingsBuilder New(string key, LocalizedString title)
     {
-      return new(key, title);
+      return new SettingsBuilder(key, title);
     }
 
-    public SettingsBuilder(string key, LocalizedString title)
+    /// <param name="key">
+    /// Globally unique key / name for the settings group. Use only lowercase letters, numbers, '-', and '.'
+    /// </param>
+    /// <param name="title">Title of the settings group, displayed on the settings page</param>
+    public SettingsBuilder(string key, LocalizedString title) : this()
     {
-      Group.name = key.ToLower();
-      Group.Title = title;
+      AddAnotherSettingsGroup(key, title);
+    }
+
+    private SettingsBuilder()
+    {
+
+    }
+
+
+    /// <summary>
+    /// Creates a new group of settings.
+    /// </summary>
+    /// <param name="key"></param>
+    /// Globally unique key / name for the settings group. Use only lowercase letters, numbers, '-', and '.'
+    /// <param name="title"></param>
+    /// Title of the settings group, displayed on the settings page
+    public SettingsBuilder AddAnotherSettingsGroup(string key, LocalizedString title)
+    {
+      if (GroupList.Any() && GroupList.Any(g => g.name.Equals(key)))
+        Main.Logger.Warning("An attempt to create a new Settings group with an existing key");
+
+      var group = ScriptableObject.CreateInstance<UISettingsGroup>();
+      group.name = key;
+      group.Title= title;
+      if (Settings?.Count > 0) Group.SettingsList = Settings.ToArray();
+      GroupList.Add(group);
+      Group = group;
+      return this;
+    }
+
+    /// <summary>
+    /// Set a source mod for your settings. Information from the manifest / info will be displayed when selecting the mod in the menu dropdown.
+    /// If you don't set Mod name and Mod description separately, the information from the manifest / info will be used instead.
+    /// Providing the source mod is necessary if you want to allow disabling from the ModMenu.
+    /// </summary>
+    /// <param name="modEntry"></param>
+    /// Your mod
+    /// <param name="AllowDisabling"></param>
+    /// Set to true if you want to create a button to disable it
+    /// <returns></returns>
+    public SettingsBuilder SetMod(OwlcatModification modEntry, bool AllowDisabling = false)
+    {
+      mod = modEntry;
+      allowDisabling = AllowDisabling;
+      return this;
+    }
+
+    /// <summary>
+    /// Set a source mod for your settings. Information from the manifest / info will be displayed when selecting the mod in the menu dropdown.
+    /// If you don't set Mod name and Mod description separately, the information from the manifest / info will be used instead.
+    /// Providing the source mod is necessary if you want to allow disabling from the ModMenu.
+    /// </summary>
+    /// <param name="modEntry"></param>
+    /// Your mod
+    /// <param name="AllowDisabling"></param>
+    /// Set to true if you want to create a button to disable it
+    /// <returns></returns>
+    public SettingsBuilder SetMod(UnityModManagerNet.UnityModManager.ModEntry modEntry, bool AllowDisabling = false)
+    {
+      mod = modEntry;
+      allowDisabling = AllowDisabling;
+      return this;
+    }
+
+    /// <summary>
+    /// The name of your mod to be displayed in the ModMenu dropdown.
+    /// </summary>
+    /// <param name="name"></param> - a Localized string containing the mod name.
+    /// <returns></returns>
+    public SettingsBuilder SetModName(LocalizedString name)
+    {
+      modName = name;
+      return this;
+    }
+
+    /// <summary>
+    /// Sets the description for your mod which will be visible when hovering the mouse over the mod entry in the ModMenu dropdown.
+    /// </summary>
+    /// <param name="description"></param> - a Localized string containing the description.
+    /// <returns></returns>
+    public SettingsBuilder SetModDescription(LocalizedString description)
+    {
+      modDescription = description;
+      return this;
     }
 
     /// <summary>
@@ -106,6 +201,44 @@ namespace ModMenu.Settings
     public SettingsBuilder AddImage(Sprite sprite, int height, float imageScale)
     {
       return AddImageInternal(sprite, height, imageScale);
+    }
+
+    /// <summary>
+    /// Adds mod's version to the mod description shown when you hover the mouse over the mod entry in the ModMenu dropdown
+    /// </summary>
+    /// 
+    /// <remarks> Will be displayed only if you at least provided a Localized mod name with <see cref="SettingsBuilder.SetModName(LocalizedString)"/>. 
+    /// Mod version from the source mod info (if set with <see cref="SettingsBuilder.SetMod(UnityModManagerNet.UnityModManager.ModEntry, bool)"/>
+    /// or with <see cref="SettingsBuilder.SetMod(OwlcatModification, bool)"/>) will have higher precedence</remarks>
+    public SettingsBuilder SetModVersion(string version)
+    {
+      Version = version;
+      return this;
+    }
+
+    /// <summary>
+    /// Adds author's name mod description shown when you hover the mouse over the mod entry in the ModMenu dropdown
+    /// </summary>
+    /// 
+    /// <remarks> Will be displayed only if you at least provided a Localized mod name with <see cref="SettingsBuilder.SetModName(LocalizedString)"/>. 
+    /// Author's name from the source mod info (if set with <see cref="SettingsBuilder.SetMod(UnityModManagerNet.UnityModManager.ModEntry, bool)"/>
+    /// or with <see cref="SettingsBuilder.SetMod(OwlcatModification, bool)"/>) will have higher precedence.</remarks>
+    public SettingsBuilder SetModAuthor(string author)
+    {
+      Author = author;
+      return this;
+    }
+
+    /// <summary>
+    /// Adds an image to the mod description shown when you hover the mouse over the mod entry in the ModMenu dropdown
+    /// </summary>
+    /// 
+    /// <remarks> Will be displayed only if you have a source mod info (if set with <see cref="SettingsBuilder.SetMod(UnityModManagerNet.UnityModManager.ModEntry, bool)"/>
+    /// or with <see cref="SettingsBuilder.SetMod(OwlcatModification, bool)"/>) or at least provided a Localized mod name with <see cref="SettingsBuilder.SetModName(LocalizedString)"/>. </remarks>
+    public SettingsBuilder SetModIllustration(Sprite image)
+    {
+      modIllustration = image;
+      return this;
     }
 
     /// <summary>
@@ -278,10 +411,15 @@ namespace ModMenu.Settings
       return this;
     }
 
-    internal (UISettingsGroup group, Dictionary<string, ISettingsEntity> settings) Build()
+    internal (List<UISettingsGroup> groups, Dictionary<string, ISettingsEntity> settings, ModsMenuEntry.Info info) Build()
     {
       Group.SettingsList = Settings.ToArray();
-      return (Group, SettingsEntities);
+      ModsMenuEntry.Info Info;
+      if (mod is OwlcatModification OwlMod) Info = new(OwlMod, allowDisabling, modName, modDescription, modIllustration);
+      else if (mod is UnityModManagerNet.UnityModManager.ModEntry UMMmod) Info = new(UMMmod, allowDisabling, modName, modDescription, modIllustration);
+      else if (modName is not null) Info = new(modName, modDescription, Version, Author, modIllustration);
+      else Info = default;
+      return (GroupList, SettingsEntities, Info);
     }
 
     private void OpenDefaultSettingsDialog()
