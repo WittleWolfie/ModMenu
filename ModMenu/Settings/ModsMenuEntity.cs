@@ -4,8 +4,10 @@ using Kingmaker.UI.MVVM._PCView.Settings.Menu;
 using Kingmaker.UI.MVVM._VM.Settings;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.Utility;
+using ModMenu.NewTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -20,6 +22,7 @@ namespace ModMenu.Settings
     private const int SettingsScreenValue = 17;
     internal static readonly UISettingsManager.SettingsScreen SettingsScreenId =
       (UISettingsManager.SettingsScreen)SettingsScreenValue;
+    internal static SettingsVM settingVM;
 
     private static LocalizedString _menuTitleString;
     private static LocalizedString MenuTitleString
@@ -33,11 +36,28 @@ namespace ModMenu.Settings
     }
 
     private static readonly List<UISettingsGroup> ModSettings = new();
+    internal static readonly List<ModsMenuEntry> ModEntries = new();
 
+#pragma warning disable CS0618 // Obsolete method which I myself marked as obsolete >_>
     internal static void Add(UISettingsGroup uiSettingsGroup)
     {
-      ModSettings.Add(uiSettingsGroup);
+      ModEntries.Add(new(uiSettingsGroup));
     }
+
+    internal static void Add(List<UISettingsGroup> uiSettingsGroup)
+    {
+      ModEntries.Add(new(uiSettingsGroup));
+    }
+#pragma warning restore CS0618 // Тип или член устарел
+
+    internal static void Add(ModsMenuEntry modEntry)
+    {
+      ModEntries.Add(modEntry);
+    }
+
+
+    internal static IEnumerable<UISettingsGroup> CollectSettingGroups => UISettingsEntityDropdownModsmenuEntry.instance.Setting.m_CurrentValue.ModSettings;
+
 
     /// <summary>
     /// Patch to create the Mods Menu ViewModel.
@@ -85,6 +105,7 @@ namespace ModMenu.Settings
         try
         {
           settings.CreateMenuEntity(MenuTitleString, SettingsScreenId);
+          settingVM = settings;
           Main.Logger.NativeLog("Added Mods Menu ViewModel.");
         }
         catch (Exception e)
@@ -137,7 +158,7 @@ namespace ModMenu.Settings
           if (screenId is not null && screenId == SettingsScreenId)
           {
             Main.Logger.NativeLog($"Returning mod settings for screen {screenId}.");
-            __result = ModSettings;
+            __result = CollectSettingGroups.ToList();
           }
         }
         catch (Exception e)
