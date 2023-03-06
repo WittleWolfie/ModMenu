@@ -14,6 +14,7 @@ namespace ModMenu
   internal static class Helpers
   {
     private static readonly List<LocalString> Strings = new();
+    internal static LocalizedString EmptyString = CreateString("", "");
 
     internal static LocalizedString CreateString(string key, string enGB, string ruRU = "")
     {
