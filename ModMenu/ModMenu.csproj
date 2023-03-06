@@ -52,7 +52,7 @@
       <HintPath>$(WrathPath)\Wrath_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
     </Reference>
     <Reference Include="Owlcat.Runtime.UI.dll">
-      <HintPath>$(WrathPath)\Wrath_Data\Managed\Owlcat.Runtime.UI.dll</HintPath>
+      <HintPath>$(SolutionDir)lib\Owlcat.Runtime.UI_public.dll</HintPath>
     </Reference>
     <Reference Include="Owlcat.Runtime.Validation.dll">
       <HintPath>$(WrathPath)\Wrath_Data\Managed\Owlcat.Runtime.Validation.dll</HintPath>
@@ -103,6 +103,23 @@
     <PublicizeTask InputAssemblies="@(Assemblies)" OutputDir="$(SolutionDir)lib/" />
     <Move SourceFiles="@(PublicAssembly)" DestinationFiles="@(RenamedAssembly)" />
   </Target>
+
+
+	<Target Name="Publicize" AfterTargets="Clean">
+		<ItemGroup>
+			<Assemblies Include="$(Wrath)\Assembly-CSharp.dll" />
+		</ItemGroup>
+
+		<PublicizeTask InputAssemblies="@(Assemblies)" OutputDir="$(SolutionDir)lib/" />
+	</Target>
+
+	<Target Name="Publicize" AfterTargets="Clean">
+		<ItemGroup>
+			<Assemblies Include="$(Wrath)\Owlcat.Runtime.UI.dll" />
+		</ItemGroup>
+
+		<PublicizeTask InputAssemblies="@(Assemblies)" OutputDir="$(SolutionDir)lib/" />
+	</Target>
 
   <!-- Automatically deploys the mod on build -->
   <Target Name="Deploy" AfterTargets="Build">
