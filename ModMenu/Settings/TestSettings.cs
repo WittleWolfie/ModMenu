@@ -27,6 +27,7 @@ namespace ModMenu.Settings
     {
       ModMenu.AddSettings(
         SettingsBuilder.New(RootKey, CreateString("title", "Testing settings"))
+          .SetMod(Main.Entry)
           .AddImage(Helpers.CreateSprite("ModMenu.WittleWolfie.png"), 250)
           .AddDefaultButton(OnDefaultsApplied)
           .AddButton(
@@ -83,10 +84,8 @@ namespace ModMenu.Settings
                 CreateString("int-desc", "This is a custom int slider"),
                 minValue: 1,
                 maxValue: 6)
-              .HideValueText()));
-
-      ModMenu.AddSettings(
-        SettingsBuilder.New(GetKey("extra"), CreateString("extra-title", "More Test Settings"))
+              .HideValueText())
+          .AddAnotherSettingsGroup(GetKey("extra"), CreateString("extra-title", "More Test Settings"))
           .AddDefaultButton()
           .AddToggle(
             Toggle.New(
