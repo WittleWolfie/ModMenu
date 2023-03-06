@@ -10,6 +10,7 @@ namespace ModMenu
   public static class Main
   {
     internal static ModLogger Logger;
+    internal static ModEntry Entry;
     private static Harmony Harmony;
 
     public static bool Load(ModEntry modEntry)
