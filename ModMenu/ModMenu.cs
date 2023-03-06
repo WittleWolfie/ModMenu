@@ -1,4 +1,5 @@
 ﻿using Kingmaker.Settings;
+using Kingmaker.UI.SaveLoadWindow;
 using Kingmaker.UI.SettingsUI;
 using ModMenu.Settings;
 using System;
@@ -25,8 +26,8 @@ namespace ModMenu
     /// </exception>
     public static void AddSettings(SettingsBuilder settings)
     {
-      var settingsGroup = settings.Build();
-      foreach (var setting in settingsGroup.settings)
+      var result = settings.Build();
+      foreach (var setting in result.settings)
       {
         if (Settings.ContainsKey(setting.Key))
         {
@@ -35,17 +36,18 @@ namespace ModMenu
         }
         Settings.Add(setting.Key, setting.Value);
       }
-      ModsMenuEntity.Add(settingsGroup.group);
+      ModsMenuEntity.Add(new ModsMenuEntry(result.info, result.groups));
     }
 
     /// <summary>
-    /// Adds a new group of settings to the Mods menu page.
+    /// Adds a new entry containing the group of settings to the Mods menu dropdown. 
+    /// Group's title will be displayed instead of the mod name.
     /// </summary>
     /// 
     /// <remarks>
     /// <para>
     /// Using <see cref="AddSettings(SettingsBuilder)"/> is recommended. If you prefer to construct the settings
-    /// on your own you can use this method.
+    /// on your own you can use this method, but better choose a less deprecated overload using ModsMenuEntry.
     /// </para>
     /// 
     /// <para>
@@ -53,10 +55,49 @@ namespace ModMenu
     /// <see cref="GetSettingValue{T}(string)"/>.
     /// </para>
     /// </remarks>
-    public static void AddSettings(UISettingsGroup settingsGroup)
-    {
-      ModsMenuEntity.Add(settingsGroup);
-    }
+    [Obsolete("Please, use AddSettings(ModsMenuEntry entry) instead")]
+    public static void AddSettings(UISettingsGroup settingsGroup) => ModsMenuEntity.Add(settingsGroup);
+    
+
+
+    /// <summary>
+    /// Adds a new entry containing groups of settings to the Mods menu dropdown. 
+    /// The title of the first group will displayed instead of the mod name
+    /// </summary>
+    /// 
+    /// <remarks>
+    /// <para>
+    /// Using <see cref="AddSettings(SettingsBuilder)"/> is recommended. If you prefer to construct the settings
+    /// on your own you can use this method, but better choose a less deprecated overload using ModsMenuEntry.
+    /// </para>
+    /// 
+    /// <para>
+    /// Settings added in this way cannot be retrieved using <see cref="GetSetting{T, TValue}(string)"/> or
+    /// <see cref="GetSettingValue{T}(string)"/>.
+    /// </para>
+    /// </remarks>
+    [Obsolete("Please, use AddSettings(ModsMenuEntry entry) instead")]
+    public static void AddSettings(List<UISettingsGroup> settingsGroup) => ModsMenuEntity.Add(settingsGroup);
+    
+
+    /// <summary>
+    /// Adds a new entry containing groups of settings to the Mods menu page. 
+    /// </summary>
+    /// 
+    /// <remarks>
+    /// <para>
+    /// Use this method if you prefer to construct settings on your own you can use this method
+    /// instead of using the recommended <see cref="AddSettings(SettingsBuilder)"/>. 
+    /// </para>
+    /// 
+    /// <para>
+    /// Settings added in this way cannot be retrieved using <see cref="GetSetting{T, TValue}(string)"/> or
+    /// <see cref="GetSettingValue{T}(string)"/>.
+    /// </para>
+    /// </remarks>
+    public static void AddSetting(ModsMenuEntry entry) => ModsMenuEntity.Add(entry);
+   
+
 
     /// <returns>
     /// The setting with the specified <paramref name="key"/>, or null if it does not exist or has the wrong type.
