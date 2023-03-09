@@ -13,6 +13,7 @@ namespace ModMenu.NewTypes
   {
     static UISettingsEntityDropdownModsmenuEntry()
     {
+      instance.OnTempIndexValueChanged += new Action<int>(ModIndex => ModsMenuEntity.settingVM.SwitchSettingsScreen(ModsMenuEntity.SettingsScreenId));
       instance.LinkSetting(SettingsEntityModsmenuEntry.instance);
     }
     internal static UISettingsEntityDropdownModsmenuEntry instance = ScriptableObject.CreateInstance<UISettingsEntityDropdownModsmenuEntry>();
@@ -20,7 +21,7 @@ namespace ModMenu.NewTypes
     {
       get
       { 
-        return ModsMenuEntity.ModEntries.Select(entry => entry.ModInfo.GenerateName()).ToList();
+        return ModsMenuEntity.ModEntries.Select(entry => entry.ModInfo.ModName.ToString()).ToList();
       }
     }
 

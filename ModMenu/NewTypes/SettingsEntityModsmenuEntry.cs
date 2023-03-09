@@ -11,8 +11,6 @@ namespace ModMenu.NewTypes
   internal class SettingsEntityModsmenuEntry : SettingsEntity<ModsMenuEntry>
   {
     internal static SettingsEntityModsmenuEntry instance = new("modsmenu.entrystaticinstance", ModsMenuEntry.EmptyInstance);
-
-    public SettingsEntityModsmenuEntry(string key, ModsMenuEntry defaultValue) : base(key, defaultValue, false, false, false) 
-      => OnTempValueChanged += new(() => { ModsMenuEntity.settingVM.SwitchSettingsScreen(ModsMenuEntity.SettingsScreenId); return true; });
+    public SettingsEntityModsmenuEntry(string key, ModsMenuEntry defaultValue) : base(key, defaultValue, false, false, false) {} 
   }
 }
