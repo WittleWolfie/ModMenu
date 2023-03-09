@@ -140,6 +140,7 @@ namespace ModMenu.Settings
       public string AuthorName { get; private set; }
       public LocalizedString LocalizedModDescription { get; private set; }
       public string NonLocalizedModDescription { get; private set; }
+      private string ModDescription { get { return LocalizedModDescription ?? NonLocalizedModDescription; } }
       internal bool AllowModDisabling { get; set; }
       internal OwlcatModification OwlMod { get; }
       internal UnityModManagerNet.UnityModManager.ModEntry UMMMod { get; }
@@ -265,7 +266,7 @@ namespace ModMenu.Settings
 
       internal string GenerateDescription()
       {
-        string result = ModName;
+        string result = ModDescription;
         if (!string.IsNullOrEmpty(VersionNumber)) result = $"{result} ({stringVer}: {VersionNumber})";
         result = $"<align=\"center\"><color=#{Color.black}><size=140%><b>{result}</b></size></color></align>\n";
         if (!string.IsNullOrEmpty(AuthorName)) result = string.Concat(result, $"<align=\"center\"><color=#{Color.black}><size=120%>{stringAuthor}: {AuthorName}</size></color></align>\n");
