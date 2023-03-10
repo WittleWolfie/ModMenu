@@ -35,7 +35,6 @@ namespace ModMenu.Settings
       }
     }
 
-    private static readonly List<UISettingsGroup> ModSettings = new();
     internal static readonly List<ModsMenuEntry> ModEntries = new();
 
 #pragma warning disable CS0618 // Obsolete method which I myself marked as obsolete >_>

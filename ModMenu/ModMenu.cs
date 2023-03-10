@@ -56,8 +56,6 @@ namespace ModMenu
     /// </remarks>
     [Obsolete("Please, use AddSettings(ModsMenuEntry entry) instead")]
     public static void AddSettings(UISettingsGroup settingsGroup) => ModsMenuEntity.Add(settingsGroup);
-    
-
 
     /// <summary>
     /// Adds a new entry containing groups of settings to the Mods menu dropdown. 
@@ -78,7 +76,6 @@ namespace ModMenu
     [Obsolete("Please, use AddSettings(ModsMenuEntry entry) instead")]
     public static void AddSettings(List<UISettingsGroup> settingsGroup) => ModsMenuEntity.Add(settingsGroup);
     
-
     /// <summary>
     /// Adds a new entry containing groups of settings to the Mods menu page. 
     /// </summary>
@@ -95,8 +92,6 @@ namespace ModMenu
     /// </para>
     /// </remarks>
     public static void AddSetting(ModsMenuEntry entry) => ModsMenuEntity.Add(entry);
-   
-
 
     /// <returns>
     /// The setting with the specified <paramref name="key"/>, or null if it does not exist or has the wrong type.
