@@ -11,11 +11,13 @@ namespace ModMenu.NewTypes
   {
     static UISettingsEntityDropdownModMenuEntry()
     {
-      ((IUISettingsEntityDropdown) instance).OnTempIndexValueChanged += new Action<int>(ModIndex => ModsMenuEntity.settingVM.SwitchSettingsScreen(ModsMenuEntity.SettingsScreenId));
+      ((IUISettingsEntityDropdown) instance).OnTempIndexValueChanged +=
+        new Action<int>(ModIndex => ModsMenuEntity.settingVM.SwitchSettingsScreen(ModsMenuEntity.SettingsScreenId));
       instance.LinkSetting(SettingsEntityModsmenuEntry.instance);
     }
 
-    internal static UISettingsEntityDropdownModMenuEntry instance = ScriptableObject.CreateInstance<UISettingsEntityDropdownModMenuEntry>();
+    internal static UISettingsEntityDropdownModMenuEntry instance =
+      ScriptableObject.CreateInstance<UISettingsEntityDropdownModMenuEntry>();
     public override List<string> LocalizedValues
     {
       get
