@@ -29,7 +29,6 @@ namespace ModMenu.NewTypes
       return ModsMenuEntity.ModEntries.IndexOf(Setting.GetTempValue());
     }
 
-
     public override void SetIndexTempValue(int value)
     {
       if (value is < 0 && value > ModsMenuEntity.ModEntries.Count())
@@ -40,6 +39,5 @@ namespace ModMenu.NewTypes
 
       SetTempValue(ModsMenuEntity.ModEntries[value]);
     }
-
   }
 }
