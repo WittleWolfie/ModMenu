@@ -11,7 +11,7 @@ namespace ModMenu.NewTypes
   {
     static UISettingsEntityDropdownModMenuEntry()
     {
-      instance.OnTempIndexValueChanged += new Action<int>(ModIndex => ModsMenuEntity.settingVM.SwitchSettingsScreen(ModsMenuEntity.SettingsScreenId));
+      ((IUISettingsEntityDropdown) instance).OnTempIndexValueChanged += new Action<int>(ModIndex => ModsMenuEntity.settingVM.SwitchSettingsScreen(ModsMenuEntity.SettingsScreenId));
       instance.LinkSetting(SettingsEntityModsmenuEntry.instance);
     }
     internal static UISettingsEntityDropdownModMenuEntry instance = ScriptableObject.CreateInstance<UISettingsEntityDropdownModMenuEntry>();
@@ -33,7 +33,7 @@ namespace ModMenu.NewTypes
     {
       if (value is < 0 && value > ModsMenuEntity.ModEntries.Count())
       {
-        Main.Logger.Error($"Value {value} is given to UISettingsEntityDropdownModsmenuEntry when there're only {ModsMenuEntity.ModEntries.Count()} entries in the list");
+        Main.Logger.Error($"Value {value} is given to UISettingsEntityDropdownModMenuEntry when there're only {ModsMenuEntity.ModEntries.Count()} entries in the list");
         SetTempValue(ModsMenuEntity.ModEntries[0]);
       }
 
