@@ -21,8 +21,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Assets\**" />
     <Compile Remove="lib\**" />
+    <EmbeddedResource Remove="Assets\**" />
     <EmbeddedResource Remove="lib\**" />
+    <None Remove="Assets\**" />
     <None Remove="lib\**" />
   </ItemGroup>
 
@@ -86,10 +89,6 @@
     <None Update="Info.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Assets\" />
   </ItemGroup>
 
   <!-- Generates Assembly-CSharp_public.dll -->
