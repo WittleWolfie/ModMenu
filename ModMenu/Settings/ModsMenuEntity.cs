@@ -55,9 +55,8 @@ namespace ModMenu.Settings
       ModEntries.Add(modEntry);
     }
 
-
-    internal static IEnumerable<UISettingsGroup> CollectSettingGroups => UISettingsEntityDropdownModMenuEntry.instance.Setting.m_CurrentValue.ModSettings;
-
+    internal static IEnumerable<UISettingsGroup> CollectSettingGroups =>
+      UISettingsEntityDropdownModMenuEntry.instance.Setting.m_CurrentValue.ModSettings;
 
     /// <summary>
     /// Patch to create the Mods Menu ViewModel.
