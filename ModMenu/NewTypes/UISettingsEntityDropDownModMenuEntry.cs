@@ -7,14 +7,14 @@ using UnityEngine;
 
 namespace ModMenu.NewTypes
 {
-  internal class UISettingsEntityDropdownModsmenuEntry : UISettingsEntityDropdown<ModsMenuEntry>
+  internal class UISettingsEntityDropdownModMenuEntry : UISettingsEntityDropdown<ModsMenuEntry>
   {
-    static UISettingsEntityDropdownModsmenuEntry()
+    static UISettingsEntityDropdownModMenuEntry()
     {
       instance.OnTempIndexValueChanged += new Action<int>(ModIndex => ModsMenuEntity.settingVM.SwitchSettingsScreen(ModsMenuEntity.SettingsScreenId));
       instance.LinkSetting(SettingsEntityModsmenuEntry.instance);
     }
-    internal static UISettingsEntityDropdownModsmenuEntry instance = ScriptableObject.CreateInstance<UISettingsEntityDropdownModsmenuEntry>();
+    internal static UISettingsEntityDropdownModMenuEntry instance = ScriptableObject.CreateInstance<UISettingsEntityDropdownModMenuEntry>();
     public override List<string> LocalizedValues
     {
       get

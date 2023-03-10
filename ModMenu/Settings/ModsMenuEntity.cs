@@ -56,7 +56,7 @@ namespace ModMenu.Settings
     }
 
 
-    internal static IEnumerable<UISettingsGroup> CollectSettingGroups => UISettingsEntityDropdownModsmenuEntry.instance.Setting.m_CurrentValue.ModSettings;
+    internal static IEnumerable<UISettingsGroup> CollectSettingGroups => UISettingsEntityDropdownModMenuEntry.instance.Setting.m_CurrentValue.ModSettings;
 
 
     /// <summary>

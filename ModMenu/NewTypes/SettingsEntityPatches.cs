@@ -81,7 +81,7 @@ namespace ModMenu.NewTypes
         Main.Logger.NativeLog("Collecting setting entities.");
 
         __instance.m_SettingEntities.Clear();
-        __instance.m_SettingEntities.Add(__instance.AddDisposableAndReturn(SettingsVM.GetVMForSettingsItem(UISettingsEntityDropdownModsmenuEntry.instance)));
+        __instance.m_SettingEntities.Add(__instance.AddDisposableAndReturn(SettingsVM.GetVMForSettingsItem(UISettingsEntityDropdownModMenuEntry.instance)));
         __instance.m_SettingEntities.Add(__instance.AddDisposableAndReturn(SettingsVM.GetVMForSettingsItem(new UISettingsEntitySeparator())));
 
           //Here should be a toggle for mod disabling, but do we need it?
