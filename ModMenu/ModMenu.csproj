@@ -88,10 +88,6 @@
     </None>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Assets\" />
-  </ItemGroup>
-
   <!-- Generates Assembly-CSharp_public.dll and Owlcat.Runtime.UI_public.dll -->
 	<Target Name="Publicize" AfterTargets="Clean">
 		<ItemGroup>

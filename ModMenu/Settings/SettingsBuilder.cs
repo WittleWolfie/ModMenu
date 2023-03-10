@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityModManagerNet;
 
 namespace ModMenu.Settings
 {
@@ -71,10 +72,10 @@ namespace ModMenu.Settings
   /// </remarks>
   public class SettingsBuilder
   {
-    private object mod;
-    private bool allowDisabling;
-    private LocalizedString modName;
-    private LocalizedString modDescription;
+    private object Mod;
+    private bool AllowDisabling;
+    private LocalizedString ModName;
+    private LocalizedString ModDescription;
     private string Author = "";
     private string Version = "";
     private Sprite modIllustration;
@@ -102,11 +103,7 @@ namespace ModMenu.Settings
       AddAnotherSettingsGroup(key, title);
     }
 
-    private SettingsBuilder()
-    {
-
-    }
-
+    private SettingsBuilder() { }
 
     /// <summary>
     /// Creates a new group of settings.
@@ -130,58 +127,54 @@ namespace ModMenu.Settings
     }
 
     /// <summary>
-    /// Set a source mod for your settings. Information from the manifest / info will be displayed when selecting the mod in the menu dropdown.
-    /// If you don't set Mod name and Mod description separately, the information from the manifest / info will be used instead.
-    /// Providing the source mod is necessary if you want to allow disabling from the ModMenu.
+    /// Set a source mod for your settings. Information from the manifest / info will be displayed when selecting the
+    /// mod in the menu dropdown. If you don't set Mod name and Mod description separately, the information from the
+    /// manifest / info will be used instead. Providing the source mod is necessary if you want to allow disabling from
+    /// the ModMenu.
     /// </summary>
-    /// <param name="modEntry"></param>
-    /// Your mod
-    /// <param name="AllowDisabling"></param>
-    /// Set to true if you want to create a button to disable it
-    /// <returns></returns>
-    public SettingsBuilder SetMod(OwlcatModification modEntry, bool AllowDisabling = false)
+    /// 
+    /// <param name="modEntry">Your mod</param>
+    /// <param name="allowDisabling">Set to true if you want to create a button to disable it</param>
+    public SettingsBuilder SetMod(OwlcatModification modEntry, bool allowDisabling = false)
     {
-      mod = modEntry;
-      allowDisabling = AllowDisabling;
+      Mod = modEntry;
+      AllowDisabling = allowDisabling;
       return this;
     }
 
     /// <summary>
-    /// Set a source mod for your settings. Information from the manifest / info will be displayed when selecting the mod in the menu dropdown.
-    /// If you don't set Mod name and Mod description separately, the information from the manifest / info will be used instead.
-    /// Providing the source mod is necessary if you want to allow disabling from the ModMenu.
+    /// Set a source mod for your settings. Information from the manifest / info will be displayed when selecting the
+    /// mod in the menu dropdown. If you don't set Mod name and Mod description separately, the information from the
+    /// manifest / info will be used instead. Providing the source mod is necessary if you want to allow disabling from
+    /// the ModMenu.
     /// </summary>
-    /// <param name="modEntry"></param>
-    /// Your mod
-    /// <param name="AllowDisabling"></param>
-    /// Set to true if you want to create a button to disable it
-    /// <returns></returns>
-    public SettingsBuilder SetMod(UnityModManagerNet.UnityModManager.ModEntry modEntry, bool AllowDisabling = false)
+    /// 
+    /// <param name="modEntry">Your mod</param>
+    /// <param name="allowDisabling">Set to true if you want to create a button to disable it</param>
+    public SettingsBuilder SetMod(UnityModManager.ModEntry modEntry, bool allowDisabling = false)
     {
-      mod = modEntry;
-      allowDisabling = AllowDisabling;
+      Mod = modEntry;
+      AllowDisabling = allowDisabling;
       return this;
     }
 
     /// <summary>
     /// The name of your mod to be displayed in the ModMenu dropdown.
     /// </summary>
-    /// <param name="name"></param> - a Localized string containing the mod name.
-    /// <returns></returns>
+    /// <param name="name">A Localized string containing the mod name.</param>
     public SettingsBuilder SetModName(LocalizedString name)
     {
-      modName = name;
+      ModName = name;
       return this;
     }
 
     /// <summary>
     /// Sets the description for your mod which will be visible when hovering the mouse over the mod entry in the ModMenu dropdown.
     /// </summary>
-    /// <param name="description"></param> - a Localized string containing the description.
-    /// <returns></returns>
+    /// <param name="description">A Localized string containing the description.</param>
     public SettingsBuilder SetModDescription(LocalizedString description)
     {
-      modDescription = description;
+      ModDescription = description;
       return this;
     }
 
@@ -207,7 +200,8 @@ namespace ModMenu.Settings
     /// Adds mod's version to the mod description shown when you hover the mouse over the mod entry in the ModMenu dropdown
     /// </summary>
     /// 
-    /// <remarks> Will be displayed only if you at least provided a Localized mod name with <see cref="SettingsBuilder.SetModName(LocalizedString)"/>. 
+    /// <remarks>
+    /// Will be displayed only if you at least provided a Localized mod name with <see cref="SettingsBuilder.SetModName(LocalizedString)"/>. 
     /// Mod version from the source mod info (if set with <see cref="SettingsBuilder.SetMod(UnityModManagerNet.UnityModManager.ModEntry, bool)"/>
     /// or with <see cref="SettingsBuilder.SetMod(OwlcatModification, bool)"/>) will have higher precedence</remarks>
     public SettingsBuilder SetModVersion(string version)
@@ -233,8 +227,10 @@ namespace ModMenu.Settings
     /// Adds an image to the mod description shown when you hover the mouse over the mod entry in the ModMenu dropdown
     /// </summary>
     /// 
-    /// <remarks> Will be displayed only if you have a source mod info (if set with <see cref="SettingsBuilder.SetMod(UnityModManagerNet.UnityModManager.ModEntry, bool)"/>
-    /// or with <see cref="SettingsBuilder.SetMod(OwlcatModification, bool)"/>) or at least provided a Localized mod name with <see cref="SettingsBuilder.SetModName(LocalizedString)"/>. </remarks>
+    /// <remarks>
+    /// Will be displayed only if you have a source mod info (if set with <see cref="SettingsBuilder.SetMod(UnityModManagerNet.UnityModManager.ModEntry, bool)"/>
+    /// or with <see cref="SettingsBuilder.SetMod(OwlcatModification, bool)"/>) or at least provided a Localized mod name with <see cref="SettingsBuilder.SetModName(LocalizedString)"/>.
+    /// </remarks>
     public SettingsBuilder SetModIllustration(Sprite image)
     {
       modIllustration = image;
@@ -415,10 +411,14 @@ namespace ModMenu.Settings
     {
       Group.SettingsList = Settings.ToArray();
       ModsMenuEntry.Info Info;
-      if (mod is OwlcatModification OwlMod) Info = new(OwlMod, allowDisabling, modName, modDescription, modIllustration);
-      else if (mod is UnityModManagerNet.UnityModManager.ModEntry UMMmod) Info = new(UMMmod, allowDisabling, modName, modDescription, modIllustration);
-      else if (modName is not null) Info = new(modName, modDescription, Version, Author, modIllustration);
-      else Info = default;
+      if (Mod is OwlcatModification OwlMod)
+        Info = new(OwlMod, AllowDisabling, ModName, ModDescription, modIllustration);
+      else if (Mod is UnityModManager.ModEntry UMMmod)
+        Info = new(UMMmod, AllowDisabling, ModName, ModDescription, modIllustration);
+      else if (ModName is not null)
+        Info = new(ModName, ModDescription, Version, Author, modIllustration);
+      else
+        Info = default;
       return (GroupList, SettingsEntities, Info);
     }
 
@@ -583,6 +583,7 @@ namespace ModMenu.Settings
 
     protected readonly string Key;
     protected readonly T DefaultValue;
+
     /// <summary>
     /// Currently this is unused but I might add some kind of special handling later so the code is here.
     /// </summary>
