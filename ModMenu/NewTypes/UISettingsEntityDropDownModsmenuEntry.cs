@@ -1,10 +1,8 @@
-﻿using System;
+﻿using Kingmaker.UI.SettingsUI;
+using ModMenu.Settings;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Kingmaker.UI.SettingsUI;
-using ModMenu.Settings;
 using UnityEngine;
 
 namespace ModMenu.NewTypes

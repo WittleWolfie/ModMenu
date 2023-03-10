@@ -1,10 +1,4 @@
-﻿using Kingmaker.Localization;
-using Kingmaker.UI.SettingsUI;
-using System.Text;
-using UnityEngine;
-using static Kingmaker.UI.KeyboardAccess;
-
-namespace ModMenu.Settings
+﻿namespace ModMenu.Settings
 {
 #if DEBUG
   /// <summary>

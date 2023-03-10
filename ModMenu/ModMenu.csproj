@@ -44,15 +44,15 @@
   <ItemGroup>
     <!-- Main Wrath Assembly, Publicized -->
     <Reference Include="Assembly-CSharp.dll">
-      <HintPath>$(SolutionDir)lib\Assembly-CSharp.dll</HintPath>
+      <HintPath>$(SolutionDir)lib\Assembly-CSharp_public.dll</HintPath>
+    </Reference>
+    <Reference Include="Owlcat.Runtime.UI.dll">
+      <HintPath>$(SolutionDir)lib\Owlcat.Runtime.UI_public.dll</HintPath>
     </Reference>
 
     <!-- Wrath Assemblies -->
     <Reference Include="Assembly-CSharp-firstpass.dll">
       <HintPath>$(WrathPath)\Wrath_Data\Managed\Assembly-CSharp-firstpass.dll</HintPath>
-    </Reference>
-    <Reference Include="Owlcat.Runtime.UI.dll">
-      <HintPath>$(SolutionDir)lib\Owlcat.Runtime.UI_public.dll</HintPath>
     </Reference>
     <Reference Include="Owlcat.Runtime.Validation.dll">
       <HintPath>$(WrathPath)\Wrath_Data\Managed\Owlcat.Runtime.Validation.dll</HintPath>
@@ -92,34 +92,15 @@
     <Folder Include="Assets\" />
   </ItemGroup>
 
-  <!-- Generates Assembly-CSharp_public.dll -->
-  <Target Name="Publicize" AfterTargets="Clean">
-    <ItemGroup>
+  <!-- Generates Assembly-CSharp_public.dll and Owlcat.Runtime.UI_public.dll -->
+	<Target Name="Publicize" AfterTargets="Clean">
+		<ItemGroup>
+      <Assemblies Include="$(WrathPath)\Wrath_Data\Managed\Owlcat.Runtime.UI.dll" />
       <Assemblies Include="$(WrathPath)\Wrath_Data\Managed\Assembly-CSharp.dll" />
-      <PublicAssembly Include="$(SolutionDir)lib\Assembly-CSharp_public.dll" />
-      <RenamedAssembly Include="$(SolutionDir)lib\Assembly-CSharp.dll" />
     </ItemGroup>
 
-    <PublicizeTask InputAssemblies="@(Assemblies)" OutputDir="$(SolutionDir)lib/" />
-    <Move SourceFiles="@(PublicAssembly)" DestinationFiles="@(RenamedAssembly)" />
+    <PublicizeTask InputAssemblies="@(Assemblies)" OutputDir="$(SolutionDir)lib\" />
   </Target>
-
-
-	<Target Name="Publicize" AfterTargets="Clean">
-		<ItemGroup>
-			<Assemblies Include="$(Wrath)\Assembly-CSharp.dll" />
-		</ItemGroup>
-
-		<PublicizeTask InputAssemblies="@(Assemblies)" OutputDir="$(SolutionDir)lib/" />
-	</Target>
-
-	<Target Name="Publicize" AfterTargets="Clean">
-		<ItemGroup>
-			<Assemblies Include="$(Wrath)\Owlcat.Runtime.UI.dll" />
-		</ItemGroup>
-
-		<PublicizeTask InputAssemblies="@(Assemblies)" OutputDir="$(SolutionDir)lib/" />
-	</Target>
 
   <!-- Automatically deploys the mod on build -->
   <Target Name="Deploy" AfterTargets="Build">

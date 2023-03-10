@@ -1,16 +1,14 @@
-﻿using Kingmaker.Localization;
-using Kingmaker.Settings;
-using Kingmaker.UI.SettingsUI;
-using System.Text;
-using static Kingmaker.UI.KeyboardAccess;
-using UnityEngine;
-using HarmonyLib;
-using Kingmaker.UI;
+﻿using HarmonyLib;
 using Kingmaker;
+using Kingmaker.Localization;
+using Kingmaker.Settings;
+using Kingmaker.UI;
+using Kingmaker.UI.SettingsUI;
 using System;
 using System.Collections.Generic;
-using System.Security.Principal;
-using Kingmaker.GameModes;
+using System.Text;
+using UnityEngine;
+using static Kingmaker.UI.KeyboardAccess;
 
 namespace ModMenu.Settings
 {
