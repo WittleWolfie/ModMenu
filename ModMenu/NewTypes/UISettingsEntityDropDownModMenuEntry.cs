@@ -13,7 +13,7 @@ namespace ModMenu.NewTypes
     {
       ((IUISettingsEntityDropdown) instance).OnTempIndexValueChanged +=
         new Action<int>(ModIndex => ModsMenuEntity.settingVM.SwitchSettingsScreen(ModsMenuEntity.SettingsScreenId));
-      instance.LinkSetting(SettingsEntityModsmenuEntry.instance);
+      instance.LinkSetting(SettingsEntityModMenuEntry.instance);
     }
 
     internal static UISettingsEntityDropdownModMenuEntry instance =
