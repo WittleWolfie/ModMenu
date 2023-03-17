@@ -15,7 +15,6 @@ namespace ModMenu.Window
 {
   internal class WindowView : ViewBase<BookPageVM>
   {
-
     // TODO: Replace meee
     [HarmonyPatch(typeof(EscHotkeyManager))]
     static class EscHotkeyManager_Patch
