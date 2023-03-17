@@ -4,7 +4,7 @@ using Owlcat.Runtime.UI.VirtualListSystem.ElementSettings;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace ModMenu.NewTypes
+namespace ModMenu.Settings.Entities
 {
   internal class UISettingsEntityImage : UISettingsEntityBase
   {
@@ -14,7 +14,7 @@ namespace ModMenu.NewTypes
 
     internal static UISettingsEntityImage Create(Sprite sprite, int height, float imageScale)
     {
-      var image = ScriptableObject.CreateInstance<UISettingsEntityImage>();
+      var image = CreateInstance<UISettingsEntityImage>();
       image.Sprite = sprite;
       image.Height = height;
       image.ImageScale = imageScale;
@@ -108,7 +108,7 @@ namespace ModMenu.NewTypes
       Icon.transform.localScale = new Vector3(scaling, Icon.transform.localScale.y);
 
       // Height scaling on the top bar changes its thickness, so invert it to counteract the row scaling.
-      float inverseScaling = 1 / scaling;
+      var inverseScaling = 1 / scaling;
       TopBorder.transform.localScale = new Vector3(TopBorder.transform.localScale.x, inverseScaling);
 
       SetHeight(height);

@@ -4,6 +4,7 @@ using Kingmaker.UI.MVVM._PCView.Settings.Menu;
 using Kingmaker.UI.MVVM._VM.Settings;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.Utility;
+using ModMenu.Utils;
 using System;
 using System.Collections.Generic;
 using System.Reflection;

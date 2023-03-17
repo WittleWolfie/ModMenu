@@ -7,21 +7,21 @@ using Owlcat.Runtime.UI.Controls.Button;
 using Owlcat.Runtime.UI.VirtualListSystem.ElementSettings;
 using System;
 using TMPro;
-using UnityEngine.EventSystems;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace ModMenu.NewTypes
+namespace ModMenu.Settings.Entities
 {
-  public class UISettingsEntityDropdownButton : UISettingsEntityDropdownInt
+  public class UISettingsEntityButton : UISettingsEntityBase
   {
     internal LocalizedString ButtonText;
-    internal Action<int> OnClick;
+    internal Action OnClick;
 
-    internal static UISettingsEntityDropdownButton Create(
-      LocalizedString description, LocalizedString longDescription, LocalizedString buttonText, Action<int> onClick)
+    internal static UISettingsEntityButton Create(
+      LocalizedString description, LocalizedString longDescription, LocalizedString buttonText, Action onClick)
     {
-      var button = ScriptableObject.CreateInstance<UISettingsEntityDropdownButton>();
+      var button = CreateInstance<UISettingsEntityButton>();
       button.m_Description = description;
       button.m_TooltipDescription = longDescription;
 
@@ -33,33 +33,31 @@ namespace ModMenu.NewTypes
     public override SettingsListItemType? Type => SettingsListItemType.Custom;
   }
 
-  internal class SettingsEntityDropdownButtonVM : SettingsEntityDropdownVM
+  internal class SettingsEntityButtonVM : SettingsEntityVM
   {
-    private readonly UISettingsEntityDropdownButton buttonEntity;
+    private readonly UISettingsEntityButton buttonEntity;
 
     public string Text => buttonEntity.ButtonText;
 
-    internal SettingsEntityDropdownButtonVM(UISettingsEntityDropdownButton buttonEntity) : base(buttonEntity)
+    internal SettingsEntityButtonVM(UISettingsEntityButton buttonEntity) : base(buttonEntity)
     {
       this.buttonEntity = buttonEntity;
     }
 
-    public void PerformClick(int selectedIndex)
+    public void PerformClick()
     {
-      buttonEntity.OnClick?.Invoke(selectedIndex);
+      buttonEntity.OnClick?.Invoke();
     }
   }
 
-  internal class SettingsEntityDropdownButtonView
-    : SettingsEntityDropdownPCView, IPointerEnterHandler, IPointerExitHandler
+  internal class SettingsEntityButtonView
+    : SettingsEntityView<SettingsEntityButtonVM>, IPointerEnterHandler, IPointerExitHandler
   {
-    private SettingsEntityDropdownButtonVM VM => ViewModel as SettingsEntityDropdownButtonVM;
-
     public override VirtualListLayoutElementSettings LayoutSettings
     {
       get
       {
-        bool set_mOverrideType = m_LayoutSettings == null;
+        var set_mOverrideType = m_LayoutSettings == null;
         m_LayoutSettings ??= new();
         if (set_mOverrideType)
         {
@@ -75,13 +73,12 @@ namespace ModMenu.NewTypes
 
     public override void BindViewImplementation()
     {
-      base.BindViewImplementation();
-      Title.text = VM.Title;
-      ButtonLabel.text = VM.Text;
+      Title.text = ViewModel.Title;
+      ButtonLabel.text = ViewModel.Text;
       Button.OnLeftClick.RemoveAllListeners();
       Button.OnLeftClick.AddListener(() =>
       {
-        VM.PerformClick(VM.GetTempValue());
+        ViewModel.PerformClick();
       });
 
       SetupColor(isHighlighted: false);
@@ -125,3 +122,4 @@ namespace ModMenu.NewTypes
     }
   }
 }
+

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 
-namespace ModMenu
+namespace ModMenu.Utils
 {
   /// <summary>
   /// Generic utils for simple operations.
@@ -27,7 +27,7 @@ namespace ModMenu
     {
       var assembly = Assembly.GetExecutingAssembly();
       using var stream = assembly.GetManifestResourceStream(embeddedImage);
-      byte[] bytes = new byte[stream.Length];
+      var bytes = new byte[stream.Length];
       stream.Read(bytes, 0, bytes.Length);
       var texture = new Texture2D(128, 128, TextureFormat.RGBA32, false);
       _ = texture.LoadImage(bytes);

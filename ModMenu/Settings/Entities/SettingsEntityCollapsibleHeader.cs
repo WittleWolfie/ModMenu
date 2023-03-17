@@ -7,7 +7,7 @@ using Owlcat.Runtime.UI.VirtualListSystem.ElementSettings;
 using System.Collections.Generic;
 using TMPro;
 
-namespace ModMenu.NewTypes
+namespace ModMenu.Settings.Entities
 {
   internal class SettingsEntityCollapsibleHeaderVM : SettingsEntityHeaderVM
   {
@@ -39,7 +39,7 @@ namespace ModMenu.NewTypes
 
     internal void Expand()
     {
-      bool expanded = true;
+      var expanded = true;
       foreach (var entityVM in SettingsInGroup)
       {
         if (entityVM is SettingsEntitySubHeaderVM subHeader)
@@ -76,7 +76,7 @@ namespace ModMenu.NewTypes
     {
       get
       {
-        bool set_mOverrideType = m_LayoutSettings == null;
+        var set_mOverrideType = m_LayoutSettings == null;
         m_LayoutSettings ??=
           new()
           {

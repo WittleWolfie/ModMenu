@@ -3,7 +3,7 @@ using Kingmaker.UI.SettingsUI;
 using Owlcat.Runtime.UI.VirtualListSystem.ElementSettings;
 using UnityEngine;
 
-namespace ModMenu.NewTypes
+namespace ModMenu.Settings.Entities
 {
   internal class UISettingsEntitySubHeader : UISettingsEntityBase
   {
@@ -12,7 +12,7 @@ namespace ModMenu.NewTypes
 
     internal static UISettingsEntitySubHeader Create(LocalizedString title, bool expanded)
     {
-      var subHeader = ScriptableObject.CreateInstance<UISettingsEntitySubHeader>();
+      var subHeader = CreateInstance<UISettingsEntitySubHeader>();
       subHeader.Title = title;
       subHeader.Expanded = expanded;
       return subHeader;
@@ -33,7 +33,7 @@ namespace ModMenu.NewTypes
     {
       get
       {
-        bool set_mOverrideType = m_LayoutSettings == null;
+        var set_mOverrideType = m_LayoutSettings == null;
         m_LayoutSettings ??=
           new()
           {

@@ -21,7 +21,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Object = UnityEngine.Object;
 
-namespace ModMenu.NewTypes
+namespace ModMenu.Settings.Entities
 {
   internal class SettingsEntityPatches
   {
@@ -83,7 +83,7 @@ namespace ModMenu.NewTypes
           // Add all settings in each group to the corresponding expand/collapse button
           SettingsEntityCollapsibleHeaderVM headerVM = null;
           SettingsEntitySubHeaderVM subHeaderVM = null;
-          for (int i = 0; i < __instance.m_SettingEntities.Count; i++)
+          for (var i = 0; i < __instance.m_SettingEntities.Count; i++)
           {
             var entity = __instance.m_SettingEntities[i];
             if (entity is SettingsEntitySubHeaderVM subHeader)
