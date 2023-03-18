@@ -1,6 +1,9 @@
-﻿using Kingmaker.Settings;
+﻿using HarmonyLib;
+using Kingmaker.Settings;
+using Kingmaker.UI;
 using Kingmaker.UI.SettingsUI;
 using ModMenu.Settings;
+using ModMenu.Window;
 using System;
 using System.Collections.Generic;
 
@@ -11,6 +14,7 @@ namespace ModMenu
   /// </summary>
   public static class ModMenu
   {
+    #region Settings
     /// <summary>
     /// Stores all settings entities in the mod menu.
     /// </summary>
@@ -149,5 +153,41 @@ namespace ModMenu
     {
       return SetSetting<SettingsEntityInt, int>(key, value);
     }
+    #endregion
+
+    #region Windows
+    /// <summary>
+    /// Stores all windows by key.
+    /// </summary>
+    private static readonly Dictionary<string, WindowBuilder> Windows = new();
+
+    /// <summary>
+    /// Adds a new window.
+    /// </summary>
+    /// 
+    /// <exception cref="ArgumentException">
+    /// Thrown when <paramref name="window"/> uses a key that already exists.
+    /// </exception>
+    public static void AddWindow(WindowBuilder window)
+    {
+      if (Windows.ContainsKey(window.Key))
+        throw new ArgumentException($"Attempt to add window failed: a window with key {window.Key} already exists.");
+      Windows.Add(window.Key, window);
+    }
+
+    /// <summary>
+    /// Opens the full screen window with the specified <paramref name="key"/>
+    /// </summary>
+    /// 
+    /// <exception cref="ArgumentException">
+    /// Thrown when a window does not exist for <paramref name="key"/>
+    /// </exception>
+    public static void ShowWindow(string key)
+    {
+      if (Windows.ContainsKey(key))
+        throw new ArgumentException($"No window with key {key} exists.");
+      WindowView.ShowWindow(Windows[key]);
+    }
+    #endregion
   }
 }

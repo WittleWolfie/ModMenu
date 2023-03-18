@@ -1,5 +1,6 @@
 ﻿using Kingmaker.Localization;
 using Kingmaker.UI.SettingsUI;
+using ModMenu.Utils;
 using System.Text;
 using UnityEngine;
 using static Kingmaker.UI.KeyboardAccess;
@@ -23,7 +24,7 @@ namespace ModMenu.Settings
 
     private class UISettingsEntityDropdownTestEnum : UISettingsEntityDropdownEnum<TestEnum> { }
 
-    internal void Initialize()
+    internal static void Initialize()
     {
       ModMenu.AddSettings(
         SettingsBuilder.New(RootKey, CreateString("title", "Testing settings"))
@@ -134,12 +135,12 @@ namespace ModMenu.Settings
               .OnTempValueChanged(value => Main.Logger.Log($"Currently selected dropdown button is {value}"))));
     }
 
-    private void OnKeyPress()
+    private static void OnKeyPress()
     {
       Main.Logger.Log($"Key was pressed!");
     }
 
-    private void OnClick()
+    private static void OnClick()
     {
       var log = new StringBuilder();
       log.AppendLine("Current settings: ");
@@ -152,23 +153,23 @@ namespace ModMenu.Settings
       Main.Logger.Log(log.ToString());
     }
 
-    private void OnDefaultsApplied()
+    private static void OnDefaultsApplied()
     {
       Main.Logger.NativeLog("Defaults were applied!");
     }
 
-    private bool CheckToggle()
+    private static bool CheckToggle()
     {
       Main.Logger.NativeLog("Checking toggle");
       return ModMenu.GetSettingValue<bool>(GetKey("toggle"));
     }
 
-    private void OnToggle(bool value)
+    private static void OnToggle(bool value)
     {
       Main.Logger.Log($"Toggle switched to {value}");
     }
 
-    private void OnSliderFloatChanged(float value)
+    private static void OnSliderFloatChanged(float value)
     {
       Main.Logger.Log($"Float slider changed to {value}");
     }

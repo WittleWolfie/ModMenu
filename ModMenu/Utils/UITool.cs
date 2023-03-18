@@ -98,7 +98,10 @@ namespace ModMenu.Utils
     /// Adds <paramref name="obj"/> as a child of <paramref name="parent"/>.
     /// </summary>
     /// 
-    /// <remarks>Resets the position, scale, and rotation.</remarks>
+    /// <remarks>
+    /// Resets the position, scale, and rotation. Usually this is what you want, but if you set something custom be
+    /// sure to set after calling this.
+    /// </remarks>
     public static void AddTo(this Transform obj, Transform parent)
     {
       obj.SetParent(parent);

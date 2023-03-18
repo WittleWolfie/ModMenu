@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using Kingmaker.PubSubSystem;
-using Kingmaker.UI;
 using Kingmaker.UI.FullScreenUITypes;
 using Kingmaker.UI.MVVM._PCView.ChangeVisual;
 using Kingmaker.UI.MVVM._PCView.InGame;
@@ -19,25 +18,20 @@ namespace ModMenu.Window
   //    - Grid + Linear + Absolute?
   // - Define action to launch the screen
   // - Implement layout using build structure
-  internal class WindowView : ViewBase<BookPageVM>
+  internal class WindowView : ViewBase<WindowVM>
   {
-    // TODO: Replace meee
-    [HarmonyPatch(typeof(EscHotkeyManager))]
-    static class EscHotkeyManager_Patch
-    {
-      [HarmonyPatch(nameof(EscHotkeyManager.OnEscPressed)), HarmonyPrefix]
-      static bool OnEscPressed()
-      {
-        Main.Logger.Log("Escape shown (manager)!");
-        InGameStaticPartPCView_Patch.WindowVM.Value = new(DisposeBookPage);
-        return false;
-      }
+    private static WindowView BaseView;
+    private static readonly ReactiveProperty<WindowVM> WindowVM = new();
 
-      private static void DisposeBookPage()
-      {
-        InGameStaticPartPCView_Patch.WindowVM.Value?.Dispose();
-        InGameStaticPartPCView_Patch.WindowVM.Value = null;
-      }
+    internal static void ShowWindow(WindowBuilder window)
+    {
+      WindowVM.Value = new(window, DisposeWindow);
+    }
+
+    internal static void DisposeWindow()
+    {
+      WindowVM.Value?.Dispose();
+      WindowVM.Value = null;
     }
 
     public override void BindViewImplementation()
@@ -53,16 +47,14 @@ namespace ModMenu.Window
     [HarmonyPatch(typeof(InGameStaticPartPCView))]
     static class InGameStaticPartPCView_Patch
     {
-      internal static WindowView Prefab;
-      internal static readonly ReactiveProperty<BookPageVM> WindowVM = new();
 
       [HarmonyPatch(nameof(InGameStaticPartPCView.Initialize)), HarmonyPostfix]
       static void Initialize(InGameStaticPartPCView __instance)
       {
         try
         {
-          Main.Logger.NativeLog("Initializing WindowView Prefab");
-          Prefab = CreatePrefab(__instance.m_ChangeVisualPCView);
+          Main.Logger.NativeLog("Initializing WindowView BaseView");
+          BaseView = Create(__instance.m_ChangeVisualPCView);
         }
         catch (Exception e)
         {
@@ -76,7 +68,7 @@ namespace ModMenu.Window
         try
         {
           Main.Logger.NativeLog("Binding to WindowVM");
-          __instance.AddDisposable(WindowVM.Subscribe(Prefab.Bind));
+          __instance.AddDisposable(WindowVM.Subscribe(BaseView.Bind));
         }
         catch (Exception e)
         {
@@ -84,25 +76,37 @@ namespace ModMenu.Window
         }
       }
 
-      internal static WindowView CreatePrefab(ChangeVisualPCView changeVisualView)
+      internal static WindowView Create(ChangeVisualPCView changeVisualView)
       {
         var prefab = GameObject.Instantiate(changeVisualView.gameObject);
-        prefab.DestroyComponents<ChangeVisualPCView>();
         prefab.transform.AddTo(changeVisualView.transform.parent);
+
+        prefab.DestroyComponents<ChangeVisualPCView>();
+        // TODO: Add as components!
+        prefab.DestroyChildren(
+          "Window/InteractionSlot",
+          "Window/Inventory",
+          "Window/Doll",
+          "Window/BackToStashButton",
+          "Window/ChangeItemsPool",
+          "Window/Header"); 
+
         return prefab.AddComponent<WindowView>();
       }
     }
   }
 
   // TODO: Basically the entire implementation :(
-  internal class BookPageVM : BaseDisposable, IViewModel
+  internal class WindowVM : BaseDisposable, IViewModel
   {
+    private readonly WindowBuilder Window;
     private readonly Action DisposeAction;
 
-    internal BookPageVM(Action disposeAction)
+    internal WindowVM(WindowBuilder window, Action disposeAction)
     {
+      Window = window;
       DisposeAction = disposeAction;
-      EventBus.RaiseEvent<IFullScreenUIHandler>(h => h.HandleFullScreenUiChanged(state: true, FullScreenUIType.Unknown));
+      EventBus.RaiseEvent<IFullScreenUIHandler>(h => h.HandleFullScreenUiChanged(state: true, FullScreenUIType.CharacterScreen));
     }
 
     public override void DisposeImplementation()

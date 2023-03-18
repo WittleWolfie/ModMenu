@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Kingmaker.Blueprints.JsonSystem;
 using ModMenu.Settings;
+using ModMenu.Window;
 using System;
 using static UnityModManagerNet.UnityModManager;
 using static UnityModManagerNet.UnityModManager.ModEntry;
@@ -49,7 +50,8 @@ namespace ModMenu
       {
         try
         {
-          new TestSettings().Initialize();
+          TestSettings.Initialize();
+          TestWindow.Initialize();
         }
         catch (Exception e)
         {
