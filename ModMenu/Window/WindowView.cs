@@ -13,7 +13,6 @@ using UnityEngine;
 namespace ModMenu.Window
 {
   // TODO:
-  // - Remove all the stuff we don't need from ChangeVisualPCView
   // - Create basic view element prefabs
   // - Define build structure to create a screen
   //    - Grid + Linear + Absolute?
