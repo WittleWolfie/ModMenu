@@ -5,6 +5,8 @@ using Kingmaker.UI.FullScreenUITypes;
 using Kingmaker.UI.MVVM._PCView.ChangeVisual;
 using Kingmaker.UI.MVVM._PCView.InGame;
 using ModMenu.Utils;
+using Owlcat.Runtime.UI.Controls.Button;
+using Owlcat.Runtime.UI.Controls.Other;
 using Owlcat.Runtime.UI.MVVM;
 using System;
 using UniRx;
@@ -20,8 +22,9 @@ namespace ModMenu.Window
   // - Implement layout using build structure
   internal class WindowView : ViewBase<WindowVM>
   {
+    #region Static
     private static WindowView BaseView;
-    private static readonly ReactiveProperty<WindowVM> WindowVM = new();
+    internal static readonly ReactiveProperty<WindowVM> WindowVM = new();
 
     internal static void ShowWindow(WindowBuilder window)
     {
@@ -33,16 +36,25 @@ namespace ModMenu.Window
       WindowVM.Value?.Dispose();
       WindowVM.Value = null;
     }
+    #endregion
+
+    private OwlcatButton CloseButton;
 
     public override void BindViewImplementation()
     {
       gameObject.SetActive(true);
+      AddDisposable(Game.Instance.UI.EscManager.Subscribe(ViewModel.Close));
+      AddDisposable(CloseButton.OnLeftClickAsObservable().Subscribe(_ => ViewModel.Close()));
     }
 
     public override void DestroyViewImplementation()
     {
       gameObject.SetActive(false);
-      AddDisposable(Game.Instance.UI.EscManager.Subscribe(ViewModel.Close));
+    }
+
+    internal void Initialize()
+    {
+      CloseButton = gameObject.ChildObject("Window/Close").GetComponent<OwlcatButton>();
     }
 
     [HarmonyPatch(typeof(InGameStaticPartPCView))]
@@ -79,12 +91,12 @@ namespace ModMenu.Window
 
       internal static WindowView Create(ChangeVisualPCView changeVisualView)
       {
-        var prefab = GameObject.Instantiate(changeVisualView.gameObject);
-        prefab.transform.AddTo(changeVisualView.transform.parent);
+        var obj = GameObject.Instantiate(changeVisualView.gameObject);
+        obj.transform.AddTo(changeVisualView.transform.parent);
 
-        prefab.DestroyComponents<ChangeVisualPCView>();
+        obj.DestroyComponents<ChangeVisualPCView>();
         // TODO: Add as components!
-        prefab.DestroyChildren(
+        obj.DestroyChildren(
           "Window/InteractionSlot",
           "Window/Inventory",
           "Window/Doll",
@@ -92,7 +104,9 @@ namespace ModMenu.Window
           "Window/ChangeItemsPool",
           "Window/Header"); 
 
-        return prefab.AddComponent<WindowView>();
+        var view = obj.AddComponent<WindowView>();
+        view.Initialize();
+        return view;
       }
     }
   }

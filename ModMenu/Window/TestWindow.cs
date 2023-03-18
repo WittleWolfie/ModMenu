@@ -21,24 +21,21 @@ namespace ModMenu.Window
     [HarmonyPatch(typeof(EscHotkeyManager))]
     static class EscHotkeyManager_Patch
     {
-      private static bool IsOpen = false;
-
       [HarmonyPatch(nameof(EscHotkeyManager.OnEscPressed)), HarmonyPrefix]
       static bool OnEscPressed()
       {
         try
         {
-          if (IsOpen)
-          {
-            Main.Logger.Log("Hiding test window.");
-            WindowView.DisposeWindow();
-          }
-          else
+          if (WindowView.WindowVM.Value is null)
           {
             Main.Logger.Log("Showing test window.");
             ModMenu.ShowWindow(Key);
           }
-          IsOpen = !IsOpen;
+          else
+          {
+            Main.Logger.Log("Hiding test window.");
+            WindowView.DisposeWindow();
+          }
           return false;
         }
         catch (Exception e)
