@@ -110,5 +110,13 @@ namespace ModMenu.Utils
       obj.localRotation = Quaternion.identity;
       obj.Rect().anchoredPosition = Vector3.zero;
     }
+
+    /// <summary>
+    /// Sets the sibling index to match the specified <paramref name="path"/> in the parent object
+    /// </summary>
+    public static void MakeSibling(this GameObject obj, string path)
+    {
+      obj.transform.SetSiblingIndex(obj.transform.parent.gameObject.ChildObject(path).transform.GetSiblingIndex());
+    }
   }
 }

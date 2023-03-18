@@ -93,6 +93,7 @@ namespace ModMenu.Window
       {
         var obj = GameObject.Instantiate(changeVisualView.gameObject);
         obj.transform.AddTo(changeVisualView.transform.parent);
+        obj.MakeSibling("ServiceWindowsPCView");
 
         obj.DestroyComponents<ChangeVisualPCView>();
         // TODO: Add as components!
