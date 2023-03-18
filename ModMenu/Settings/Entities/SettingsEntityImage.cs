@@ -37,7 +37,7 @@ namespace ModMenu.Settings.Entities
       ImageScale = imageEntity.ImageScale;
     }
 
-    protected override void DisposeImplementation() { }
+    public override void DisposeImplementation() { }
   }
 
   internal class SettingsEntityImageView : VirtualListElementViewBase<SettingsEntityImageVM>
@@ -81,7 +81,7 @@ namespace ModMenu.Settings.Entities
     public Image Icon;
     public GameObject TopBorder;
 
-    protected override void BindViewImplementation()
+    public override void BindViewImplementation()
     {
       Icon.sprite = ViewModel.Sprite;
 
@@ -114,7 +114,7 @@ namespace ModMenu.Settings.Entities
       SetHeight(height);
     }
 
-    protected override void DestroyViewImplementation() { }
+    public override void DestroyViewImplementation() { }
   }
 }
 

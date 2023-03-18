@@ -41,12 +41,12 @@ namespace ModMenu.Window
       }
     }
 
-    protected override void BindViewImplementation()
+    public override void BindViewImplementation()
     {
       gameObject.SetActive(true);
     }
 
-    protected override void DestroyViewImplementation()
+    public override void DestroyViewImplementation()
     {
       gameObject.SetActive(false);
     }
@@ -107,11 +107,10 @@ namespace ModMenu.Window
     internal BookPageVM(Action disposeAction)
     {
       DisposeAction = disposeAction;
-
-      EventBus.RaiseEvent<IFullScreenUIHandler>(h => h.HandleFullScreenUiChanged(state: true, FullScreenUIType.ChangeVisual));
+      EventBus.RaiseEvent<IFullScreenUIHandler>(h => h.HandleFullScreenUiChanged(state: true, FullScreenUIType.Unknown));
     }
 
-    protected override void DisposeImplementation()
+    public override void DisposeImplementation()
     {
       DisposeAction();
     }
