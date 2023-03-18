@@ -7,7 +7,6 @@ using Kingmaker.UI.MVVM._PCView.InGame;
 using ModMenu.Utils;
 using Owlcat.Runtime.UI.MVVM;
 using System;
-using System.Reflection;
 using UniRx;
 using UnityEngine;
 
@@ -54,10 +53,6 @@ namespace ModMenu.Window
     [HarmonyPatch(typeof(InGameStaticPartPCView))]
     static class InGameStaticPartPCView_Patch
     {
-      // TODO: Publicize
-      internal static readonly MethodInfo AddDisposable =
-        AccessTools.Method(typeof(InGameStaticPartPCView), "AddDisposable");
-
       internal static WindowView Prefab;
       internal static readonly ReactiveProperty<BookPageVM> WindowVM = new();
 
@@ -81,7 +76,7 @@ namespace ModMenu.Window
         try
         {
           Main.Logger.NativeLog("Binding to WindowVM");
-          AddDisposable.Invoke(__instance, new[] { WindowVM.Subscribe(Prefab.Bind) });
+          __instance.AddDisposable(WindowVM.Subscribe(Prefab.Bind));
         }
         catch (Exception e)
         {
