@@ -9,6 +9,7 @@ using Owlcat.Runtime.UI.Controls.Button;
 using Owlcat.Runtime.UI.Controls.Other;
 using Owlcat.Runtime.UI.MVVM;
 using System;
+using TMPro;
 using UniRx;
 using UnityEngine;
 
@@ -39,12 +40,15 @@ namespace ModMenu.Window
     #endregion
 
     private OwlcatButton CloseButton;
+    private TextMeshProUGUI Header;
 
     public override void BindViewImplementation()
     {
       gameObject.SetActive(true);
       AddDisposable(Game.Instance.UI.EscManager.Subscribe(ViewModel.Close));
       AddDisposable(CloseButton.OnLeftClickAsObservable().Subscribe(_ => ViewModel.Close()));
+
+      Header.text = ViewModel.Header;
     }
 
     public override void DestroyViewImplementation()
@@ -55,6 +59,7 @@ namespace ModMenu.Window
     internal void Initialize()
     {
       CloseButton = gameObject.ChildObject("Window/Close").GetComponent<OwlcatButton>();
+      Header = gameObject.ChildObject("Window/Header").GetComponentInChildren<TextMeshProUGUI>();
     }
 
     [HarmonyPatch(typeof(InGameStaticPartPCView))]
@@ -102,8 +107,7 @@ namespace ModMenu.Window
           "Window/Inventory",
           "Window/Doll",
           "Window/BackToStashButton",
-          "Window/ChangeItemsPool",
-          "Window/Header"); 
+          "Window/ChangeItemsPool"); 
 
         var view = obj.AddComponent<WindowView>();
         view.Initialize();
@@ -135,5 +139,7 @@ namespace ModMenu.Window
     {
       DisposeImplementation();
     }
+
+    internal string Header => Window.Title;
   }
 }
