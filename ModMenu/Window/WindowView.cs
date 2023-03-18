@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Kingmaker;
 using Kingmaker.PubSubSystem;
 using Kingmaker.UI.FullScreenUITypes;
 using Kingmaker.UI.MVVM._PCView.ChangeVisual;
@@ -42,6 +43,7 @@ namespace ModMenu.Window
     public override void DestroyViewImplementation()
     {
       gameObject.SetActive(false);
+      AddDisposable(Game.Instance.UI.EscManager.Subscribe(ViewModel.Close));
     }
 
     [HarmonyPatch(typeof(InGameStaticPartPCView))]
@@ -117,7 +119,7 @@ namespace ModMenu.Window
 
     internal void Close()
     {
-      DisposeAction?.Invoke();
+      DisposeImplementation();
     }
   }
 }
