@@ -17,12 +17,16 @@ namespace ModMenu.Window
       ModMenu.AddWindow(WindowBuilder.New(Key, Helpers.CreateString("mod-menu.window.title", "Test Window")));
     }
 
-    [HarmonyPatch(nameof(EscHotkeyManager.OnEscPressed)), HarmonyPrefix]
-    static bool OnEscPressed()
+    [HarmonyPatch(typeof(EscHotkeyManager))]
+    static class EscHotkeyManager_Patch
     {
-      Main.Logger.Log("Escape shown (manager)!");
-      ModMenu.ShowWindow(Key);
-      return false;
+      [HarmonyPatch(nameof(EscHotkeyManager.OnEscPressed)), HarmonyPrefix]
+      static bool OnEscPressed()
+      {
+        Main.Logger.Log("Escape shown (manager)!");
+        ModMenu.ShowWindow(Key);
+        return false;
+      }
     }
   }
 #endif
