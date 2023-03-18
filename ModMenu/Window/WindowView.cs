@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Kingmaker;
 using Kingmaker.PubSubSystem;
+using Kingmaker.UI;
 using Kingmaker.UI.FullScreenUITypes;
 using Kingmaker.UI.MVVM._PCView.ChangeVisual;
 using Kingmaker.UI.MVVM._PCView.InGame;
@@ -41,6 +42,7 @@ namespace ModMenu.Window
 
     private OwlcatButton CloseButton;
     private TextMeshProUGUI Header;
+    private GridLayoutGroupWorkaround Root;
 
     public override void BindViewImplementation()
     {
@@ -48,7 +50,15 @@ namespace ModMenu.Window
       AddDisposable(Game.Instance.UI.EscManager.Subscribe(ViewModel.Close));
       AddDisposable(CloseButton.OnLeftClickAsObservable().Subscribe(_ => ViewModel.Close()));
 
-      Header.text = ViewModel.Header;
+      if (!string.IsNullOrEmpty(ViewModel.Header))
+      {
+        Header.text = ViewModel.Header;
+        Header.gameObject.SetActive(true);
+      }
+      else
+      {
+        Header.gameObject.SetActive(false);
+      }
     }
 
     public override void DestroyViewImplementation()
@@ -60,12 +70,31 @@ namespace ModMenu.Window
     {
       CloseButton = gameObject.ChildObject("Window/Close").GetComponent<OwlcatButton>();
       Header = gameObject.ChildObject("Window/Header").GetComponentInChildren<TextMeshProUGUI>();
+
+      // TODO: So this works! But the hierarchy isn't quite right and we need to re-do the configuration.
+      // The positioning is off and the cells aren't resizing the way I'd expect.
+      // Looks like GridLayoutGroup doesn't support resizing based on content so this should only be used for
+      // fixed width / height content.
+      // Otherwise need to look at the different LayoutGroups (e.g. HorizontalLayoutGroup).
+      //
+      // Basic Plan:
+      //  - Add 2 & 3 column layout (probably multiple VerticalLayoutGroup children?)
+      //    - This can probably be done by finding a generic "Window" and just cloning it
+      //  - Within each column can either insert a bunch of things vertically or a Grid
+      //    - I don't think we should support nested layouts
+      //  - Special add a bunch of existing game things like doll, icon windows, etc.
+      //  - Cry?
+      //  - Start on the leveling UI oh god
+      var window = gameObject.ChildObject("Window");
+      window.DestroyComponents<HorizontalLayoutGroupWorkaround>();
+      Root = window.AddComponent<GridLayoutGroupWorkaround>();
+      var anotherHeader = GameObject.Instantiate(Header);
+      anotherHeader.transform.AddTo(Root.transform);
     }
 
     [HarmonyPatch(typeof(InGameStaticPartPCView))]
     static class InGameStaticPartPCView_Patch
     {
-
       [HarmonyPatch(nameof(InGameStaticPartPCView.Initialize)), HarmonyPostfix]
       static void Initialize(InGameStaticPartPCView __instance)
       {
@@ -107,7 +136,7 @@ namespace ModMenu.Window
           "Window/Inventory",
           "Window/Doll",
           "Window/BackToStashButton",
-          "Window/ChangeItemsPool"); 
+          "Window/ChangeItemsPool");
 
         var view = obj.AddComponent<WindowView>();
         view.Initialize();
