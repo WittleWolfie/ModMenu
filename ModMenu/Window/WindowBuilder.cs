@@ -65,15 +65,15 @@ namespace ModMenu.Window
     internal LocalizedString Title;
 
     /// <param name="key">Globally unique key / name for the window. Case insensitive.</param>
-    /// <param name="title">Title displayed on the window.</param>
-    public static WindowBuilder New(string key, LocalizedString title)
+    /// <param name="title">Title displayed on the window, or null for none</param>
+    public static WindowBuilder New(string key, LocalizedString title = null)
     {
       return new(key, title);
     }
 
     /// <param name="key">Globally unique key / name for the window. Case insensitive.</param>
-    /// <param name="title">Title displayed on the window.</param>
-    public WindowBuilder(string key, LocalizedString title)
+    /// <param name="title">Title displayed on the window, or null for none</param>
+    public WindowBuilder(string key, LocalizedString title = null)
     {
       Key = key.ToLower();
       Title = title;
