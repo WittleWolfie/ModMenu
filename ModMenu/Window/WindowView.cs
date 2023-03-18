@@ -106,12 +106,13 @@ namespace ModMenu.Window
     {
       Window = window;
       DisposeAction = disposeAction;
-      EventBus.RaiseEvent<IFullScreenUIHandler>(h => h.HandleFullScreenUiChanged(state: true, FullScreenUIType.CharacterScreen));
+      EventBus.RaiseEvent<IFullScreenUIHandler>(h => h.HandleFullScreenUiChanged(state: true, FullScreenUIType.Unknown));
     }
 
     public override void DisposeImplementation()
     {
       DisposeAction();
+      EventBus.RaiseEvent<IFullScreenUIHandler>(h => h.HandleFullScreenUiChanged(state: false, FullScreenUIType.Unknown));
     }
 
     internal void Close()
