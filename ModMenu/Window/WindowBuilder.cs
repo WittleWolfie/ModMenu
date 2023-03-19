@@ -1,4 +1,5 @@
 ﻿using Kingmaker.Localization;
+using System.Collections.Generic;
 
 namespace ModMenu.Window
 {
@@ -62,6 +63,8 @@ namespace ModMenu.Window
   public class WindowBuilder
   {
     internal readonly string Key;
+
+    internal readonly List<BaseElement> Elements = new();
     internal LocalizedString Title;
 
     /// <param name="key">Globally unique key / name for the window. Case insensitive.</param>
@@ -77,6 +80,32 @@ namespace ModMenu.Window
     {
       Key = key.ToLower();
       Title = title;
+    }
+
+    // TODO Layouts:
+    //  - WidgetList
+    //  - HorizontalLayout
+    //  - VerticalLayout
+    //  - GridLayout
+    //  - Scrolling List (thing Change Visual RHS)
+    // TODO Elements:
+    //  - Character Doll & Slots
+    //  - Draggable Item "Slot"
+    //  - Buttons
+    //  - Text [DONE]
+    //  - Expandable Headers?
+    //  - Images?
+    // TODO Misc.:
+    //  - Sounds?
+    //  - Text formatting?
+    //
+    // Notes:
+    //  - Root should be absolute positioning
+
+    public WindowBuilder AddText(LocalizedString text, AbsoluteLayoutParams layoutParams = null)
+    {
+      Elements.Add(new TextElement(text, layoutParams));
+      return this;
     }
   }
 }

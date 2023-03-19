@@ -1,7 +1,6 @@
 ﻿using HarmonyLib;
 using Kingmaker;
 using Kingmaker.PubSubSystem;
-using Kingmaker.UI;
 using Kingmaker.UI.FullScreenUITypes;
 using Kingmaker.UI.MVVM._PCView.ChangeVisual;
 using Kingmaker.UI.MVVM._PCView.InGame;
@@ -10,6 +9,7 @@ using Owlcat.Runtime.UI.Controls.Button;
 using Owlcat.Runtime.UI.Controls.Other;
 using Owlcat.Runtime.UI.MVVM;
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UniRx;
 using UnityEngine;
@@ -40,9 +40,9 @@ namespace ModMenu.Window
     }
     #endregion
 
+    private Transform Window;
     private OwlcatButton CloseButton;
     private TextMeshProUGUI Header;
-    private GridLayoutGroupWorkaround Root;
 
     public override void BindViewImplementation()
     {
@@ -59,6 +59,20 @@ namespace ModMenu.Window
       {
         Header.gameObject.SetActive(false);
       }
+
+      ViewModel.Elements.ForEach(BindElement);
+    }
+
+    private void BindElement(BaseElement element)
+    {
+      switch (element.Type)
+      {
+        case ElementType.Text:
+          (element as TextElement).Instantiate(Window);
+          break;
+        default:
+          throw new InvalidOperationException($"Unsupported element type: {element.Type}");
+      }
     }
 
     public override void DestroyViewImplementation()
@@ -68,6 +82,7 @@ namespace ModMenu.Window
 
     internal void Initialize()
     {
+      Window = gameObject.ChildObject("Window").transform;
       CloseButton = gameObject.ChildObject("Window/Close").GetComponent<OwlcatButton>();
       Header = gameObject.ChildObject("Window/Header").GetComponentInChildren<TextMeshProUGUI>();
 
@@ -85,11 +100,11 @@ namespace ModMenu.Window
       //  - Special add a bunch of existing game things like doll, icon windows, etc.
       //  - Cry?
       //  - Start on the leveling UI oh god
-      var window = gameObject.ChildObject("Window");
-      window.DestroyComponents<HorizontalLayoutGroupWorkaround>();
-      Root = window.AddComponent<GridLayoutGroupWorkaround>();
-      var anotherHeader = GameObject.Instantiate(Header);
-      anotherHeader.transform.AddTo(Root.transform);
+      //var window = gameObject.ChildObject("Window");
+      //window.DestroyComponents<HorizontalLayoutGroupWorkaround>();
+      //Root = window.AddComponent<GridLayoutGroupWorkaround>();
+      //var anotherHeader = GameObject.Instantiate(Header);
+      //anotherHeader.transform.AddTo(Root.transform);
     }
 
     [HarmonyPatch(typeof(InGameStaticPartPCView))]
@@ -102,6 +117,7 @@ namespace ModMenu.Window
         {
           Main.Logger.NativeLog("Initializing WindowView BaseView");
           BaseView = Create(__instance.m_ChangeVisualPCView);
+          Prefabs.Create();
         }
         catch (Exception e)
         {
@@ -168,6 +184,8 @@ namespace ModMenu.Window
     {
       DisposeImplementation();
     }
+
+    internal List<BaseElement> Elements => Window.Elements;
 
     internal string Header => Window.Title;
   }

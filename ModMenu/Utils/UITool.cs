@@ -3,6 +3,7 @@ using System.Linq;
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using Kingmaker;
 
 namespace ModMenu.Utils
 {
@@ -12,6 +13,11 @@ namespace ModMenu.Utils
   /// </summary>
   public static class UITool
   {
+    /// <summary>
+    /// Root transform for the static UI elements.
+    /// </summary>
+    public static Transform StaticCanvas => Game.Instance.UI.Canvas.transform;
+
     /// <summary>
     /// Returns the Transform matching the specified <paramref name="path"/>
     /// </summary>
