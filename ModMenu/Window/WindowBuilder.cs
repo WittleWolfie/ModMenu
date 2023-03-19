@@ -91,7 +91,7 @@ namespace ModMenu.Window
     // TODO Elements:
     //  - Character Doll & Slots
     //  - Draggable Item "Slot"
-    //  - Buttons
+    //  - Buttons [DONE]
     //  - Text [DONE]
     //  - Expandable Headers?
     //  - Images?
