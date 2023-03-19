@@ -119,5 +119,9 @@ namespace ModMenu.Window
       Elements.Add(new ButtonElement(text, onLeftClick, style, layoutParams, onRightClick));
       return this;
     }
+    
+    // TODO:
+    //  - To support customized stuff, just provide an add function accepting a callback which returns a list of
+    //    IViewModel objects + callback to intantiate + binder
   }
 }
