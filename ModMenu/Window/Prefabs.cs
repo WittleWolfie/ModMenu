@@ -14,19 +14,23 @@ namespace ModMenu.Window
   internal static class Prefabs
   {
     internal static GameObject Text;
+    internal static GameObject Button;
 
-    // Basic idea: create a copy of our original prefabs, removing anything not needed. This way when we spawn from
-    // prefab we don't have to remove a bunch of things.
     internal static void Create()
     {
       Main.Logger.Log("Creating prefabs");
-      //var canvas = view.gameObject.ChildObject("StaticCanvas");
       CreateText();
+      CreateButton();
     }
 
     private static void CreateText()
     {
-      Text = GameObject.Instantiate(UITool.StaticCanvas.gameObject.ChildObject("ChangeVisualPCView/Window/Header/Header"));
+      Text = GameObject.Instantiate(UITool.StaticCanvas.ChildObject("ChangeVisualPCView/Window/Header/Header"));
+    }
+
+    private static void CreateButton()
+    {
+      Button = GameObject.Instantiate(UITool.StaticCanvas.ChildObject("ChangeVisualPCView/Window/BackToStashButton/OwlcatButton"));
     }
   }
 }

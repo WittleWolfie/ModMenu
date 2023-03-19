@@ -102,9 +102,21 @@ namespace ModMenu.Window
     // Notes:
     //  - Root should be absolute positioning
 
-    public WindowBuilder AddText(LocalizedString text, AbsoluteLayoutParams layoutParams = null)
+    public WindowBuilder AddText(
+      LocalizedString text, TextStyle style = null, AbsoluteLayoutParams layoutParams = null)
     {
-      Elements.Add(new TextElement(text, layoutParams));
+      Elements.Add(new TextElement(text, style, layoutParams));
+      return this;
+    }
+
+    public WindowBuilder AddButton(
+      LocalizedString text,
+      OnClick onLeftClick,
+      ButtonStyle style = null,
+      AbsoluteLayoutParams layoutParams = null,
+      OnClick onRightClick = null)
+    {
+      Elements.Add(new ButtonElement(text, onLeftClick, style, layoutParams, onRightClick));
       return this;
     }
   }

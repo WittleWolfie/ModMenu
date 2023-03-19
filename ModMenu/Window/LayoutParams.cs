@@ -7,30 +7,23 @@ namespace ModMenu.Window
   /// </summary>
   /// <param name="transform">The Unity <see cref="Transform"/> ready for display</param>
   /// <param name="id">An identifier used to identify a specific view</param>
-  public delegate void OnLayout(Transform transform, string id);
+  public delegate void OnBind(Transform transform, string id);
 
   public abstract class LayoutParams
   {
-    /// <summary>
-    /// Identifier for a specific view.
-    /// </summary>
-    public string ID { get; private set; }
+    internal readonly string ID;
+    private readonly OnBind Binder;
 
-    /// <summary>
-    /// Callback when the view is ready to be displayed
-    /// </summary>
-    public OnLayout LayoutHandler { get; private set; }
-
-    protected LayoutParams(string id, OnLayout layoutHandler)
+    protected LayoutParams(string id, OnBind binder)
     {
       ID = id;
-      LayoutHandler = layoutHandler;
+      Binder = binder;
     }
 
     internal void Apply(Transform transform)
     {
-      if (LayoutHandler is not null)
-        LayoutHandler(transform, ID);
+      if (Binder is not null)
+        Binder(transform, ID);
       ApplyInternal(transform);
     }
 
@@ -51,7 +44,7 @@ namespace ModMenu.Window
       Vector3? position = null,
       Vector3? scale = null,
       Quaternion? rotation = null,
-      OnLayout layoutHandler = null) : base(id, layoutHandler)
+      OnBind binder = null) : base(id, binder)
     {
       Position = position;
       Scale = scale;

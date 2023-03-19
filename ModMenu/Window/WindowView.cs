@@ -65,14 +65,7 @@ namespace ModMenu.Window
 
     private void BindElement(BaseElement element)
     {
-      switch (element.Type)
-      {
-        case ElementType.Text:
-          (element as TextElement).Instantiate(Window);
-          break;
-        default:
-          throw new InvalidOperationException($"Unsupported element type: {element.Type}");
-      }
+      element.Instantiate(Window);
     }
 
     public override void DestroyViewImplementation()

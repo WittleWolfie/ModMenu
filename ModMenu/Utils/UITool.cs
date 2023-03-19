@@ -16,7 +16,7 @@ namespace ModMenu.Utils
     /// <summary>
     /// Root transform for the static UI elements.
     /// </summary>
-    public static Transform StaticCanvas => Game.Instance.UI.Canvas.transform;
+    public static GameObject StaticCanvas => Game.Instance.UI.Canvas.gameObject;
 
     /// <summary>
     /// Returns the Transform matching the specified <paramref name="path"/>

@@ -3,6 +3,7 @@ using Kingmaker.Localization;
 using Kingmaker.UI;
 using ModMenu.Utils;
 using System;
+using TMPro;
 using UnityEngine;
 
 namespace ModMenu.Window
@@ -19,15 +20,22 @@ namespace ModMenu.Window
     {
       ModMenu.AddWindow(
         WindowBuilder.New(Key, CreateString("window.title", "Test Window"))
-          .AddText(CreateString("first-text", "First text!"), new("first-text"))
+          .AddText(CreateString("first-text", "First text!"), layoutParams: new("first-text"))
           .AddText(
             CreateString("second-text", "Second text!"),
-            new(
+            style: new(color: Color.green),
+            layoutParams: new(
               "second-text",
               position: new(200, 200, 0),
               scale: new(2f, 2f, 1f),
               rotation: Quaternion.Euler(0, 0, 45),
-              layoutHandler: OnLayoutCalled)));
+              binder: OnBind))
+          .AddButton(
+            CreateString(GetKey("first-button"), "Click Me!"),
+            onLeftClick: OnLeftClick,
+            style: new(new(color: Color.red)),
+            layoutParams: new("first-button", position: new(-200, 200, 0)),
+            onRightClick: OnRightClick));
     }
 
     private static LocalizedString CreateString(string key, string text)
@@ -35,9 +43,19 @@ namespace ModMenu.Window
       return Helpers.CreateString(GetKey(key), text);
     }
 
-    private static void OnLayoutCalled(Transform transform, string id)
+    private static void OnBind(Transform transform, string id)
     {
-      Main.Logger.Log($"OnLayout called: {id}");
+      Main.Logger.Log($"OnBind called: {id}");
+    }
+
+    private static void OnLeftClick(string id, bool enabled, bool doubleClick)
+    {
+      Main.Logger.Log($"Left Click: id - {id}, enabled - {enabled}, double - {doubleClick}");
+    }
+
+    private static void OnRightClick(string id, bool enabled, bool doubleClick)
+    {
+      Main.Logger.Log($"Right Click: id - {id}, enabled - {enabled}, double - {doubleClick}");
     }
 
     private static string GetKey(string key)
