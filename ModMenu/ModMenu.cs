@@ -184,9 +184,10 @@ namespace ModMenu
     /// </exception>
     public static void ShowWindow(string key)
     {
-      if (!Windows.ContainsKey(key))
-        throw new ArgumentException($"No window with key {key} exists.");
-      WindowView.ShowWindow(Windows[key]);
+      var actualKey = key.ToLower();
+      if (!Windows.ContainsKey(actualKey))
+        throw new ArgumentException($"No window with key {actualKey} exists.");
+      WindowView.ShowWindow(Windows[actualKey]);
     }
     #endregion
   }
