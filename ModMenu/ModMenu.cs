@@ -4,6 +4,7 @@ using Kingmaker.UI;
 using Kingmaker.UI.SettingsUI;
 using ModMenu.Settings;
 using ModMenu.Window;
+using ModMenu.Window.Views;
 using System;
 using System.Collections.Generic;
 

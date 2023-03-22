@@ -1,4 +1,5 @@
 ﻿using Kingmaker.Localization;
+using ModMenu.Window.Layout;
 using System.Collections.Generic;
 
 namespace ModMenu.Window
@@ -65,6 +66,7 @@ namespace ModMenu.Window
     internal readonly string Key;
 
     internal readonly List<BaseElement> Elements = new();
+    internal readonly List<BaseContainer> Containers = new();
     internal LocalizedString Title;
 
     /// <param name="key">Globally unique key / name for the window. Case insensitive.</param>

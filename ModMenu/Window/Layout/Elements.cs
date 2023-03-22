@@ -4,7 +4,7 @@ using Owlcat.Runtime.UI.Controls.Button;
 using TMPro;
 using UnityEngine;
 
-namespace ModMenu.Window
+namespace ModMenu.Window.Layout
 {
   internal enum ElementType
   {
@@ -51,7 +51,7 @@ namespace ModMenu.Window
 
     protected override Transform InstantiateInternal()
     {
-      var transform = GameObject.Instantiate(Prefabs.Text).transform;
+      var transform = Object.Instantiate(Prefabs.Text).transform;
       var text = transform.GetComponent<TextMeshProUGUI>();
       text.SetText(Text);
       Style?.Apply(text);
@@ -92,7 +92,7 @@ namespace ModMenu.Window
 
     protected override Transform InstantiateInternal()
     {
-      var transform = GameObject.Instantiate(Prefabs.Button).transform;
+      var transform = Object.Instantiate(Prefabs.Button).transform;
       var button = transform.GetComponent<OwlcatButton>();
       button.gameObject.ChildObject("Text").GetComponent<TextMeshProUGUI>().SetText(Text);
 

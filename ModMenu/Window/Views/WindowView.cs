@@ -5,6 +5,7 @@ using Kingmaker.UI.FullScreenUITypes;
 using Kingmaker.UI.MVVM._PCView.ChangeVisual;
 using Kingmaker.UI.MVVM._PCView.InGame;
 using ModMenu.Utils;
+using ModMenu.Window.Layout;
 using Owlcat.Runtime.UI.Controls.Button;
 using Owlcat.Runtime.UI.Controls.Other;
 using Owlcat.Runtime.UI.MVVM;
@@ -14,7 +15,7 @@ using TMPro;
 using UniRx;
 using UnityEngine;
 
-namespace ModMenu.Window
+namespace ModMenu.Window.Views
 {
   // TODO:
   // - Create basic view element prefabs
@@ -61,11 +62,17 @@ namespace ModMenu.Window
       }
 
       ViewModel.Elements.ForEach(BindElement);
+      ViewModel.Containers.ForEach(BindContainer);
     }
 
     private void BindElement(BaseElement element)
     {
       element.Instantiate(Window);
+    }
+
+    private void BindContainer(BaseContainer container)
+    {
+      container.Instantiate(Window);
     }
 
     public override void DestroyViewImplementation()
@@ -134,7 +141,7 @@ namespace ModMenu.Window
 
       internal static WindowView Create(ChangeVisualPCView changeVisualView)
       {
-        var obj = GameObject.Instantiate(changeVisualView.gameObject);
+        var obj = Instantiate(changeVisualView.gameObject);
         obj.transform.AddTo(changeVisualView.transform.parent);
         obj.MakeSibling("ServiceWindowsPCView");
 
@@ -179,6 +186,7 @@ namespace ModMenu.Window
     }
 
     internal List<BaseElement> Elements => Window.Elements;
+    internal List<BaseContainer> Containers => Window.Containers;
 
     internal string Header => Window.Title;
   }

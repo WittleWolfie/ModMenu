@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace ModMenu.Window
+namespace ModMenu.Window.Layout
 {
   /// <summary>
   /// Called when a view is ready for display.

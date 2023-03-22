@@ -15,12 +15,14 @@ namespace ModMenu.Window
   {
     internal static GameObject Text;
     internal static GameObject Button;
+    internal static GameObject WidgetList;
 
     internal static void Create()
     {
       Main.Logger.Log("Creating prefabs");
       CreateText();
       CreateButton();
+      CreateWidgetList();
     }
 
     private static void CreateText()
@@ -31,6 +33,11 @@ namespace ModMenu.Window
     private static void CreateButton()
     {
       Button = GameObject.Instantiate(UITool.StaticCanvas.ChildObject("ChangeVisualPCView/Window/BackToStashButton/OwlcatButton"));
+    }
+
+    private static void CreateWidgetList()
+    {
+
     }
   }
 }

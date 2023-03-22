@@ -3,7 +3,7 @@ using Owlcat.Runtime.UI.Controls.Button;
 using TMPro;
 using UnityEngine;
 
-namespace ModMenu.Window
+namespace ModMenu.Window.Layout
 {
   public class TextStyle
   {

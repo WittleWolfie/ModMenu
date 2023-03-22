@@ -2,6 +2,7 @@
 using Kingmaker.Localization;
 using Kingmaker.UI;
 using ModMenu.Utils;
+using ModMenu.Window.Views;
 using System;
 using TMPro;
 using UnityEngine;
