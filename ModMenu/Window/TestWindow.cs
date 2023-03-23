@@ -2,6 +2,7 @@
 using Kingmaker.Localization;
 using Kingmaker.UI;
 using ModMenu.Utils;
+using ModMenu.Window.Layout;
 using ModMenu.Window.Views;
 using System;
 using TMPro;
@@ -27,7 +28,7 @@ namespace ModMenu.Window
             style: new(color: Color.green),
             layoutParams: new(
               "second-text",
-              position: new(200, 200, 0),
+              position: new(200, 200),
               scale: new(2f, 2f, 1f),
               rotation: Quaternion.Euler(0, 0, 45),
               binder: OnBind))
@@ -35,8 +36,14 @@ namespace ModMenu.Window
             CreateString(GetKey("first-button"), "Click Me!"),
             onLeftClick: OnLeftClick,
             style: new(new(color: Color.red)),
-            layoutParams: new("first-button", position: new(-200, 200, 0)),
-            onRightClick: OnRightClick));
+            layoutParams: new("first-button", position: new(-200, 200)),
+            onRightClick: OnRightClick)
+          .AddGrid(
+            GridBuilder.New("first-grid")
+              .AddText(CreateString("first-cell", "First Cell!"))
+              .AddButton(CreateString("second-cell", "Second Cell"), onLeftClick: OnLeftClick),
+            style: GridStyle.FixedColumns(3),
+            layoutParams: new("first-grid", position: new(-800, 400))));
     }
 
     private static LocalizedString CreateString(string key, string text)

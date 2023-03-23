@@ -61,27 +61,24 @@ namespace ModMenu.Window
   /// </code>
   /// </example>
   /// </remarks>
-  public class WindowBuilder
+  public class GridBuilder
   {
+    // TODO: Maybe we can make interfaces for adding elements to the builder? IContainerBuilder<T>
+
     internal readonly string Key;
 
     internal readonly List<BaseElement> Elements = new();
-    internal readonly List<BaseContainer> Containers = new();
-    internal LocalizedString Title;
 
-    /// <param name="key">Globally unique key / name for the window. Case insensitive.</param>
-    /// <param name="title">Title displayed on the window, or null for none</param>
-    public static WindowBuilder New(string key, LocalizedString title = null)
+    /// <param name="key">Globally unique key / name for the grid. Case insensitive.</param>
+    public static GridBuilder New(string key)
     {
-      return new(key, title);
+      return new(key);
     }
 
-    /// <param name="key">Globally unique key / name for the window. Case insensitive.</param>
-    /// <param name="title">Title displayed on the window, or null for none</param>
-    public WindowBuilder(string key, LocalizedString title = null)
+    /// <param name="key">Globally unique key / name for the grid. Case insensitive.</param>
+    public GridBuilder(string key)
     {
       Key = key.ToLower();
-      Title = title;
     }
 
     // TODO Layouts:
@@ -104,14 +101,14 @@ namespace ModMenu.Window
     // Notes:
     //  - Root should be absolute positioning
 
-    public WindowBuilder AddText(
+    public GridBuilder AddText(
       LocalizedString text, TextStyle style = null, AbsoluteLayoutParams layoutParams = null)
     {
       Elements.Add(new TextElement(text, style, layoutParams));
       return this;
     }
 
-    public WindowBuilder AddButton(
+    public GridBuilder AddButton(
       LocalizedString text,
       OnClick onLeftClick,
       ButtonStyle style = null,
@@ -119,12 +116,6 @@ namespace ModMenu.Window
       OnClick onRightClick = null)
     {
       Elements.Add(new ButtonElement(text, onLeftClick, style, layoutParams, onRightClick));
-      return this;
-    }
-
-    public WindowBuilder AddGrid(GridBuilder grid, GridStyle style = null, AbsoluteLayoutParams layoutParams = null)
-    {
-      Containers.Add(new GridContainer(grid, style, layoutParams));
       return this;
     }
     

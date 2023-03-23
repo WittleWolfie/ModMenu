@@ -45,6 +45,8 @@ namespace ModMenu.Window.Views
     private OwlcatButton CloseButton;
     private TextMeshProUGUI Header;
 
+    private readonly List<Transform> Children = new();
+
     public override void BindViewImplementation()
     {
       gameObject.SetActive(true);
@@ -67,17 +69,19 @@ namespace ModMenu.Window.Views
 
     private void BindElement(BaseElement element)
     {
-      element.Instantiate(Window);
+      Children.Add(element.Instantiate(Window));
     }
 
     private void BindContainer(BaseContainer container)
     {
-      container.Instantiate(Window);
+      Children.Add(container.Instantiate(Window));
     }
 
     public override void DestroyViewImplementation()
     {
       gameObject.SetActive(false);
+
+      Children.ForEach(GameObject.DestroyImmediate);
     }
 
     internal void Initialize()

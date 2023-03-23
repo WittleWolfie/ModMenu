@@ -58,6 +58,9 @@
     <Reference Include="Owlcat.Runtime.UI.dll">
       <HintPath>$(SolutionDir)lib\Owlcat.Runtime.UI_public.dll</HintPath>
     </Reference>
+    <Reference Include="Owlcat.Runtime.Core.dll">
+      <HintPath>$(WrathPath)\Wrath_Data\Managed\Owlcat.Runtime.Core.dll</HintPath>
+    </Reference>
     <Reference Include="Owlcat.Runtime.Validation.dll">
       <HintPath>$(WrathPath)\Wrath_Data\Managed\Owlcat.Runtime.Validation.dll</HintPath>
     </Reference>

@@ -1,4 +1,5 @@
-﻿using ModMenu.Utils;
+﻿using Kingmaker.UI.MVVM._PCView.ServiceWindows.CharacterInfo.Sections.Abilities;
+using ModMenu.Utils;
 using UnityEngine;
 
 namespace ModMenu.Window
@@ -15,14 +16,14 @@ namespace ModMenu.Window
   {
     internal static GameObject Text;
     internal static GameObject Button;
-    internal static GameObject WidgetList;
+    internal static GameObject Grid;
 
     internal static void Create()
     {
       Main.Logger.Log("Creating prefabs");
       CreateText();
       CreateButton();
-      CreateWidgetList();
+      CreateGrid();
     }
 
     private static void CreateText()
@@ -35,9 +36,11 @@ namespace ModMenu.Window
       Button = GameObject.Instantiate(UITool.StaticCanvas.ChildObject("ChangeVisualPCView/Window/BackToStashButton/OwlcatButton"));
     }
 
-    private static void CreateWidgetList()
+    private static void CreateGrid()
     {
-
+      Grid = GameObject.Instantiate(
+        UITool.StaticCanvas.ChildObject(
+          "ServiceWindowsPCView/Background/Windows/SpellbookPCView/SpellbookScreen/MainContainer/KnownSpells/StandardScrollView/"));
     }
   }
 }

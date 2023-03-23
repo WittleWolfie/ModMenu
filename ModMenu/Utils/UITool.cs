@@ -67,6 +67,16 @@ namespace ModMenu.Utils
     }
 
     /// <summary>
+    /// Calls <see cref="GameObject.AddComponent(Type)"/> then executes <paramref name="build"/> on the new component
+    /// </summary>
+    public static T CreateComponent<T>(this GameObject obj, Action<T> build) where T : Component
+    {
+      var component = obj.AddComponent<T>();
+      build(component);
+      return component;
+    }
+
+    /// <summary>
     /// Invokes <paramref name="build"/> on the first component of type <typeparamref name="T"/> and returns it
     /// </summary>
     public static T EditComponent<T>(this GameObject obj, Action<T> build) where T : Component
