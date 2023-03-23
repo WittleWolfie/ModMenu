@@ -90,26 +90,6 @@ namespace ModMenu.Window.Views
       Window = gameObject.ChildObject("Window").transform;
       CloseButton = gameObject.ChildObject("Window/Close").GetComponent<OwlcatButton>();
       Header = gameObject.ChildObject("Window/Header").GetComponentInChildren<TextMeshProUGUI>();
-
-      // TODO: So this works! But the hierarchy isn't quite right and we need to re-do the configuration.
-      // The positioning is off and the cells aren't resizing the way I'd expect.
-      // Looks like GridLayoutGroup doesn't support resizing based on content so this should only be used for
-      // fixed width / height content.
-      // Otherwise need to look at the different LayoutGroups (e.g. HorizontalLayoutGroup).
-      //
-      // Basic Plan:
-      //  - Add 2 & 3 column layout (probably multiple VerticalLayoutGroup children?)
-      //    - This can probably be done by finding a generic "Window" and just cloning it
-      //  - Within each column can either insert a bunch of things vertically or a Grid
-      //    - I don't think we should support nested layouts
-      //  - Special add a bunch of existing game things like doll, icon windows, etc.
-      //  - Cry?
-      //  - Start on the leveling UI oh god
-      //var window = gameObject.ChildObject("Window");
-      //window.DestroyComponents<HorizontalLayoutGroupWorkaround>();
-      //Root = window.AddComponent<GridLayoutGroupWorkaround>();
-      //var anotherHeader = GameObject.Instantiate(Header);
-      //anotherHeader.transform.AddTo(Root.transform);
     }
 
     [HarmonyPatch(typeof(InGameStaticPartPCView))]

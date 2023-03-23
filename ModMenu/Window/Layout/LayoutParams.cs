@@ -22,9 +22,9 @@ namespace ModMenu.Window.Layout
 
     internal void Apply(Transform transform)
     {
+      ApplyInternal(transform);
       if (Binder is not null)
         Binder(transform, ID);
-      ApplyInternal(transform);
     }
 
     protected abstract void ApplyInternal(Transform transform);

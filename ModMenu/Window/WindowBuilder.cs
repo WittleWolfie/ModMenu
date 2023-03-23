@@ -122,6 +122,9 @@ namespace ModMenu.Window
       return this;
     }
 
+    // TODO: Grid needs to be its own thing not a builder. Only use builders for horizontal / vertical containers.
+    // TODO: Vertical / Horizontal containers can nest
+    // TODO: Grids just pull from a data source and scroll
     public WindowBuilder AddGrid(GridBuilder grid, GridStyle style = null, AbsoluteLayoutParams layoutParams = null)
     {
       Containers.Add(new GridContainer(grid, style, layoutParams));

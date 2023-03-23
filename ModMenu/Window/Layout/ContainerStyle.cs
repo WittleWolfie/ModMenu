@@ -1,4 +1,5 @@
 ﻿using Kingmaker.UI;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace ModMenu.Window.Layout
@@ -8,18 +9,40 @@ namespace ModMenu.Window.Layout
     private readonly GridLayoutGroup.Axis Axis;
     private readonly GridLayoutGroup.Constraint Constraint;
     private readonly int ConstraintCount;
+
     private readonly int Height;
     private readonly int Width;
 
-    public static GridStyle FixedColumns(int columnCount, int height = 50, int width = 200)
+    private readonly int CellHeight;
+    private readonly int CellWidth;
+
+    public static GridStyle FixedColumns(
+      int height,
+      int width,
+      int columnCount,
+      int cellHeight = 50,
+      int cellWidth = 200)
     {
       return new(
-        GridLayoutGroup.Axis.Horizontal, GridLayoutGroup.Constraint.FixedColumnCount, columnCount, height, width);
+        GridLayoutGroup.Axis.Horizontal,
+        GridLayoutGroup.Constraint.FixedColumnCount,
+        columnCount,
+        height,
+        width,
+        cellHeight,
+        cellWidth);
     }
 
-    public static GridStyle FixedRows(int rowCount, int height = 50, int width = 200)
+    public static GridStyle FixedRows(int height, int width, int rowCount, int cellHeight = 50, int cellWidth = 200)
     {
-      return new(GridLayoutGroup.Axis.Vertical, GridLayoutGroup.Constraint.FixedRowCount, rowCount, height, width);
+      return new(
+        GridLayoutGroup.Axis.Vertical,
+        GridLayoutGroup.Constraint.FixedRowCount,
+        rowCount,
+        height,
+        width,
+        cellHeight,
+        cellWidth);
     }
 
     private GridStyle(
@@ -27,13 +50,15 @@ namespace ModMenu.Window.Layout
       GridLayoutGroup.Constraint constraint,
       int constraintCount,
       int height,
-      int width)
+      int width,
+      int cellHeight,
+      int cellWidth)
     {
       Axis = axis;
       Constraint = constraint;
       ConstraintCount = constraintCount;
-      Height = height;
-      Width = width;
+      CellHeight = cellHeight;
+      CellWidth = cellWidth;
     }
 
     internal void Apply(GridLayoutGroupWorkaround grid)
@@ -41,7 +66,10 @@ namespace ModMenu.Window.Layout
       grid.startAxis = Axis;
       grid.constraint = Constraint;
       grid.constraintCount = ConstraintCount;
-      grid.cellSize = new(Width, Height);
+      grid.cellSize = new(CellWidth, CellHeight);
+
+      var viewport = grid.transform.parent;
+      viewport.GetComponent<RectTransform>().sizeDelta = new(Width, Height);
     }
   }
 }
