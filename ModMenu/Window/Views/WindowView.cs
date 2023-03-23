@@ -81,7 +81,8 @@ namespace ModMenu.Window.Views
     {
       gameObject.SetActive(false);
 
-      Children.ForEach(GameObject.DestroyImmediate);
+      Children.ForEach(child => GameObject.DestroyImmediate(child.gameObject));
+      Children.Clear();
     }
 
     internal void Initialize()
