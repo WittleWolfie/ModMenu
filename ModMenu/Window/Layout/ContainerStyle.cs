@@ -33,7 +33,12 @@ namespace ModMenu.Window.Layout
         cellWidth);
     }
 
-    public static GridStyle FixedRows(int height, int width, int rowCount, int cellHeight = 50, int cellWidth = 200)
+    public static GridStyle FixedRows(
+      int height,
+      int width,
+      int rowCount,
+      int cellHeight = 50,
+      int cellWidth = 200)
     {
       return new(
         GridLayoutGroup.Axis.Vertical,
