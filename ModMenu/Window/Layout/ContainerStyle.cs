@@ -64,6 +64,8 @@ namespace ModMenu.Window.Layout
       ConstraintCount = constraintCount;
       CellHeight = cellHeight;
       CellWidth = cellWidth;
+      Height = height;
+      Width = width;
     }
 
     internal void Apply(GridLayoutGroupWorkaround grid)

@@ -41,8 +41,10 @@ namespace ModMenu.Window
           .AddGrid(
             GridBuilder.New("first-grid")
               .AddText(CreateString("first-cell", "First Cell!"))
-              .AddButton(CreateString("second-cell", "Second Cell"), onLeftClick: OnLeftClick),
-            style: GridStyle.FixedColumns(200, 200, 3),
+              .AddButton(CreateString("second-cell", "Second Cell"), onLeftClick: OnLeftClick)
+              .AddText(CreateString("third-cell", "3"))
+              .AddText(CreateString("fourth-cell", "Fourth!")),
+            style: GridStyle.FixedColumns(100, 400, 3),
             layoutParams: new("first-grid", position: new(-800, 400))));
     }
 
