@@ -5,6 +5,7 @@ using ModMenu.Window.Views;
 using Owlcat.Runtime.UI.Controls.Button;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace ModMenu.Window.Layout
 {
@@ -28,7 +29,11 @@ namespace ModMenu.Window.Layout
     {
       var transform = InstantiateInternal();
       transform.AddTo(parent);
-      LayoutParams?.Apply(transform);
+      //LayoutParams?.Apply(transform);
+      transform.Rect().anchorMin = new(0.05f, 0.05f);
+      transform.Rect().anchorMax = new(0.95f, 0.95f);
+      transform.Rect().sizeDelta = Vector2.zero;
+      transform.gameObject.AddComponent<Image>().color = Color.blue;
       BindVM(transform);
       return transform;
     }
@@ -58,6 +63,7 @@ namespace ModMenu.Window.Layout
       var gridLayout = transform.GetComponentInChildren<GridLayoutGroupWorkaround>();
       Style?.Apply(gridLayout);
       transform.gameObject.CreateComponent<GridView>(view => view.Grid = gridLayout.transform);
+      transform.Find("Viewport").Rect().offsetMin = Vector2.zero;
       return transform;
     }
 
