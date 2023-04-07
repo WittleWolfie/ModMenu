@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using ModMenu.Utils;
+using UnityEngine;
 
 namespace ModMenu.Window.Layout
 {
@@ -28,6 +29,33 @@ namespace ModMenu.Window.Layout
     }
 
     protected abstract void ApplyInternal(Transform transform);
+  }
+
+  /// <summary>
+  /// Layout params which anchor themselves inside of the parent.
+  /// </summary>
+  public class RelativeLayoutParams : LayoutParams
+  {
+    private readonly Vector2? AnchorMin;
+    private readonly Vector2? AnchorMax;
+
+    public RelativeLayoutParams(
+      string id,
+      Vector2? anchorMin = null,
+      Vector2? anchorMax = null,
+      OnBind binder = null) : base(id, binder)
+    {
+      AnchorMin = anchorMin;
+      AnchorMax = anchorMax;
+    }
+
+    protected override void ApplyInternal(Transform transform)
+    {
+      var rect = transform.Rect();
+      rect.anchorMin = AnchorMin ?? new(0.05f, 0.05f);
+      rect.anchorMax = AnchorMax ?? new(0.95f, 0.95f);
+      rect.sizeDelta = Vector2.zero;
+    }
   }
 
   /// <summary>

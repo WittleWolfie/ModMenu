@@ -46,8 +46,8 @@ namespace ModMenu.Window
             onRightClick: OnRightClick)
           .AddGrid(
             gb,
-            style: GridStyle.FixedColumns(100, 400, 3),
-            layoutParams: new("first-grid", position: new(-800, 400))));
+            style: GridStyle.FixedColumns(3),
+            layoutParams: new("first-grid")));
     }
 
     private static LocalizedString CreateString(string key, string text)

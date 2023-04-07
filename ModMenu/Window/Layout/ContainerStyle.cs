@@ -1,5 +1,4 @@
 ﻿using Kingmaker.UI;
-using UnityEngine;
 using UnityEngine.UI;
 
 namespace ModMenu.Window.Layout
@@ -10,15 +9,10 @@ namespace ModMenu.Window.Layout
     private readonly GridLayoutGroup.Constraint Constraint;
     private readonly int ConstraintCount;
 
-    private readonly int Height;
-    private readonly int Width;
-
     private readonly int CellHeight;
     private readonly int CellWidth;
 
     public static GridStyle FixedColumns(
-      int height,
-      int width,
       int columnCount,
       int cellHeight = 50,
       int cellWidth = 200)
@@ -27,15 +21,11 @@ namespace ModMenu.Window.Layout
         GridLayoutGroup.Axis.Horizontal,
         GridLayoutGroup.Constraint.FixedColumnCount,
         columnCount,
-        height,
-        width,
         cellHeight,
         cellWidth);
     }
 
     public static GridStyle FixedRows(
-      int height,
-      int width,
       int rowCount,
       int cellHeight = 50,
       int cellWidth = 200)
@@ -44,8 +34,6 @@ namespace ModMenu.Window.Layout
         GridLayoutGroup.Axis.Vertical,
         GridLayoutGroup.Constraint.FixedRowCount,
         rowCount,
-        height,
-        width,
         cellHeight,
         cellWidth);
     }
@@ -54,8 +42,6 @@ namespace ModMenu.Window.Layout
       GridLayoutGroup.Axis axis,
       GridLayoutGroup.Constraint constraint,
       int constraintCount,
-      int height,
-      int width,
       int cellHeight,
       int cellWidth)
     {
@@ -64,8 +50,6 @@ namespace ModMenu.Window.Layout
       ConstraintCount = constraintCount;
       CellHeight = cellHeight;
       CellWidth = cellWidth;
-      Height = height;
-      Width = width;
     }
 
     internal void Apply(GridLayoutGroupWorkaround grid)
@@ -74,9 +58,6 @@ namespace ModMenu.Window.Layout
       grid.constraint = Constraint;
       grid.constraintCount = ConstraintCount;
       grid.cellSize = new(CellWidth, CellHeight);
-
-      var viewport = grid.transform.parent;
-      viewport.GetComponent<RectTransform>().sizeDelta = new(Width, Height);
     }
   }
 }

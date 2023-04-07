@@ -1,9 +1,6 @@
-﻿using Kingmaker.Localization;
-using Kingmaker.UI;
+﻿using Kingmaker.UI;
 using ModMenu.Utils;
 using ModMenu.Window.Views;
-using Owlcat.Runtime.UI.Controls.Button;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -29,10 +26,7 @@ namespace ModMenu.Window.Layout
     {
       var transform = InstantiateInternal();
       transform.AddTo(parent);
-      //LayoutParams?.Apply(transform);
-      transform.Rect().anchorMin = new(0.05f, 0.05f);
-      transform.Rect().anchorMax = new(0.95f, 0.95f);
-      transform.Rect().sizeDelta = Vector2.zero;
+      LayoutParams?.Apply(transform);
       transform.gameObject.AddComponent<Image>().color = Color.blue;
       BindVM(transform);
       return transform;
@@ -51,7 +45,7 @@ namespace ModMenu.Window.Layout
     private readonly GridBuilder Grid;
     private readonly GridStyle Style;
 
-    internal GridContainer(GridBuilder grid, GridStyle style, AbsoluteLayoutParams layoutParams) : base(layoutParams, ContainerType.Grid)
+    internal GridContainer(GridBuilder grid, GridStyle style, RelativeLayoutParams layoutParams) : base(layoutParams, ContainerType.Grid)
     {
       Grid = grid;
       Style = style;
