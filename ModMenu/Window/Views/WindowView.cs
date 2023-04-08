@@ -20,7 +20,7 @@ namespace ModMenu.Window.Views
   // TODO:
   // - Create basic view element prefabs
   // - Define build structure to create a screen
-  //    - Grid + Linear + Absolute?
+  //    - DataGrid + Linear + Absolute?
   // - Define action to launch the screen
   // - Implement layout using build structure
   internal class WindowView : ViewBase<WindowVM>

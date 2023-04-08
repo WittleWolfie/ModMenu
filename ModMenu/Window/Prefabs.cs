@@ -16,15 +16,18 @@ namespace ModMenu.Window
   {
     internal static GameObject Text;
     internal static GameObject Button;
-    internal static GameObject Grid;
+    internal static GameObject DataGrid;
+
     internal static CharInfoFeaturePCView Feature;
 
     internal static void Create()
     {
       Main.Logger.Log("Creating prefabs");
+
       CreateText();
       CreateButton();
-      CreateGrid();
+      CreateDataGrid();
+
       CreateFeature();
     }
 
@@ -38,9 +41,9 @@ namespace ModMenu.Window
       Button = GameObject.Instantiate(UITool.StaticCanvas.ChildObject("ChangeVisualPCView/Window/BackToStashButton/OwlcatButton"));
     }
 
-    private static void CreateGrid()
+    private static void CreateDataGrid()
     {
-      Grid = GameObject.Instantiate(
+      DataGrid = GameObject.Instantiate(
         UITool.StaticCanvas.ChildObject(
           "ServiceWindowsPCView/Background/Windows/SpellbookPCView/SpellbookScreen/MainContainer/KnownSpells/StandardScrollView/"));
     }

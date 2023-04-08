@@ -1,5 +1,4 @@
 ﻿using Kingmaker;
-using Kingmaker.UI.Common;
 using Kingmaker.UI.MVVM._PCView.ServiceWindows.CharacterInfo.Sections.Abilities;
 using Kingmaker.UI.MVVM._VM.ServiceWindows.CharacterInfo.Sections.Abilities;
 using Kingmaker.UnitLogic;
@@ -12,15 +11,20 @@ using UnityEngine;
 
 namespace ModMenu.Window.Views
 {
+  /// <summary>
+  /// Scrolling grid based on the spellbook known spells grid
+  /// </summary>
   internal class DataGridView : ViewBase<DataGridViewVM>
   {
+    // Track children so they are not retained when the window is destroyed
     private readonly List<Transform> Children = new();
 
     public override void BindViewImplementation()
     {
       gameObject.SetActive(true);
       Refresh();
-      ViewModel.OnRefresh(Refresh);
+      // Subscribe to the view model which will call this whenever the view should update
+      ViewModel.Subscribe(Refresh);
     }
 
     public override void DestroyViewImplementation()
@@ -33,10 +37,13 @@ namespace ModMenu.Window.Views
 
     private void Refresh()
     {
-      ViewModel.Features.ForEach(
+      // TODO: Should there be a bind callback here?
+      // TODO: How to handle clicks on items?
+
+      // CharInfoFeatures are copied as is from Owlcat so there's no Element class or styling.
+      ViewModel.CharInfoFeatures.ForEach(
         feature =>
         {
-          Main.Logger.Log("Binding a feature");
           var view = GameObject.Instantiate<CharInfoFeaturePCView>(Prefabs.Feature);
           view.Bind(feature);
           view.transform.AddTo(Grid);
@@ -49,49 +56,56 @@ namespace ModMenu.Window.Views
 
   internal class DataGridViewVM : BaseDisposable, IViewModel
   {
+    internal List<CharInfoFeatureVM> CharInfoFeatures = new();
+
     private readonly WindowBuilder.GetFeatures FeatureProvider;
 
-    internal DataGridViewVM(WindowBuilder.GetFeatures featureProvider)
+    private Action OnRefresh;
+    private UnitDescriptor Unit => SelectedUnit.Value;
+    private readonly ReactiveProperty<UnitDescriptor> SelectedUnit = new();
+
+    private DataGridViewVM(bool observeSelectedUnit = true)
+    {
+      if (observeSelectedUnit)
+      {
+        AddDisposable(
+          Game.Instance.SelectionCharacter.SelectedUnit.Subscribe(
+            unit =>
+            {
+              SelectedUnit.Value = unit.Value;
+              Refresh();
+            }));
+      }
+    }
+
+    internal DataGridViewVM(WindowBuilder.GetFeatures featureProvider) : this()
     {
       FeatureProvider = featureProvider;
-      AddDisposable(
-        Game.Instance.SelectionCharacter.SelectedUnit.Subscribe(
-          unit =>
-          {
-            SelectedUnit.Value = unit.Value;
-            Refresh();
-          }));
     }
 
     public override void DisposeImplementation() { }
 
     private void Refresh()
     {
-      Main.Logger.Log($"Refreshing: {Unit}");
-      foreach (var vm in Features)
+      Main.Logger.NativeLog($"Refreshing: {Unit}");
+      foreach (var vm in CharInfoFeatures)
         vm.Dispose();
 
-      Features = new();
+      CharInfoFeatures = new();
 
       if (Unit is null)
         return;
 
       foreach (var feature in FeatureProvider.Invoke(Unit))
-        Features.Add(new(feature));
+        CharInfoFeatures.Add(new(feature));
 
-      Main.Logger.Log($"Feature count for {Unit.CharacterName}: {Features.Count}");
-      RefreshView?.Invoke();
+      Main.Logger.NativeLog($"Feature count for {Unit.CharacterName}: {CharInfoFeatures.Count}");
+      OnRefresh?.Invoke();
     }
 
-    internal void OnRefresh(Action refreshView)
+    internal void Subscribe(Action onRefresh)
     {
-      RefreshView = refreshView;
+      OnRefresh = onRefresh;
     }
-
-    private Action RefreshView;
-    private UnitDescriptor Unit => SelectedUnit.Value;
-    internal readonly ReactiveProperty<UnitDescriptor> SelectedUnit = new();
-
-    internal List<CharInfoFeatureVM> Features = new();
   }
 }

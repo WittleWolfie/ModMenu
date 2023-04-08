@@ -38,14 +38,17 @@ namespace ModMenu.Window.Layout
   }
 
   /// <summary>
-  /// Grid layout container
+  /// DataGrid layout container
   /// </summary>
   internal class CharInfoFeatureGrid : BaseContainer
   {
     private readonly WindowBuilder.GetFeatures FeatureProvider;
     private readonly GridStyle Style;
 
-    internal CharInfoFeatureGrid(WindowBuilder.GetFeatures featureProvider, GridStyle style, RelativeLayoutParams layoutParams) : base(layoutParams, ContainerType.Grid)
+    internal CharInfoFeatureGrid(
+      WindowBuilder.GetFeatures featureProvider,
+      GridStyle style,
+      RelativeLayoutParams layoutParams) : base(layoutParams, ContainerType.Grid)
     {
       FeatureProvider = featureProvider;
       Style = style;
@@ -53,7 +56,7 @@ namespace ModMenu.Window.Layout
 
     protected override Transform InstantiateInternal()
     {
-      var transform = Object.Instantiate(Prefabs.Grid).transform;
+      var transform = Object.Instantiate(Prefabs.DataGrid).transform;
       var gridLayout = transform.GetComponentInChildren<GridLayoutGroupWorkaround>();
       Style?.Apply(gridLayout);
       transform.gameObject.CreateComponent<DataGridView>(view => view.Grid = gridLayout.transform);
