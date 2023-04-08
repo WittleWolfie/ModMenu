@@ -14,8 +14,8 @@ namespace ModMenu.Window.Layout
 
     public static GridStyle FixedColumns(
       int columnCount,
-      int cellHeight = 50,
-      int cellWidth = 200)
+      int cellHeight = 60,
+      int cellWidth = 346)
     {
       return new(
         GridLayoutGroup.Axis.Horizontal,
@@ -27,8 +27,8 @@ namespace ModMenu.Window.Layout
 
     public static GridStyle FixedRows(
       int rowCount,
-      int cellHeight = 50,
-      int cellWidth = 200)
+      int cellHeight = 60,
+      int cellWidth = 346)
     {
       return new(
         GridLayoutGroup.Axis.Vertical,

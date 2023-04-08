@@ -1,10 +1,14 @@
 ﻿using HarmonyLib;
 using Kingmaker.Localization;
 using Kingmaker.UI;
+using Kingmaker.UI.Common;
+using Kingmaker.UI.ServiceWindow.CharacterScreen;
+using Kingmaker.UnitLogic;
 using ModMenu.Utils;
 using ModMenu.Window.Layout;
 using ModMenu.Window.Views;
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
@@ -38,10 +42,19 @@ namespace ModMenu.Window
             style: new(new(color: Color.red)),
             layoutParams: new("first-button", position: new(-200, 200)),
             onRightClick: OnRightClick)
-          .AddGrid(
-            GridBuilder.Abilities("first-grid"),
+          .AddCharInfoFeatureGrid(
+            GetFeatures,
             style: GridStyle.FixedColumns(3),
             layoutParams: new("first-grid")));
+    }
+
+    private static IEnumerable<UIFeature> GetFeatures(UnitDescriptor unit)
+    {
+      return
+        UIUtilityUnit.ClearFromDublicatedFeatures(
+          UIUtilityUnit.CollectAbilityFeatures(unit),
+          UIUtilityUnit.CollectAbilities(unit),
+          UIUtilityUnit.CollectActivatableAbilities(unit));
     }
 
     private static LocalizedString CreateString(string key, string text)

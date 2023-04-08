@@ -1,4 +1,6 @@
 ﻿using Kingmaker.Localization;
+using Kingmaker.UI.ServiceWindow.CharacterScreen;
+using Kingmaker.UnitLogic;
 using ModMenu.Window.Layout;
 using System.Collections.Generic;
 
@@ -122,12 +124,18 @@ namespace ModMenu.Window
       return this;
     }
 
+
+    public delegate IEnumerable<UIFeature> GetFeatures(UnitDescriptor unit);
+
     // TODO: Grid needs to be its own thing not a builder. Only use builders for horizontal / vertical containers.
     // TODO: Vertical / Horizontal containers can nest
     // TODO: Grids just pull from a data source and scroll
-    public WindowBuilder AddGrid(GridBuilder grid, GridStyle style = null, RelativeLayoutParams layoutParams = null)
+    public WindowBuilder AddCharInfoFeatureGrid(
+      GetFeatures featureProvider,
+      GridStyle style = null,
+      RelativeLayoutParams layoutParams = null)
     {
-      Containers.Add(new GridContainer(grid, style, layoutParams));
+      Containers.Add(new CharInfoFeatureGrid(featureProvider, style, layoutParams));
       return this;
     }
     

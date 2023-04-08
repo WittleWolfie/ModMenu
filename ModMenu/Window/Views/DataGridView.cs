@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace ModMenu.Window.Views
 {
-  internal class GridView : ViewBase<GridViewVM>
+  internal class DataGridView : ViewBase<DataGridViewVM>
   {
     private readonly List<Transform> Children = new();
 
@@ -47,13 +47,13 @@ namespace ModMenu.Window.Views
     internal Transform Grid; 
   }
 
-  internal class GridViewVM : BaseDisposable, IViewModel
+  internal class DataGridViewVM : BaseDisposable, IViewModel
   {
-    private readonly GridBuilder Grid;
+    private readonly WindowBuilder.GetFeatures FeatureProvider;
 
-    internal GridViewVM(GridBuilder grid)
+    internal DataGridViewVM(WindowBuilder.GetFeatures featureProvider)
     {
-      Grid = grid;
+      FeatureProvider = featureProvider;
       AddDisposable(
         Game.Instance.SelectionCharacter.SelectedUnit.Subscribe(
           unit =>
@@ -76,18 +76,8 @@ namespace ModMenu.Window.Views
       if (Unit is null)
         return;
 
-      switch (Grid.Type)
-      {
-        case GridType.Abilities:
-          var abilities =
-            UIUtilityUnit.ClearFromDublicatedFeatures(
-              UIUtilityUnit.CollectAbilityFeatures(Unit),
-              UIUtilityUnit.CollectAbilities(Unit),
-              UIUtilityUnit.CollectActivatableAbilities(Unit));
-          foreach (var ability in abilities)
-            Features.Add(new(ability));
-          break;
-      }
+      foreach (var feature in FeatureProvider.Invoke(Unit))
+        Features.Add(new(feature));
 
       Main.Logger.Log($"Feature count for {Unit.CharacterName}: {Features.Count}");
       RefreshView?.Invoke();

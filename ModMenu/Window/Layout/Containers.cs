@@ -27,7 +27,7 @@ namespace ModMenu.Window.Layout
       var transform = InstantiateInternal();
       transform.AddTo(parent);
       LayoutParams?.Apply(transform);
-      transform.gameObject.AddComponent<Image>().color = Color.blue;
+     // transform.gameObject.AddComponent<Image>().color = Color.blue;
       BindVM(transform);
       return transform;
     }
@@ -40,14 +40,14 @@ namespace ModMenu.Window.Layout
   /// <summary>
   /// Grid layout container
   /// </summary>
-  internal class GridContainer : BaseContainer
+  internal class CharInfoFeatureGrid : BaseContainer
   {
-    private readonly GridBuilder Grid;
+    private readonly WindowBuilder.GetFeatures FeatureProvider;
     private readonly GridStyle Style;
 
-    internal GridContainer(GridBuilder grid, GridStyle style, RelativeLayoutParams layoutParams) : base(layoutParams, ContainerType.Grid)
+    internal CharInfoFeatureGrid(WindowBuilder.GetFeatures featureProvider, GridStyle style, RelativeLayoutParams layoutParams) : base(layoutParams, ContainerType.Grid)
     {
-      Grid = grid;
+      FeatureProvider = featureProvider;
       Style = style;
     }
 
@@ -56,15 +56,15 @@ namespace ModMenu.Window.Layout
       var transform = Object.Instantiate(Prefabs.Grid).transform;
       var gridLayout = transform.GetComponentInChildren<GridLayoutGroupWorkaround>();
       Style?.Apply(gridLayout);
-      transform.gameObject.CreateComponent<GridView>(view => view.Grid = gridLayout.transform);
+      transform.gameObject.CreateComponent<DataGridView>(view => view.Grid = gridLayout.transform);
       transform.Find("Viewport").Rect().offsetMin = Vector2.zero;
       return transform;
     }
 
     protected override void BindVM(Transform transform)
     {
-      var view = transform.gameObject.GetComponent<GridView>();
-      view.Bind(new(Grid));
+      var view = transform.gameObject.GetComponent<DataGridView>();
+      view.Bind(new(FeatureProvider));
     }
   }
 }
