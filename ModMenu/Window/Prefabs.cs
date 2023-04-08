@@ -17,6 +17,7 @@ namespace ModMenu.Window
     internal static GameObject Text;
     internal static GameObject Button;
     internal static GameObject Grid;
+    internal static CharInfoFeaturePCView Feature;
 
     internal static void Create()
     {
@@ -24,6 +25,7 @@ namespace ModMenu.Window
       CreateText();
       CreateButton();
       CreateGrid();
+      CreateFeature();
     }
 
     private static void CreateText()
@@ -41,6 +43,14 @@ namespace ModMenu.Window
       Grid = GameObject.Instantiate(
         UITool.StaticCanvas.ChildObject(
           "ServiceWindowsPCView/Background/Windows/SpellbookPCView/SpellbookScreen/MainContainer/KnownSpells/StandardScrollView/"));
+    }
+
+    private static void CreateFeature()
+    {
+      Feature = GameObject.Instantiate(
+        UITool.StaticCanvas.ChildObject(
+          "ServiceWindowsPCView/Background/Windows/CharacterInfoPCView/CharacterScreen/Abilities")
+            .GetComponent<CharInfoAbilitiesPCView>().m_WidgetEntityView.m_WidgetEntityView);
     }
   }
 }

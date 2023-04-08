@@ -4,6 +4,14 @@ using System.Collections.Generic;
 
 namespace ModMenu.Window
 {
+  public enum GridType
+  {
+    Abilities,
+    Feats,
+    Spells,
+    Custom
+  }
+
   // TODO: Add real docs
   /// <summary>
   /// Builder API for constructing a full screen window.
@@ -66,19 +74,19 @@ namespace ModMenu.Window
     // TODO: Maybe we can make interfaces for adding elements to the builder? IContainerBuilder<T>
 
     internal readonly string Key;
-
-    internal readonly List<BaseElement> Elements = new();
+    internal readonly GridType Type;
 
     /// <param name="key">Globally unique key / name for the grid. Case insensitive.</param>
-    public static GridBuilder New(string key)
+    public static GridBuilder Abilities(string key)
     {
-      return new(key);
+      return new(key, GridType.Abilities);
     }
 
     /// <param name="key">Globally unique key / name for the grid. Case insensitive.</param>
-    public GridBuilder(string key)
+    private GridBuilder(string key, GridType type)
     {
       Key = key.ToLower();
+      Type = type;
     }
 
     // TODO Layouts:
@@ -100,24 +108,6 @@ namespace ModMenu.Window
     //
     // Notes:
     //  - Root should be absolute positioning
-
-    public GridBuilder AddText(
-      LocalizedString text, TextStyle style = null, AbsoluteLayoutParams layoutParams = null)
-    {
-      Elements.Add(new TextElement(text, style, layoutParams));
-      return this;
-    }
-
-    public GridBuilder AddButton(
-      LocalizedString text,
-      OnClick onLeftClick,
-      ButtonStyle style = null,
-      AbsoluteLayoutParams layoutParams = null,
-      OnClick onRightClick = null)
-    {
-      Elements.Add(new ButtonElement(text, onLeftClick, style, layoutParams, onRightClick));
-      return this;
-    }
     
     // TODO:
     //  - To support customized stuff, just provide an add function accepting a callback which returns a list of

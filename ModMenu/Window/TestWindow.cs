@@ -20,12 +20,6 @@ namespace ModMenu.Window
 
     internal static void Initialize()
     {
-      var gb = GridBuilder.New("first-grid");
-      for (int i = 0; i < 100; i++)
-      {
-        gb.AddText(CreateString($"bob-{i}", $"Bob: {i}"));
-      }
-
       ModMenu.AddWindow(
         WindowBuilder.New(Key, CreateString("window.title", "Test Window"))
           .AddText(CreateString("first-text", "First text!"), layoutParams: new("first-text"))
@@ -45,7 +39,7 @@ namespace ModMenu.Window
             layoutParams: new("first-button", position: new(-200, 200)),
             onRightClick: OnRightClick)
           .AddGrid(
-            gb,
+            GridBuilder.Abilities("first-grid"),
             style: GridStyle.FixedColumns(3),
             layoutParams: new("first-grid")));
     }
