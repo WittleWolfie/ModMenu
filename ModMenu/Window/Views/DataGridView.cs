@@ -64,23 +64,16 @@ namespace ModMenu.Window.Views
     private UnitDescriptor Unit => SelectedUnit.Value;
     private readonly ReactiveProperty<UnitDescriptor> SelectedUnit = new();
 
-    private DataGridViewVM(bool observeSelectedUnit = true)
-    {
-      if (observeSelectedUnit)
-      {
-        AddDisposable(
-          Game.Instance.SelectionCharacter.SelectedUnit.Subscribe(
-            unit =>
-            {
-              SelectedUnit.Value = unit.Value;
-              Refresh();
-            }));
-      }
-    }
-
-    internal DataGridViewVM(WindowBuilder.GetFeatures featureProvider) : this()
+    internal DataGridViewVM(WindowBuilder.GetFeatures featureProvider)
     {
       FeatureProvider = featureProvider;
+      AddDisposable(
+        Game.Instance.SelectionCharacter.SelectedUnit.Subscribe(
+          unit =>
+          {
+            SelectedUnit.Value = unit.Value;
+            Refresh();
+          }));
     }
 
     public override void DisposeImplementation() { }
