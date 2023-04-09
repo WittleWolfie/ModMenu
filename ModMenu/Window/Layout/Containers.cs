@@ -27,7 +27,7 @@ namespace ModMenu.Window.Layout
       var transform = InstantiateInternal();
       transform.AddTo(parent);
       LayoutParams?.Apply(transform);
-     // transform.gameObject.AddComponent<Image>().color = Color.blue;
+      //transform.gameObject.AddComponent<Image>().color = Color.blue;
       BindVM(transform);
       return transform;
     }

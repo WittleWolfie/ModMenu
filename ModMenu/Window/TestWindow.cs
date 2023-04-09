@@ -9,6 +9,7 @@ using ModMenu.Window.Layout;
 using ModMenu.Window.Views;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 
@@ -25,36 +26,47 @@ namespace ModMenu.Window
     internal static void Initialize()
     {
       ModMenu.AddWindow(
-        WindowBuilder.New(Key, CreateString("window.title", "Test Window"))
-          .AddText(CreateString("first-text", "First text!"), layoutParams: new("first-text"))
-          .AddText(
-            CreateString("second-text", "Second text!"),
-            style: new(color: Color.green),
-            layoutParams: new(
-              "second-text",
-              position: new(200, 200),
-              scale: new(2f, 2f, 1f),
-              rotation: Quaternion.Euler(0, 0, 45),
-              binder: OnBind))
+        WindowBuilder.New(Key, CreateString("window.title", "Armor Enchantments"))
           .AddButton(
-            CreateString(GetKey("first-button"), "Click Me!"),
+            CreateString(GetKey("finalize"), "Finalize Attunement"),
             onLeftClick: OnLeftClick,
-            style: new(new(color: Color.red)),
-            layoutParams: new("first-button", position: new(-200, 200)),
-            onRightClick: OnRightClick)
+            layoutParams: new("finalize-button", position: new(600, -400)))
+          .AddButton(
+            CreateString(GetKey("primary-weapon"), "Primary Weapon"),
+            onLeftClick: OnLeftClick,
+            layoutParams: new("primary-weapon-button", position: new(-600, -265)))
+          .AddButton(
+            CreateString(GetKey("secondary-weapon"), "Secondary Weapon"),
+            onLeftClick: OnLeftClick,
+            layoutParams: new("secondary-weapon-button", position: new(-600, -310)))
+          .AddButton(
+            CreateString(GetKey("armor"), "Armor"),
+            onLeftClick: OnLeftClick,
+            layoutParams: new("armor-button", position: new(-600, -355)))
+          .AddButton(
+            CreateString(GetKey("shield"), "Shield"),
+            onLeftClick: OnLeftClick,
+            layoutParams: new("shield-button", position: new(-600, -400)))
           .AddCharInfoFeatureGrid(
             GetFeatures,
-            style: GridStyle.FixedColumns(3),
-            layoutParams: new("first-grid")));
+            style: GridStyle.FixedColumns(4),
+            layoutParams: new("enchantments", anchorMin: new(0.12f, 0.3f), anchorMax: new(0.89f, 0.85f))));
     }
 
     private static IEnumerable<UIFeature> GetFeatures(UnitDescriptor unit)
     {
       return
         UIUtilityUnit.ClearFromDublicatedFeatures(
-          UIUtilityUnit.CollectAbilityFeatures(unit),
-          UIUtilityUnit.CollectAbilities(unit),
-          UIUtilityUnit.CollectActivatableAbilities(unit));
+            UIUtilityUnit.CollectAbilityFeatures(unit),
+            UIUtilityUnit.CollectAbilities(unit),
+            UIUtilityUnit.CollectActivatableAbilities(unit))
+          .Select(
+            feature =>
+            {
+              Main.Logger.Log($"Feature: {feature}");
+              feature.Rank = 2;
+              return feature;
+            });
     }
 
     private static LocalizedString CreateString(string key, string text)

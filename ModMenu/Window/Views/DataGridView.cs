@@ -39,6 +39,7 @@ namespace ModMenu.Window.Views
     {
       // TODO: Should there be a bind callback here?
       // TODO: How to handle clicks on items?
+      // TODO: How can user refresh?
 
       // CharInfoFeatures are copied as is from Owlcat so there's no Element class or styling.
       ViewModel.CharInfoFeatures.ForEach(
@@ -84,11 +85,12 @@ namespace ModMenu.Window.Views
       foreach (var vm in CharInfoFeatures)
         vm.Dispose();
 
-      CharInfoFeatures = new();
+      CharInfoFeatures.Clear();
 
       if (Unit is null)
         return;
 
+      Main.Logger.Log($"Is feature provider null? {FeatureProvider is null}");
       foreach (var feature in FeatureProvider.Invoke(Unit))
         CharInfoFeatures.Add(new(feature));
 
