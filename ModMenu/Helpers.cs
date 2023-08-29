@@ -1,8 +1,13 @@
 ﻿using HarmonyLib;
+using Kingmaker;
 using Kingmaker.Localization;
 using Kingmaker.Localization.Shared;
+using Kingmaker.UI.MVVM._PCView.Settings.Entities;
+using Kingmaker.UI.MVVM._PCView.Settings;
+using Kingmaker.UI.MVVM._VM.Settings.Entities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
@@ -61,6 +66,77 @@ namespace ModMenu
         LocalizationManager.CurrentPack.PutString(LocalizedString.m_Key, localized);
       }
     }
+
+
+    internal class SettingsDescriptionUpdater<T>
+        where T : SettingsEntityWithValueVM
+    {
+      private readonly string pathMainUi;
+      private readonly string pathDescriptionUi;
+
+      private Transform mainUI;
+      private Transform settingsUI;
+      private Transform descriptionUI;
+
+      private List<SettingsEntityWithValueView<T>> settingViews;
+      private SettingsDescriptionPCView descriptionView;
+
+      public SettingsDescriptionUpdater(string pathUI, string pathDesriptionUI)
+      {
+        pathMainUi = pathUI;
+        pathDescriptionUi = pathDesriptionUI;
+      }
+
+      private bool Ensure()
+      {
+        // UI tends to change frequently, ensure that eveything is up to date.
+
+        if ((mainUI = Game.Instance.RootUiContext.m_CommonView.transform) == null)
+          return false;
+
+        settingsUI = mainUI.Find(pathMainUi);
+        descriptionUI = mainUI.Find(pathDescriptionUi);
+        if (settingsUI == null || descriptionUI == null)
+          return false;
+
+        settingViews = settingsUI.gameObject.GetComponentsInChildren<SettingsEntityWithValueView<T>>().ToList();
+        descriptionView = descriptionUI.GetComponent<SettingsDescriptionPCView>();
+
+        if (settingViews == null || descriptionView == null || settingViews.Count == 0)
+          return false;
+
+        return true;
+      }
+
+      public bool TryUpdate(string title, string desription)
+      {
+        // Searches for the title of the setting you are attempt to change. The only downside is that titles must be unique for the description you are attempting to change.
+
+        if (!Ensure()) return false;
+
+        T svm = null;
+
+        foreach (var settingView in settingViews)
+        {
+          var test = (T)settingView.GetViewModel();
+          if (test.Title.Equals(title))
+          {
+            svm = test;
+            break;
+          }
+        }
+
+        if (svm == null)
+          return false;
+
+        svm.GetType().GetField("Description").SetValue(svm, desription);
+
+        descriptionView.m_DescriptionText.text = desription;
+
+        return true;
+      }
+    }
+
 
     [HarmonyPatch(typeof(LocalizationManager))]
     static class LocalizationManager_Patch

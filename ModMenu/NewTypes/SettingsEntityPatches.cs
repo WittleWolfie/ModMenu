@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Kingmaker.PubSubSystem;
 using Kingmaker.UI.MVVM._PCView.ServiceWindows.Journal;
 using Kingmaker.UI.MVVM._PCView.Settings;
 using Kingmaker.UI.MVVM._PCView.Settings.Entities;
@@ -328,6 +329,17 @@ namespace ModMenu.NewTypes
         templatePrefab.ButtonLabel = buttonLabel;
 
         return templatePrefab;
+      }
+
+      [HarmonyPatch(typeof(SettingsVM))]
+      static class ApplySettings_Patch
+      {
+        [HarmonyPatch(nameof(SettingsVM.ApplySettings)), HarmonyPostfix]
+        static void Postfix()
+        {
+          // Raise Event when Apply Settings button is press in the settings UI
+          EventBus.RaiseEvent<ISettingsChanged>(h => h.HandleApplySettings());
+        }
       }
     }
   }
