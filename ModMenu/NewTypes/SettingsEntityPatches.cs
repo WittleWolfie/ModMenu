@@ -337,7 +337,7 @@ namespace ModMenu.NewTypes
         [HarmonyPatch(nameof(SettingsVM.ApplySettings)), HarmonyPostfix]
         static void Postfix()
         {
-          // Raise Event when Apply Settings button is press in the settings UI
+          // Raise Event when Apply button is press in the settings UI
           EventBus.RaiseEvent<ISettingsChanged>(h => h.HandleApplySettings());
         }
       }

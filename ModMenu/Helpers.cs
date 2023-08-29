@@ -67,6 +67,14 @@ namespace ModMenu
       }
     }
 
+    /// <summary>
+    /// Updated the Description field of a setting that is set with WithLongDescription(). The update works by finding the Title of the setting.
+    /// Titles that you wish to update must be unique inorder to update the correct setting.
+    /// </summary>
+    /// <typeparam name="T">
+    /// This needs to be a class of the type that inherits from SettingsEntityWithValueVM that you wish to update. Such as if you are updating a slider the typeparam
+    /// must be SettingsEntitySliderVM
+    /// </typeparam>
 
     internal class SettingsDescriptionUpdater<T>
         where T : SettingsEntityWithValueVM
@@ -81,9 +89,24 @@ namespace ModMenu
       private List<SettingsEntityWithValueView<T>> settingViews;
       private SettingsDescriptionPCView descriptionView;
 
-      public SettingsDescriptionUpdater(string pathUI, string pathDesriptionUI)
+      /// <summary>
+      /// Constuctor for SettingsDescriptionUpdater. Sets up the paths for where the UI gameobjects at located
+      /// </summary>
+      /// <param name="pathMainUI">
+      /// This is the path to main UI where setting GameOjects are located are located.
+      /// </param>
+      /// <remarks>
+      /// As of 2.1.5r pathMainUI would be "Canvas/SettingsView/ContentWrapper/VirtualListVertical/Viewport/Content"
+      /// </remarks>
+      /// <param name="pathDesriptionUI">
+      /// This is the path to the Description UI where the Description GameOject SettingsDescriptionPCView is located.
+      /// <remarks>
+      /// As of 2.1.5r pathDesriptionUI would be "Canvas/SettingsView/ContentWrapper/DescriptionView"
+      /// </remarks>
+      /// </param>
+      public SettingsDescriptionUpdater(string pathMainUI, string pathDesriptionUI)
       {
-        pathMainUi = pathUI;
+        pathMainUi = pathMainUI;
         pathDescriptionUi = pathDesriptionUI;
       }
 
@@ -108,10 +131,22 @@ namespace ModMenu
         return true;
       }
 
-      public bool TryUpdate(string title, string desription)
+      /// <summary>
+      /// This is the method that updates the Description of the SettingsEntityWithValueVM
+      /// </summary>
+      /// <param name="title">
+      /// This is the UNIQUE Title of the setting that you wish to edit. If the Title is
+      /// not unique then the incorrect setting may be updated.
+      /// </param>
+      /// <param name="description">
+      /// The text you wish to set the Description to.
+      /// </param>
+      /// <returns>
+      /// Will return true if the update was successfull.
+      /// </returns>
+      
+      public bool TryUpdate(string title, string description)
       {
-        // Searches for the title of the setting you are attempt to change. The only downside is that titles must be unique for the description you are attempting to change.
-
         if (!Ensure()) return false;
 
         T svm = null;
@@ -122,16 +157,16 @@ namespace ModMenu
           if (test.Title.Equals(title))
           {
             svm = test;
-            break;
+              break;
           }
         }
 
         if (svm == null)
           return false;
 
-        svm.GetType().GetField("Description").SetValue(svm, desription);
+        svm.GetType().GetField("Description").SetValue(svm, description);
 
-        descriptionView.m_DescriptionText.text = desription;
+        descriptionView.m_DescriptionText.text = description;
 
         return true;
       }
