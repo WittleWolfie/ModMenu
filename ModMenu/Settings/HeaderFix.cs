@@ -24,7 +24,13 @@ namespace ModMenu.Settings
   {
     public void HandleOpenSettings(bool isMainMenu = false)
     {
-      foreach (RectTransform transform in Game.Instance.RootUiContext.m_CommonView?.transform.Find("Canvas/SettingsView/ContentWrapper/MenuSelectorPCView"))
+      var menuSelectorView =
+        Game.Instance.RootUiContext.m_CommonView?.transform.Find(
+          "Canvas/SettingsView/ContentWrapper/MenuSelectorPCView");
+      if (menuSelectorView is null)
+        return;
+
+      foreach (RectTransform transform in menuSelectorView)
         transform.ResetScale();
     }
   }

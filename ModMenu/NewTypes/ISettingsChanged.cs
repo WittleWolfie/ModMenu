@@ -8,7 +8,6 @@ namespace ModMenu.NewTypes
   /// <remarks>
   /// Your class must subscribe to the EventBus for this to trigger via EventBus.Subscribe(object subscriber)
   /// </remarks>
- 
   public interface ISettingsChanged : ISubscriber, IGlobalSubscriber
   {
     /// <summary>
