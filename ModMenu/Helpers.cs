@@ -75,8 +75,7 @@ namespace ModMenu
     /// This needs to be a class of the type that inherits from SettingsEntityWithValueVM that you wish to update. Such as if you are updating a slider the typeparam
     /// must be SettingsEntitySliderVM
     /// </typeparam>
-
-    internal class SettingsDescriptionUpdater<T>
+    public class SettingsDescriptionUpdater<T>
         where T : SettingsEntityWithValueVM
     {
       private readonly string pathMainUi;
@@ -90,21 +89,27 @@ namespace ModMenu
       private SettingsDescriptionPCView descriptionView;
 
       /// <summary>
+      /// Expected path as of 2.1.5r
+      /// </summary>
+      public const string PATH_MAIN_UI = "Canvas/SettingsView/ContentWrapper/VirtualListVertical/Viewport/Content";
+
+      /// <summary>
+      /// Expected path as of 2.1.5r
+      /// </summary>
+      public const string PATH_DESCRIPTION_UI = "Canvas/SettingsView/ContentWrapper/DescriptionView";
+
+      /// <summary>
       /// Constuctor for SettingsDescriptionUpdater. Sets up the paths for where the UI gameobjects at located
       /// </summary>
       /// <param name="pathMainUI">
-      /// This is the path to main UI where setting GameOjects are located are located.
+      /// Optional. This is the path to main UI where setting GameOjects are located are located.
+      /// Defaults to PATH_MAIN_UI which should work in 2.1.5r.
       /// </param>
-      /// <remarks>
-      /// As of 2.1.5r pathMainUI would be "Canvas/SettingsView/ContentWrapper/VirtualListVertical/Viewport/Content"
-      /// </remarks>
       /// <param name="pathDesriptionUI">
       /// This is the path to the Description UI where the Description GameOject SettingsDescriptionPCView is located.
-      /// <remarks>
-      /// As of 2.1.5r pathDesriptionUI would be "Canvas/SettingsView/ContentWrapper/DescriptionView"
-      /// </remarks>
+      /// Defaults to PATH_DESCRIPTION_UI which should work in 2.1.5r.
       /// </param>
-      public SettingsDescriptionUpdater(string pathMainUI, string pathDesriptionUI)
+      public SettingsDescriptionUpdater(string pathMainUI = PATH_MAIN_UI, string pathDesriptionUI = PATH_DESCRIPTION_UI)
       {
         pathMainUi = pathMainUI;
         pathDescriptionUi = pathDesriptionUI;

@@ -175,10 +175,7 @@ namespace ModMenu.Settings
 
     public void OnToggleUDescriptionUpdate(bool value)
     {
-      var pathMainUi = "Canvas/SettingsView/ContentWrapper/VirtualListVertical/Viewport/Content";
-      var pathDescriptionUi = "Canvas/SettingsView/ContentWrapper/DescriptionView";
-      
-      SettingsDescriptionUpdater<SettingsEntityBoolVM> sdu = new(pathMainUi, pathDescriptionUi);
+      SettingsDescriptionUpdater<SettingsEntityBoolVM> sdu = new();
       sdu.TryUpdate("This is a toggle changes the LongDescription text!", $"Hey this value is now {value}");
     }
 
