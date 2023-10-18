@@ -1,4 +1,9 @@
-﻿using Kingmaker.UI.SettingsUI;
+﻿using HarmonyLib;
+using Kingmaker.Localization;
+using Kingmaker.Settings;
+using Kingmaker.UI.MVVM._VM.Settings;
+using Kingmaker.UI.MVVM._VM.Settings.Entities;
+using Kingmaker.UI.SettingsUI;
 using ModMenu.Settings;
 using System;
 using System.Collections.Generic;
@@ -7,17 +12,29 @@ using UnityEngine;
 
 namespace ModMenu.NewTypes
 {
+  [HarmonyLib.HarmonyPatch]
   internal class UISettingsEntityDropdownModMenuEntry : UISettingsEntityDropdown<ModsMenuEntry>
   {
     static UISettingsEntityDropdownModMenuEntry()
     {
-      ((IUISettingsEntityDropdown) instance).OnTempIndexValueChanged +=
-        new Action<int>(ModIndex => ModsMenuEntity.settingVM.SwitchSettingsScreen(ModsMenuEntity.SettingsScreenId));
+      instance.m_Description = Helpers.CreateString("UISettingsEntityDropdownModMenuEntry.Description", "Choose your mod", ruRU: "Выберите мод");
       instance.LinkSetting(SettingsEntityModMenuEntry.instance);
+
+      ((IUISettingsEntityDropdown) instance).OnTempIndexValueChanged +=
+        new (ModIndex => ModsMenuEntity.settingVM.SwitchSettingsScreen(ModsMenuEntity.SettingsScreenId));
+
+      ((IUISettingsEntityDropdown) instance).OnTempIndexValueChanged +=
+        new (_ =>
+        {
+          SettingsController.RemoveFromConfirmationList(instance.SettingsEntity, false);
+          SettingsEntityModMenuEntry.instance.TempValueIsConfirmed = true;
+        });
+
     }
 
     internal static UISettingsEntityDropdownModMenuEntry instance =
       ScriptableObject.CreateInstance<UISettingsEntityDropdownModMenuEntry>();
+
     public override List<string> LocalizedValues
     {
       get
@@ -41,5 +58,7 @@ namespace ModMenu.NewTypes
 
       SetTempValue(ModsMenuEntity.ModEntries[value]);
     }
+
+
   }
 }

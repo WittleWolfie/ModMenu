@@ -1,9 +1,11 @@
 ﻿using JetBrains.Annotations;
 using Kingmaker.Localization;
+using Kingmaker.Localization.Shared;
 using Kingmaker.Modding;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.Utility;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -15,17 +17,116 @@ namespace ModMenu.Settings
   /// Wrapper class used to display mod's settings in the ModMenu dropdown. Contains a list of UI Setting Groups and
   /// modification's info such as name.
   /// </summary>
-  public class ModsMenuEntry
+  public class ModsMenuEntry : IConvertible
   {
 #pragma warning disable CS1591 // stupid documentation requests
+    #region Conversion
+    public TypeCode GetTypeCode()
+    {
+      return TypeCode.Int32;
+    }
+
+    public bool ToBoolean(IFormatProvider provider)
+    {
+      return false;
+    }
+
+    public char ToChar(IFormatProvider provider)
+    {
+      return (char)0;
+    }
+
+    public sbyte ToSByte(IFormatProvider provider)
+    {
+      return 0;
+    }
+
+    public byte ToByte(IFormatProvider provider)
+    {
+      return 0;
+    }
+
+    public short ToInt16(IFormatProvider provider)
+    {
+      return 0;
+    }
+
+    public ushort ToUInt16(IFormatProvider provider)
+    {
+      return 0;
+    }
+
+    public int ToInt32(IFormatProvider provider)
+    {
+      return 0;
+    }
+
+    public uint ToUInt32(IFormatProvider provider)
+    {
+      return 0;
+    }
+
+    public long ToInt64(IFormatProvider provider)
+    {
+      return 0;
+    }
+
+    public ulong ToUInt64(IFormatProvider provider)
+    {
+      return 0;
+    }
+
+    public float ToSingle(IFormatProvider provider)
+    {
+      return 0;
+    }
+
+    public double ToDouble(IFormatProvider provider)
+    {
+      return 0;
+    }
+
+    public decimal ToDecimal(IFormatProvider provider)
+    {
+      return 0;
+    }
+
+    public DateTime ToDateTime(IFormatProvider provider)
+    {
+      throw new NotImplementedException();
+    }
+
+    public string ToString(IFormatProvider provider)
+    {
+      return "0";
+    }
+
+    public object ToType(Type conversionType, IFormatProvider provider)
+    {
+      if (conversionType == typeof(int))
+        return 0;
+      throw new NotImplementedException();
+    }
+    #endregion
 #pragma warning disable CS0618 // Method is obolete. I know! I made it obsolete!
-    internal static ModsMenuEntry EmptyInstance =
-      new(new UISettingsGroup() { Title = new() { m_Key = "" }, SettingsList = Array.Empty<UISettingsEntityBase>() });
+    static ModsMenuEntry()
+    {
+      ModsMenuEntity.Add(EmptyInstance);
+    }
+
+    internal static ModsMenuEntry EmptyInstance = new();
 
     internal readonly IEnumerable<UISettingsGroup> ModSettings;
     internal readonly Info ModInfo;
 
-    internal ModsMenuEntry() => ModInfo = new(Helpers.EmptyString, Helpers.EmptyString);
+    internal ModsMenuEntry() 
+    {
+      ModInfo = new(Helpers.EmptyString, Helpers.EmptyString);
+      UISettingsGroup pseudoGroup = ScriptableObject.CreateInstance<UISettingsGroup>();
+      pseudoGroup.Title = Helpers.EmptyString;
+      ModSettings = new UISettingsGroup[1]{ pseudoGroup };
+
+    } 
 
     /// <summary>
     /// Creates a simpliest ModEntry out of a single UI setting group. 
@@ -49,7 +150,7 @@ namespace ModMenu.Settings
       }
 
       ModSettings  = new UISettingsGroup[1] {settingGroup};
-       ModInfo = new(settingGroup.Title);
+      ModInfo = new(settingGroup.Title);
     }
 
     /// <summary>
@@ -126,6 +227,8 @@ namespace ModMenu.Settings
       public LocalizedString LocalizedModDescription { get; private set; }
       public string NonLocalizedModDescription { get; private set; }
       private string ModDescription { get { return LocalizedModDescription ?? NonLocalizedModDescription; } }
+      private string m_CachedDescription;
+      private Locale m_LastLocale;
       internal bool AllowModDisabling { get; set; }
       internal OwlcatModification OwlMod { get; }
       internal UnityModManager.ModEntry UMMMod { get; }
@@ -284,16 +387,32 @@ namespace ModMenu.Settings
 
       internal string GenerateDescription()
       {
-        string result = ModDescription;
-        if (!string.IsNullOrEmpty(VersionNumber))
-          result = $"{result} ({stringVer}: {VersionNumber})";
+        if (!m_CachedDescription.IsNullOrEmpty() && m_LastLocale == LocalizationManager.CurrentLocale)
+          return m_CachedDescription;
 
-        result = $"<align=\"center\"><color=#{Color.black}><size=140%><b>{result}</b></size></color></align>\n";
-        if (!string.IsNullOrEmpty(AuthorName))
-          result = string.Concat(result, $"<align=\"center\"><color=#{Color.black}><size=120%>{stringAuthor}: {AuthorName}</size></color></align>\n");
-        
-        string.Concat(result, LocalizedModDescription);
-        return result;
+        else
+        try
+        {
+          string result = "";
+          if (!string.IsNullOrEmpty(AuthorName))
+            result += $"<align=\"center\"><size=80%>{stringAuthor}: {AuthorName}</size></align>\n";
+
+          if (!string.IsNullOrEmpty(VersionNumber))
+            result += $"<align=\"center\"><size=60%><b>({stringVer}: {VersionNumber})</b></size></align>\n";
+
+          //result = $"<align=\"center\"><size=60%><b>{result}</b></size></align>\n";
+          result += "\n";
+          result += $"{ModDescription}";
+          m_CachedDescription= result;
+          m_LastLocale = LocalizationManager.CurrentLocale;
+          return result;
+        }
+        catch(Exception ex)  
+        {
+          Main.Logger.Log("We fucked up generating description!");
+          Main.Logger.LogException(ex);
+          return "We fucked up generating description!";
+        }
       }
     }
   }

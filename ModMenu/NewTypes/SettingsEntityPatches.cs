@@ -1,4 +1,11 @@
 ﻿using HarmonyLib;
+using Kingmaker;
+using Kingmaker.Blueprints.Root;
+using Kingmaker.Blueprints.Root.Strings;
+using Kingmaker.Localization;
+using Kingmaker.Settings;
+using Kingmaker.UI.Common;
+using Kingmaker.UI.MVVM;
 using Kingmaker.UI.MVVM._PCView.ServiceWindows.Journal;
 using Kingmaker.UI.MVVM._PCView.Settings;
 using Kingmaker.UI.MVVM._PCView.Settings.Entities;
@@ -15,10 +22,16 @@ using Owlcat.Runtime.UI.MVVM;
 using Owlcat.Runtime.UI.VirtualListSystem;
 using Owlcat.Runtime.UI.VirtualListSystem.ElementSettings;
 using System;
+using System.CodeDom;
+using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
+using System.Reflection.Emit;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static Kingmaker.UI.SettingsUI.UISettingsManager;
 using Object = UnityEngine.Object;
 
 namespace ModMenu.NewTypes
@@ -27,6 +40,70 @@ namespace ModMenu.NewTypes
   {
     internal static readonly FieldInfo OverrideType =
       AccessTools.Field(typeof(VirtualListLayoutElementSettings), "m_OverrideType");
+
+    /// <summary>
+    /// Patch to prevent exceptions on deserializing settings
+    /// </summary>
+    [HarmonyPatch]
+    static class DictionarySettingsProviderPatcher
+      {
+        [HarmonyTargetMethod]
+        static MethodInfo TargetMethod()
+        {
+          return typeof(DictionarySettingsProvider)
+                .GetMethod(nameof(DictionarySettingsProvider.GetValue))
+                .MakeGenericMethod(typeof(ModsMenuEntry));
+        }
+
+        [HarmonyPrefix]
+        public static bool DeserializeSettingEntry(string key, ref ModsMenuEntry __result)
+        {
+          if (key.Equals(SettingsEntityModMenuEntry.instance.Key))
+          {
+            __result = ModsMenuEntry.EmptyInstance;
+            return false;
+          }
+          return true;
+        }
+      }
+
+    /// <summary>
+    /// Patch to change the way dropdown options are generated so that the settings description would show individual mod descriptions.
+    /// </summary>
+    [HarmonyPatch]
+    static class SettingsEntityDropdownPCView_Patch
+    {
+      [HarmonyPatch(typeof(SettingsEntityDropdownPCView), nameof(SettingsEntityDropdownPCView.SetupDropdown))]
+      static bool Prefix(SettingsEntityDropdownPCView __instance)
+      {
+        if (__instance.ViewModel.m_UISettingsEntity is not UISettingsEntityDropdownModMenuEntry) return true;
+
+        else
+        __instance.Dropdown.gameObject.SetActive(true);
+        __instance.Dropdown.ClearOptions();
+
+        List<TMP_Dropdown.OptionData> options = new();
+        var vm = GameObject.Find("CommonPCView(Clone)/Canvas/SettingsView/")?.GetComponent<SettingsPCView>()?.ViewModel;
+        foreach (var modEntry in ModsMenuEntity.ModEntries)
+        {
+          options.Add(
+          new DropdownOptionWithHighlightCallback()
+          {
+            m_Text = modEntry.ModInfo.ModName,
+            OnMouseEnter = new() { new(_ => {
+              if (vm is null)
+                Main.Logger.Warning("SettingsEntityDropdownPCView_Patch - settings VM is null!");
+              else
+                vm.HandleShowSettingsDescription(
+                  title: UIUtility.GetSaberBookFormat(modEntry.ModInfo.ModName, default(Color), 140, null, 0f),
+                  description: modEntry.ModInfo.GenerateDescription());
+              })}
+          });
+        }
+        __instance.Dropdown.AddOptions(options);
+        return false;
+      }
+    }
 
     /// <summary>
     /// Patch to return the correct view model for <see cref="UISettingsEntityImage"/>
@@ -82,9 +159,11 @@ namespace ModMenu.NewTypes
 
         __instance.m_SettingEntities.Clear();
         __instance.m_SettingEntities.Add(__instance.AddDisposableAndReturn(SettingsVM.GetVMForSettingsItem(UISettingsEntityDropdownModMenuEntry.instance)));
-        __instance.m_SettingEntities.Add(__instance.AddDisposableAndReturn(SettingsVM.GetVMForSettingsItem(new UISettingsEntitySeparator())));
+          if (UISettingsEntityDropdownModMenuEntry.instance.Setting.GetTempValue() == ModsMenuEntry.EmptyInstance)
+            return false;
+        //__instance.m_SettingEntities.Add(__instance.AddDisposableAndReturn(SettingsVM.GetVMForSettingsItem(separator)));
 
-          //Here should be a toggle for mod disabling, but do we need it?
+            //Here should be a toggle for mod disabling, but do we need it?
           SettingsEntitySubHeaderVM subheader;
           foreach (var uisettingsGroup in ModsMenuEntity.CollectSettingGroups)
           {
@@ -369,6 +448,181 @@ namespace ModMenu.NewTypes
 
         return templatePrefab;
       }
+
+    }
+
+    [HarmonyPatch]
+    internal static class DefaultButtonPatcher
+    {
+      [HarmonyPatch(typeof(SettingsVM), nameof(SettingsVM.SetSettingsList))]
+      [HarmonyTranspiler]
+      static IEnumerable<CodeInstruction> SettingsVM_SetSettingsList_Transpiler_ToEnableDefaultButtonOnModsTab(IEnumerable<CodeInstruction> instructions)
+      {
+        var _inst = instructions.ToList();
+        int length = _inst.Count;
+        int index = -1;
+        for (int i = 0; i < length; i++)
+        {
+          if (
+            _inst[i + 0].opcode == OpCodes.Ldloc_0 &&
+            _inst[i + 1].opcode == OpCodes.Ldfld && _inst[i + 1].operand is FieldInfo fi && fi.Name.Contains("settingsScreen") &&
+            _inst[i + 2].opcode == OpCodes.Ldc_I4_4 &&
+            _inst[i + 3].opcode == OpCodes.Beq_S || _inst[i + 3].opcode == OpCodes.Beq)
+          {
+            index = i;
+            break;
+          }
+        }
+
+        if (index == -1)
+        {
+          Main.Logger.Error("DefaultButtonPatcher - failed to find the index when transpile SettingsVM.SetSettingsList. Default button will not be enabled on the Mods tab of settings screen.");
+          return instructions;
+        }
+
+        _inst.InsertRange(index + 4, new CodeInstruction[4] {
+          new (_inst[index + 0]),
+          new (_inst[index + 1]),
+          new (OpCodes.Ldc_I4, ModsMenuEntity.SettingsScreenValue),
+          new (_inst[index + 3]),
+        });
+
+        return _inst;
+      }
+
+      /// <summary>
+      /// Will make Default button affect the mod selected on the Mod tab
+      /// </summary>
+      /// <returns></returns>
+      [HarmonyPatch(typeof(SettingsController), nameof(SettingsController.ResetToDefault))]
+      [HarmonyTranspiler]
+      static IEnumerable<CodeInstruction> SettingsController_ResetToDefault_Transpiler_ToCollectModSettings(IEnumerable<CodeInstruction> instructions, ILGenerator gen)
+      {
+        var _inst = instructions.ToList();
+        int length = _inst.Count;
+        int index = -1;
+        FieldInfo settingsManagerInfo = typeof(Kingmaker.Game).GetField(nameof(Kingmaker.Game.UISettingsManager));
+        MethodInfo gameGetter = typeof(Kingmaker.Game).GetProperty(nameof(Kingmaker.Game.Instance)).GetMethod;
+
+
+        for (int i = 0; i < length; i++)
+        {
+          if (
+            ((_inst[i + 0].opcode == OpCodes.Call || _inst[i + 0].opcode == OpCodes.Callvirt) && _inst[i + 0].operand is MethodInfo mi1 && mi1 == gameGetter) &&
+            (_inst[i + 1].opcode == OpCodes.Ldfld && _inst[i + 1].operand is FieldInfo fi && fi == settingsManagerInfo) &&
+            _inst[i + 2].opcode == OpCodes.Ldarg_0 &&
+            _inst[i + 3].opcode == OpCodes.Newobj &&
+            ((_inst[i + 4].opcode == OpCodes.Call || _inst[i + 4].opcode == OpCodes.Callvirt) && _inst[i + 4].operand is MethodInfo mi2 && mi2.Name.Contains("GetSettingsList")))
+          {
+            index = i;
+            break;
+          }
+        }
+
+        if (index == -1)
+        {
+          Main.Logger.Error("DefaultButtonPatcher - failed to find the index when transpile SettingsController.ResetToDefault. Default button will do nothing on the Mods tab.");
+          return instructions;
+        }
+
+        Label labelNotMods = gen.DefineLabel();
+        _inst[index].labels.Add(labelNotMods);
+
+        Label labelIsMods = gen.DefineLabel();
+        _inst[index+5].labels.Add(labelIsMods);
+
+        MethodInfo mi = typeof(Enumerable).GetMethod(nameof(Enumerable.ToList)).MakeGenericMethod(typeof(UISettingsGroup));
+
+        _inst.InsertRange(index, new CodeInstruction[] {
+          new CodeInstruction(OpCodes.Ldarg_0),
+          //CodeInstruction.Call((UISettingsManager.SettingsScreen e) => Convert.ToInt32(e)), //WHY DOES IT NOT WORK?!?!?!?!?!
+          //new CodeInstruction(OpCodes.Ldc_I4, ModsMenuEntity.SettingsScreenValue),
+          //new CodeInstruction(OpCodes.Ceq),
+          CodeInstruction.Call((UISettingsManager.SettingsScreen e) => AnotherScreenCheck(e)),
+          new CodeInstruction(OpCodes.Brfalse_S, labelNotMods),
+          new CodeInstruction(OpCodes.Call, typeof(ModsMenuEntity).GetProperty(nameof(ModsMenuEntity.CollectSettingGroups), BindingFlags.Static | BindingFlags.NonPublic).GetMethod),
+          new CodeInstruction(OpCodes.Callvirt, mi),
+          new CodeInstruction(OpCodes.Br_S, labelIsMods)
+        });;
+
+        return _inst;
+      }
+
+      static bool AnotherScreenCheck(UISettingsManager.SettingsScreen e) => e == (UISettingsManager.SettingsScreen)ModsMenuEntity.SettingsScreenValue;
+
+      [HarmonyPatch(typeof(SettingsVM), nameof(SettingsVM.OpenDefaultSettingsDialog))]
+      [HarmonyTranspiler]
+      static IEnumerable<CodeInstruction> SettingsVM_OpenDefaultSettingsDialog_Transpiler_ToChangeDefaultDialogMessage(IEnumerable<CodeInstruction> instructions, ILGenerator gen)
+      {
+        var _inst = instructions.ToList();
+        int length = _inst.Count;
+        int indexStart = -1;
+        int indexEnd = -1;
+        //var newDefaultMessage = Helpers.CreateString("ModsMenu_NewDefaultButtonMessage", "this is a message for {0}");
+        string newDefaultMessage = "Revert all settings of the mod \"{0}\" to their default values?";
+
+        for (int i = 0; i < length; i++)
+        {
+          if (
+            _inst[i].Calls(typeof(Kingmaker.Game).GetProperty(nameof(Kingmaker.Game.Instance)).GetMethod) &&
+            _inst[i + 1].Calls(typeof(Kingmaker.Game).GetProperty(nameof(Kingmaker.Game.BlueprintRoot)).GetMethod) &&
+            _inst[i + 2].opcode == OpCodes.Ldfld && _inst[i + 2].operand is FieldInfo fi1 && fi1 == AccessTools.Field(typeof(BlueprintRoot), nameof(BlueprintRoot.LocalizedTexts)) &&
+            _inst[i + 3].opcode == OpCodes.Ldfld && _inst[i + 3].operand is FieldInfo fi2 && fi2 == AccessTools.Field(typeof(LocalizedTexts), nameof(LocalizedTexts.UserInterfacesText)) &&
+            _inst[i + 4].opcode == OpCodes.Ldfld && _inst[i + 4].operand is FieldInfo fi3 && fi3 == AccessTools.Field(typeof(UIStrings), nameof(UIStrings.SettingsUI)) &&
+            _inst[i + 5].opcode == OpCodes.Ldfld && _inst[i + 5].operand is FieldInfo fi4 && fi4 == AccessTools.Field(typeof(UITextSettingsUI), nameof(UITextSettingsUI.RestoreAllDefaultsMessage))
+            )
+          {
+            indexStart = i;
+            break;
+          }
+        }
+
+        if (indexStart == -1)
+        {
+          Main.Logger.Error("DefaultButtonPatcher - failed to find the starting index when transpile SettingsVM.OpenDefaultSettingsDialog. Default button message will not be altered.");
+          return instructions;
+        }
+
+        for (int i = indexStart + 6; i < length; i++)
+        {
+          if (
+            _inst[i].opcode == OpCodes.Call && _inst[i].operand is MethodInfo { Name: nameof(string.Format)} &&
+            _inst[i + 1].opcode == OpCodes.Stfld && _inst[i + 1].operand is FieldInfo { Name: "text" }
+            )
+          {
+            indexEnd = i;
+            break;
+          }
+        }
+
+        if (indexEnd == -1)
+        {
+          Main.Logger.Error("DefaultButtonPatcher - failed to find the ending index when transpile SettingsVM.OpenDefaultSettingsDialog. Default button message will not be altered.");
+          return instructions;
+        }
+
+        Label labelNotMod = gen.DefineLabel();
+        _inst[indexStart].labels.Add(labelNotMod);
+
+        Label labelIsMod = gen.DefineLabel();
+        _inst[indexEnd +1].labels.Add(labelIsMod);
+
+        _inst.InsertRange(indexStart, new CodeInstruction[]
+        {
+          CodeInstruction.Call(() => CheckForSelectedSettingsScreenType()),
+          new CodeInstruction(OpCodes.Brfalse_S, labelNotMod),
+          new CodeInstruction(OpCodes.Ldstr, newDefaultMessage),
+          CodeInstruction.Call(() => GiveMeName()),
+          CodeInstruction.Call(() => string.Format(newDefaultMessage, SettingsEntityModMenuEntry.instance.m_TempValue.ModInfo.ModName)),
+          new CodeInstruction(OpCodes.Br_S, labelIsMod)
+        });
+
+        return _inst;
+
+      }
+      static bool CheckForSelectedSettingsScreenType() =>  RootUIContext.Instance?.CommonVM.SettingsVM.Value?.SelectedMenuEntity.Value?.SettingsScreenType == (UISettingsManager.SettingsScreen)ModsMenuEntity.SettingsScreenValue;
+      
+      static string GiveMeName() => SettingsEntityModMenuEntry.instance.m_TempValue.ModInfo.ModName;
     }
   }
 }

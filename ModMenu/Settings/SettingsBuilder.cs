@@ -418,7 +418,7 @@ namespace ModMenu.Settings
       else if (ModName is not null)
         Info = new(ModName, ModDescription, Version, Author, modIllustration);
       else
-        Info = default;
+        Info = new(GroupList.ElementAt(0)?.Title ?? "");
       return (GroupList, SettingsEntities, Info);
     }
 

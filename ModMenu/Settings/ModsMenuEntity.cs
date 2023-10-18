@@ -19,9 +19,10 @@ namespace ModMenu.Settings
   internal class ModsMenuEntity
   {
     // Random magic number representing our fake enum for UiSettingsManager.SettingsScreen
-    private const int SettingsScreenValue = 17;
+    internal const int SettingsScreenValue = 17;
     internal static readonly UISettingsManager.SettingsScreen SettingsScreenId =
       (UISettingsManager.SettingsScreen)SettingsScreenValue;
+
     internal static SettingsVM settingVM;
 
     private static LocalizedString _menuTitleString;
@@ -41,21 +42,27 @@ namespace ModMenu.Settings
     internal static void Add(UISettingsGroup uiSettingsGroup)
     {
       ModEntries.Add(new(uiSettingsGroup));
+      //if (ModEntries.Contains(ModsMenuEntry.EmptyInstance))
+      //  ModEntries.Remove(ModsMenuEntry.EmptyInstance);
     }
 
     internal static void Add(List<UISettingsGroup> uiSettingsGroup)
     {
       ModEntries.Add(new(uiSettingsGroup));
+      //if (ModEntries.Contains(ModsMenuEntry.EmptyInstance))
+      //  ModEntries.Remove(ModsMenuEntry.EmptyInstance);
     }
 #pragma warning restore CS0618 // Тип или член устарел
 
     internal static void Add(ModsMenuEntry modEntry)
     {
       ModEntries.Add(modEntry);
+      //if (ModEntries.Contains(ModsMenuEntry.EmptyInstance))
+      //  ModEntries.Remove(ModsMenuEntry.EmptyInstance);
     }
 
     internal static IEnumerable<UISettingsGroup> CollectSettingGroups =>
-      UISettingsEntityDropdownModMenuEntry.instance.Setting.m_CurrentValue.ModSettings;
+      UISettingsEntityDropdownModMenuEntry.instance.Setting.m_TempValue.ModSettings;
 
     /// <summary>
     /// Patch to create the Mods Menu ViewModel.
@@ -112,6 +119,7 @@ namespace ModMenu.Settings
         }
       }
     }
+
 
     /// <summary>
     /// Patch to create the Mods Menu View. Needed to show the menu in-game.

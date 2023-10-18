@@ -1,4 +1,10 @@
-﻿namespace ModMenu.Settings
+﻿using Kingmaker.Localization;
+using Kingmaker.UI.SettingsUI;
+using System.Text;
+using UnityEngine;
+using static Kingmaker.UI.KeyboardAccess;
+
+namespace ModMenu.Settings
 {
 #if DEBUG
   /// <summary>
@@ -22,6 +28,7 @@
       ModMenu.AddSettings(
         SettingsBuilder.New(RootKey, CreateString("title", "Testing settings"))
           .SetMod(Main.Entry)
+          .SetModDescription(Helpers.CreateString("test-settings-desc", "This is a test description for mod and let's make it a bit longer to take several lines."))
           .AddImage(Helpers.CreateSprite("ModMenu.WittleWolfie.png"), 250)
           .AddDefaultButton(OnDefaultsApplied)
           .AddButton(

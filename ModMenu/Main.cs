@@ -1,26 +1,33 @@
 ﻿using HarmonyLib;
+using Kingmaker.Blueprints.Classes.Spells;
+using Kingmaker.Blueprints.JsonSystem;
+using Kingmaker.Utility;
+using ModMenu.Settings;
 using System;
+using System.Linq;
+using System.Reflection;
 using static UnityModManagerNet.UnityModManager;
 using static UnityModManagerNet.UnityModManager.ModEntry;
 
 namespace ModMenu
 {
-  public static class Main
+  internal static class Main
   {
     internal static ModLogger Logger;
     internal static ModEntry Entry;
-    private static Harmony Harmony;
+    internal static Harmony Harmony;
 
     public static bool Load(ModEntry modEntry)
     {
       try
       {
+        Entry = modEntry;
         Logger = modEntry.Logger;
         modEntry.OnUnload = OnUnload;
 
         Harmony = new(modEntry.Info.Id);
+        Harmony.DEBUG = true;
         Harmony.PatchAll();
-
         Logger.Log("Finished loading.");
       }
       catch (Exception e)
@@ -55,6 +62,7 @@ namespace ModMenu
           Logger.LogException("BlueprintsCache.Init", e);
         }
       }
+
     }
 #endif
   }
