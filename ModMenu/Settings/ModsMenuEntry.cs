@@ -1,4 +1,5 @@
-﻿using JetBrains.Annotations;
+﻿using Epic.OnlineServices.Mods;
+using JetBrains.Annotations;
 using Kingmaker.Localization;
 using Kingmaker.Localization.Shared;
 using Kingmaker.Modding;
@@ -10,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityModManagerNet;
+using static UnityModManagerNet.UnityModManager;
 
 namespace ModMenu.Settings
 {
@@ -108,25 +110,19 @@ namespace ModMenu.Settings
       throw new NotImplementedException();
     }
     #endregion
-#pragma warning disable CS0618 // Method is obolete. I know! I made it obsolete!
     static ModsMenuEntry()
     {
+      Info info = new(Helpers.EmptyString, Helpers.EmptyString);
+      UISettingsGroup pseudoGroup = ScriptableObject.CreateInstance<UISettingsGroup>();
+      pseudoGroup.Title = Helpers.EmptyString;
+      EmptyInstance = new(info, pseudoGroup);
       ModsMenuEntity.Add(EmptyInstance);
     }
 
-    internal static ModsMenuEntry EmptyInstance = new();
+    internal static ModsMenuEntry EmptyInstance;
 
     internal readonly IEnumerable<UISettingsGroup> ModSettings;
     internal readonly Info ModInfo;
-
-    internal ModsMenuEntry() 
-    {
-      ModInfo = new(Helpers.EmptyString, Helpers.EmptyString);
-      UISettingsGroup pseudoGroup = ScriptableObject.CreateInstance<UISettingsGroup>();
-      pseudoGroup.Title = Helpers.EmptyString;
-      ModSettings = new UISettingsGroup[1]{ pseudoGroup };
-
-    } 
 
     /// <summary>
     /// Creates a simpliest ModEntry out of a single UI setting group. 
@@ -161,7 +157,22 @@ namespace ModMenu.Settings
     /// settingGroups argument must not be null, have at least 1 group in it and none can be null
     /// </exception> 
     [Obsolete("Use ModsMenuEntry(Info modInfo, IEnumerable<UISettingsGroup> settingGroups). You will not be able to change ModInfo later.")]
-    public ModsMenuEntry(IEnumerable<UISettingsGroup> settingGroups)
+    public ModsMenuEntry(IEnumerable<UISettingsGroup> settingGroups) : this(default(Info), settingGroups)
+    {
+    }
+
+    /// <exception cref="ArgumentException">
+    /// settingGroups argument must not be null, have at least 1 group in it and none can be null
+    /// </exception> 
+    public ModsMenuEntry(Info modInfo, [NotNull]UISettingsGroup settingGroup) : this(modInfo, new UISettingsGroup[] { settingGroup })
+    {
+
+    }
+
+    /// <exception cref="ArgumentException">
+    /// settingGroups argument must not be null, have at least 1 group in it and none can be null
+    /// </exception> 
+    public ModsMenuEntry(Info modInfo, [NotNull] IEnumerable<UISettingsGroup> settingGroups)
     {
       if (settingGroups is null || settingGroups.Count() == 0)
       {
@@ -172,25 +183,16 @@ namespace ModMenu.Settings
         throw new ArgumentException("Cannot create ModsMenuEntry with a null settingsGroup.");
       }
 
-      UISettingsGroup firstGroup = settingGroups.ElementAt(0);
-      if (firstGroup.SettingsList.Length == 0)
+      ModSettings = settingGroups;
+
+      if (!modInfo.Equals(default(Info)))
+        ModInfo = modInfo;
+      else
       {
-        string name = ("titled " + firstGroup.Title) ?? "without a title";
-        throw new ArgumentException($"UISettingsGroup {name} is trying to create a ModsMenuEntry without mod info.");
+        string title = settingGroups.ElementAt(0)?.Title;
+        if (title.IsNullOrEmpty())
+          ModInfo = new(title);
       }
-
-      ModSettings = new UISettingsGroup[1] { firstGroup };
-      ModInfo = new(firstGroup.Title);
-    }
-
-    public ModsMenuEntry(Info modInfo, UISettingsGroup settingGroup) : this(settingGroup)
-    {
-      ModInfo = modInfo;
-    }
-
-    public ModsMenuEntry(Info modInfo, IEnumerable<UISettingsGroup> settingGroups) : this(settingGroups)
-    {
-      ModInfo = modInfo;
     }
 
     /// <summary>
@@ -202,9 +204,8 @@ namespace ModMenu.Settings
     /// <exception cref="ArgumentException">
     /// You can't create a ModEntry out of a null settings group  ¯\_(ツ)_/¯
     /// </exception>
-    public ModsMenuEntry(LocalizedString modName, [NotNull]UISettingsGroup settingGroup) : this(settingGroup)
+    public ModsMenuEntry(LocalizedString modName, [NotNull]UISettingsGroup settingGroup) : this(new Info(modName), settingGroup)
     {
-      ModInfo = new(modName);
     }
 
     /// <summary>
