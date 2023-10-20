@@ -17,7 +17,11 @@ namespace ModMenu.NewTypes
   {
     static UISettingsEntityDropdownModMenuEntry()
     {
-      instance.m_Description = Helpers.CreateString("UISettingsEntityDropdownModMenuEntry.Description", "Choose your mod", ruRU: "Выберите мод");
+      instance = new()
+      {
+        m_Description = Helpers.CreateString("UISettingsEntityDropdownModMenuEntry.Description", "Choose your mod", ruRU: "Выберите мод"),
+        m_TooltipDescription = Helpers.EmptyString,
+      };
       instance.LinkSetting(SettingsEntityModMenuEntry.instance);
 
       ((IUISettingsEntityDropdown) instance).OnTempIndexValueChanged +=
@@ -32,8 +36,7 @@ namespace ModMenu.NewTypes
 
     }
 
-    internal static UISettingsEntityDropdownModMenuEntry instance =
-      ScriptableObject.CreateInstance<UISettingsEntityDropdownModMenuEntry>();
+    internal static UISettingsEntityDropdownModMenuEntry instance;
 
     public override List<string> LocalizedValues
     {
