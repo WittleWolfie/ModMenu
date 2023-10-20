@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Kingmaker.Localization;
 using Kingmaker.Localization.Shared;
+using Kingmaker.Utility;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
@@ -16,11 +17,12 @@ namespace ModMenu
     private static readonly List<LocalString> Strings = new();
     internal static LocalizedString EmptyString = CreateString("", "");
 
-    internal static LocalizedString CreateString(string key, string enGB, string ruRU = "")
+    internal static LocalizedString CreateString(string key, string enGB, string ruRU = null)
     {
       var localString = new LocalString(key, enGB, ruRU);
       Strings.Add(localString);
-      localString.Register();
+      if (LocalizationManager.Initialized)
+        localString.Register();
       return localString.LocalizedString;
     }
 
@@ -41,6 +43,7 @@ namespace ModMenu
       public readonly LocalizedString LocalizedString;
       private readonly string enGB;
       private readonly string ruRU;
+      const string NullString = "<null>";
 
       public LocalString(string key, string enGB, string ruRU)
       {
@@ -51,14 +54,23 @@ namespace ModMenu
 
       public void Register()
       {
-        var localized = enGB;
-        switch (LocalizationManager.CurrentPack.Locale)
+        string localized;
+        if (LocalizationManager.CurrentPack.Locale == Locale.enGB)
         {
-          case Locale.ruRU:
-            if (!string.IsNullOrEmpty(ruRU))
-              localized = ruRU;
-            break;
+          localized = enGB;
+          goto putString;
         }
+
+        localized = (LocalizationManager.CurrentPack.Locale) switch
+        {
+          Locale.ruRU => ruRU,
+          _ => ""
+        };
+
+        if (localized.IsNullOrEmpty() || localized == NullString)
+          localized = enGB;
+
+        ;putString:
         LocalizationManager.CurrentPack.PutString(LocalizedString.m_Key, localized);
       }
     }
