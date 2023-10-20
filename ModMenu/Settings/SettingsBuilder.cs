@@ -14,6 +14,7 @@ using UnityModManagerNet;
 
 namespace ModMenu.Settings
 {
+#pragma warning disable CS1591 // stupid documentation requests
   /// <summary>
   /// Builder API for constructing settings.
   /// </summary>
@@ -120,7 +121,11 @@ namespace ModMenu.Settings
       var group = ScriptableObject.CreateInstance<UISettingsGroup>();
       group.name = key;
       group.Title= title;
-      if (Settings?.Count > 0) Group.SettingsList = Settings.ToArray();
+      if (Settings?.Count > 0)
+      {
+        Group.SettingsList = Settings.ToArray();
+        Settings.RemoveRange(0, Settings.Count - 1);
+      }
       GroupList.Add(group);
       Group = group;
       return this;
