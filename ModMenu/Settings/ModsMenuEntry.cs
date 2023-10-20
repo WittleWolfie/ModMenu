@@ -1,4 +1,4 @@
-﻿using Epic.OnlineServices.Mods;
+﻿
 using JetBrains.Annotations;
 using Kingmaker.Localization;
 using Kingmaker.Localization.Shared;
@@ -6,7 +6,6 @@ using Kingmaker.Modding;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.Utility;
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
