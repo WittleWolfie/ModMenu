@@ -167,7 +167,7 @@ namespace ModMenu.NewTypes
           SettingsEntitySubHeaderVM subheader;
           foreach (var uisettingsGroup in ModsMenuEntity.CollectSettingGroups)
           {
-            __instance.m_SettingEntities.Add(__instance.AddDisposableAndReturn(new SettingsEntityCollapsibleHeaderVM(uisettingsGroup.Title)));
+            __instance.m_SettingEntities.Add(__instance.AddDisposableAndReturn(new SettingsEntityHeaderVM(uisettingsGroup.Title)));
             subheader = null;
             foreach (UISettingsEntityBase uisettingsEntityBase in uisettingsGroup.VisibleSettingsList)
             {
@@ -552,14 +552,16 @@ namespace ModMenu.NewTypes
 
       [HarmonyPatch(typeof(SettingsVM), nameof(SettingsVM.OpenDefaultSettingsDialog))]
       [HarmonyTranspiler]
-      static IEnumerable<CodeInstruction> SettingsVM_OpenDefaultSettingsDialog_Transpiler_ToChangeDefaultDialogMessage(IEnumerable<CodeInstruction> instructions, ILGenerator gen)
+      static internal IEnumerable<CodeInstruction> SettingsVM_OpenDefaultSettingsDialog_Transpiler_ToChangeDefaultDialogMessage(IEnumerable<CodeInstruction> instructions, ILGenerator gen)
       {
         var _inst = instructions.ToList();
         int length = _inst.Count;
         int indexStart = -1;
         int indexEnd = -1;
-        //var newDefaultMessage = Helpers.CreateString("ModsMenu_NewDefaultButtonMessage", "this is a message for {0}");
-        string newDefaultMessage = "Revert all settings of the mod \"{0}\" to their default values?";
+        newDefaultMessage = Helpers.CreateString(
+          key: "ModsMenuNewDefaultButtonMessage",
+          enGB: "Revert all settings of the mod {0} to their default values?",
+          ruRU: "Вернуть все настройки для мода {0} к их значениям по-умолчанию?");
 
         for (int i = 0; i < length; i++)
         {
@@ -611,18 +613,19 @@ namespace ModMenu.NewTypes
         {
           CodeInstruction.Call(() => CheckForSelectedSettingsScreenType()),
           new CodeInstruction(OpCodes.Brfalse_S, labelNotMod),
-          new CodeInstruction(OpCodes.Ldstr, newDefaultMessage),
-          CodeInstruction.Call(() => GiveMeName()),
-          CodeInstruction.Call(() => string.Format(newDefaultMessage, SettingsEntityModMenuEntry.instance.m_TempValue.ModInfo.ModName)),
+          CodeInstruction.Call(() => MakeMeDefaultButtonMessage()),
           new CodeInstruction(OpCodes.Br_S, labelIsMod)
         });
 
         return _inst;
-
       }
+      static LocalizedString newDefaultMessage;
       static bool CheckForSelectedSettingsScreenType() =>  RootUIContext.Instance?.CommonVM.SettingsVM.Value?.SelectedMenuEntity.Value?.SettingsScreenType == (UISettingsManager.SettingsScreen)ModsMenuEntity.SettingsScreenValue;
       
-      static string GiveMeName() => SettingsEntityModMenuEntry.instance.m_TempValue.ModInfo.ModName;
+      static string MakeMeDefaultButtonMessage()
+      {
+        return string.Format(newDefaultMessage, SettingsEntityModMenuEntry.instance.m_TempValue.ModInfo.ModName);
+      }
     }
   }
 }
