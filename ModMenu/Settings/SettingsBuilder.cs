@@ -412,10 +412,10 @@ namespace ModMenu.Settings
       return this;
     }
 
-    internal (List<UISettingsGroup> groups, Dictionary<string, ISettingsEntity> settings, ModsMenuEntry.Info info) Build()
+    internal (List<UISettingsGroup> groups, Dictionary<string, ISettingsEntity> settings, Info info) Build()
     {
       Group.SettingsList = Settings.ToArray();
-      ModsMenuEntry.Info Info;
+      Info Info;
       if (Mod is OwlcatModification OwlMod)
         Info = new(OwlMod, AllowDisabling, ModName, ModDescription, modIllustration);
       else if (Mod is UnityModManager.ModEntry UMMmod)
@@ -459,8 +459,11 @@ namespace ModMenu.Settings
       return
         Helpers.CreateString(
           $"mod-menu.default-description.{Group.name}",
-          $"Restore all settings in {Group.Title} to their defaults",
-          ruRU: $"Вернуть все настройки в группе {Group.Title} к значениям по умолчанию");
+          enGB: $"Restore all settings in {Group.Title} to their defaults",
+          ruRU: $"Вернуть все настройки в группе {Group.Title} к значениям по умолчанию",
+          zhCN: $"还原所有{Group.Title}中的设置到默认值",
+          deDE: $"Setze alle Einstellungen in {Group.Title} auf ihre Standardwerte zurück",
+          frFR: "Rétablir les valeurs par défaut de tous les paramètres sous {Group.Title}");
     }
 
     private LocalizedString DefaultDescriptionLong()
@@ -468,13 +471,20 @@ namespace ModMenu.Settings
       return
         Helpers.CreateString(
           $"mod-menu.default-description-long.{Group.name}",
-          $"Sets each settings under {Group.Title} to its default value. Your current settings will be lost."
+          enGB: $"Sets each settings under {Group.Title} to its default value. Your current settings will be lost."
           + $" Settings in other groups are not affected. Keep in mind this will apply to sub-groups under"
           + $" {Group.Title} as well (anything that is hidden when the group is collapsed).",
           ruRU: $"При нажатии на кнопку все настройки в группе {Group.Title} примут значения по умолчанию." +
           $" Ваши текущие настройки будут потеряны. Настройки из других групп затронуты не будут. Обратите внимание," +
           $" что изменения коснутся в том числе настроек из подгрупп, вложенных в {Group.Title}" +
-          $"  (т.е. все те настройки, которые оказываются скрыты, когда вы сворачиваете группу).");
+          $"  (т.е. все те настройки, которые оказываются скрыты, когда вы сворачиваете группу).",
+          zhCN: $"{Group.Title}之中每一项设置的值都会变成各自的默认值。你的当前设置会丢失。其它分组的设置不受影响。" +
+          $"注意这也会影响{Group.Title}内部的小分组（只要是折叠之后看不见的都会影响.",
+          deDE: "Setzt alle Einstellungen unter {Group.Title} auf ihre Standardwerte zurück. Die aktuellen Einstellungen gehen dabei verloren. " +
+          "Einstellungen in anderen Gruppen werden nicht beeinflusst. Beachte, dass dies auch die Untergruppen von {Group.Title} betrifft.",
+          frFR: "Rétablit la valeur par défaut pour tous les paramètres sous {Group.Title}. Vos paramètres actuels vont être perdus. " +
+          "Les paramètres des autres sections ne seront pas affectés. Gardez en tête que cela va s'appliquer aussi aux sous-sections de {Group.Title} " +
+          "(tout ce qui est caché quand la section est réduite)");
     }
 
     private static LocalizedString _defaultButtonLabel;
@@ -483,7 +493,7 @@ namespace ModMenu.Settings
       get
       {
         _defaultButtonLabel ??= Helpers.CreateString(
-          "mod-menu.default-button-label", "Default", ruRU: "По умолчанию");
+          "mod-menu.default-button-label", "Default", ruRU: "По умолчанию", zhCN: "默认值", deDE: "Standard", frFR: "Défaut");
         return _defaultButtonLabel;
       }
     }

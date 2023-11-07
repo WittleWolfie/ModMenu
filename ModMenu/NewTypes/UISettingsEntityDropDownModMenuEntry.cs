@@ -1,27 +1,27 @@
 ﻿using HarmonyLib;
-using Kingmaker.Localization;
 using Kingmaker.Settings;
-using Kingmaker.UI.MVVM._VM.Settings;
-using Kingmaker.UI.MVVM._VM.Settings.Entities;
 using Kingmaker.UI.SettingsUI;
 using ModMenu.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 
 namespace ModMenu.NewTypes
 {
-  [HarmonyLib.HarmonyPatch]
+  [HarmonyPatch]
   internal class UISettingsEntityDropdownModMenuEntry : UISettingsEntityDropdown<ModsMenuEntry>
   {
     static UISettingsEntityDropdownModMenuEntry()
     {
-      instance = new()
-      {
-        m_Description = Helpers.CreateString("UISettingsEntityDropdownModMenuEntry.Description", "Choose your mod", ruRU: "Выберите мод"),
-        m_TooltipDescription = Helpers.EmptyString,
-      };
+      instance = CreateInstance<UISettingsEntityDropdownModMenuEntry>();
+      instance.m_Description = Helpers.CreateString("UISettingsEntityDropdownModMenuEntry.Description", 
+        enGB:"Select a mod", 
+        ruRU: "Выберите мод", 
+        zhCN: "选择一个模组",
+        deDE: "Wähle einen Mod aus",
+        frFR: "Choisir un mod");
+      instance.m_TooltipDescription = Helpers.EmptyString;
+      
       instance.LinkSetting(SettingsEntityModMenuEntry.instance);
 
       ((IUISettingsEntityDropdown) instance).OnTempIndexValueChanged +=
@@ -38,18 +38,11 @@ namespace ModMenu.NewTypes
 
     internal static UISettingsEntityDropdownModMenuEntry instance;
 
-    public override List<string> LocalizedValues
-    {
-      get
-      { 
-        return ModsMenuEntity.ModEntries.Select(entry => entry.ModInfo.ModName.ToString()).ToList();
-      }
-    }
-
+    public override List<string> LocalizedValues 
+      => ModsMenuEntity.ModEntries.Select(entry => entry.ModInfo.ModName.ToString()).ToList();
     public override int GetIndexTempValue()
-    {
-      return ModsMenuEntity.ModEntries.IndexOf(Setting.GetTempValue());
-    }
+      => ModsMenuEntity.ModEntries.IndexOf(Setting.GetTempValue());
+    
 
     public override void SetIndexTempValue(int value)
     {
@@ -61,7 +54,5 @@ namespace ModMenu.NewTypes
 
       SetTempValue(ModsMenuEntity.ModEntries[value]);
     }
-
-
   }
 }

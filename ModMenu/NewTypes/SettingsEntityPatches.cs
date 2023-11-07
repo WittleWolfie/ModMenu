@@ -561,7 +561,10 @@ namespace ModMenu.NewTypes
         newDefaultMessage = Helpers.CreateString(
           key: "ModsMenuNewDefaultButtonMessage",
           enGB: "Revert all settings of the mod {0} to their default values?",
-          ruRU: "Вернуть все настройки для мода {0} к их значениям по-умолчанию?");
+          ruRU: "Вернуть все настройки для мода {0} к их значениям по-умолчанию?",
+          zhCN: "还原所有{0}模组设置到默认值？",
+          deDE: "Alle Einstellungen des Mods {0} auf ihre Standardwerte zurücksetzen?",
+          frFR: "Rétablir les valeurs par défaut de tous les paramètres du mod {0}?");
 
         for (int i = 0; i < length; i++)
         {

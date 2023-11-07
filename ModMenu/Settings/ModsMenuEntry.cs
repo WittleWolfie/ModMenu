@@ -1,5 +1,4 @@
-﻿
-using JetBrains.Annotations;
+﻿using JetBrains.Annotations;
 using Kingmaker.Localization;
 using Kingmaker.Localization.Shared;
 using Kingmaker.Modding;
@@ -18,7 +17,7 @@ namespace ModMenu.Settings
   /// Wrapper class used to display mod's settings in the ModMenu dropdown. Contains a list of UI Setting Groups and
   /// modification's info such as name.
   /// </summary>
-  public class ModsMenuEntry : IConvertible
+  internal class ModsMenuEntry : IConvertible
   {
 #pragma warning disable CS1591 // stupid documentation requests
     #region Conversion
@@ -114,7 +113,7 @@ namespace ModMenu.Settings
       Info info = new(Helpers.EmptyString, Helpers.EmptyString);
       UISettingsGroup pseudoGroup = ScriptableObject.CreateInstance<UISettingsGroup>();
       pseudoGroup.Title = Helpers.EmptyString;
-      EmptyInstance = new(info, pseudoGroup);
+      EmptyInstance = new(info, new UISettingsGroup[1] { pseudoGroup });
       ModsMenuEntity.Add(EmptyInstance);
     }
 
@@ -123,101 +122,37 @@ namespace ModMenu.Settings
     internal readonly IEnumerable<UISettingsGroup> ModSettings;
     internal readonly Info ModInfo;
 
-    /// <summary>
-    /// Creates a simpliest ModEntry out of a single UI setting group. 
-    /// Mod entry will use the group's title as displayed name or  will be called anonymous if title is empty
-    /// </summary>
-    /// <exception cref="ArgumentException">
-    /// You can't create a ModEntry out of a null settings group  ¯\_(ツ)_/¯
-    /// </exception>
-    [Obsolete("Please, use ModsMenuEntry(Info modInfo, UISettingsGroup settingGroup) instead. You will not be able to change ModInfo later.")]
-    public ModsMenuEntry([NotNull]UISettingsGroup settingGroup)
-    {
-      if (settingGroup is null)
-      {
-        throw new ArgumentException("Cannot create ModsMenuEntry with a null settingsGroup.");
-      }
-
-      if (settingGroup.SettingsList.Length == 0)
-      {
-        string name = ("titled " + settingGroup.Title) ?? "without a title";
-        throw new ArgumentException($"UISettingsGroup {name} is trying to create a ModsMenuEntry without mod info.");
-      }
-
-      ModSettings  = new UISettingsGroup[1] {settingGroup};
-      ModInfo = new(settingGroup.Title);
-    }
-
-    /// <summary>
-    /// Creates a ModEntry out of a several UI setting group. 
-    /// Mod entry will use the first group's title as displayed name or will be called anonymous if title is empty
-    /// </summary>
     /// <exception cref="ArgumentException">
     /// settingGroups argument must not be null, have at least 1 group in it and none can be null
     /// </exception> 
-    [Obsolete("Use ModsMenuEntry(Info modInfo, IEnumerable<UISettingsGroup> settingGroups). You will not be able to change ModInfo later.")]
-    public ModsMenuEntry(IEnumerable<UISettingsGroup> settingGroups) : this(default(Info), settingGroups)
-    {
-    }
-
-    /// <exception cref="ArgumentException">
-    /// settingGroups argument must not be null, have at least 1 group in it and none can be null
-    /// </exception> 
-    public ModsMenuEntry(Info modInfo, [NotNull]UISettingsGroup settingGroup) : this(modInfo, new UISettingsGroup[] { settingGroup })
-    {
-
-    }
-
-    /// <exception cref="ArgumentException">
-    /// settingGroups argument must not be null, have at least 1 group in it and none can be null
-    /// </exception> 
-    public ModsMenuEntry(Info modInfo, [NotNull] IEnumerable<UISettingsGroup> settingGroups)
+    internal ModsMenuEntry(Info modInfo, [NotNull] IEnumerable<UISettingsGroup> settingGroups)
     {
       if (settingGroups is null || settingGroups.Count() == 0)
-      {
         throw new ArgumentException("Cannot create ModsMenuEntry without any settingsGroups.");
-      }
+      
       if (settingGroups.Any(g => g is null))
-      {
         throw new ArgumentException("Cannot create ModsMenuEntry with a null settingsGroup.");
-      }
 
       ModSettings = settingGroups;
-
       if (!modInfo.Equals(default(Info)))
         ModInfo = modInfo;
       else
-      {
-        string title = settingGroups.ElementAt(0)?.Title;
-        if (title.IsNullOrEmpty())
-          ModInfo = new(title);
-      }
+        ModInfo = new(settingGroups.ElementAt(0)?.Title);     
+
     }
 
-    /// <summary>
-    /// Creates a simple ModEntry out of a single UI setting group. 
-    /// </summary>
-    /// <param name="modName">
-    /// Name of your mod displayed in the ModMenu dropdown. If you don't provide any, it will be Anonymous
-    /// </param>
-    /// <exception cref="ArgumentException">
-    /// You can't create a ModEntry out of a null settings group  ¯\_(ツ)_/¯
-    /// </exception>
-    public ModsMenuEntry(LocalizedString modName, [NotNull]UISettingsGroup settingGroup) : this(new Info(modName), settingGroup)
-    {
-    }
-
+  }
     /// <summary>
     /// Structure containing information required to display the ModEntry in the ModMenu dropdown (such as mod's info)
     /// </summary>
     public struct Info
     {
       private static readonly LocalizedString AnonymousMod =
-        Helpers.CreateString("ModsMenu.AnonymousMod", "Anonymous Mod", ruRU: "Безымянный мод");
+        Helpers.CreateString("ModsMenu.AnonymousMod", "Anonymous Mod", ruRU: "Безымянный мод", zhCN: "匿名模组", deDE: "Anonymer Mod", frFR: "Mod anonyme");
       private static readonly LocalizedString stringAuthor =
-        Helpers.CreateString("ModsMenu.stringAuthor", "Author", ruRU: "Создатель");
+        Helpers.CreateString("ModsMenu.stringAuthor", "Author", ruRU: "Создатель", zhCN: "作者", deDE: "Autor", frFR: "Créateur");
       private static readonly LocalizedString stringVer =
-        Helpers.CreateString("ModsMenu.stringVer", "Version", ruRU: "Версия");
+        Helpers.CreateString("ModsMenu.stringVer", "Version", ruRU: "Версия", zhCN: "版本", deDE: "Version", frFR: "Version");
       private static int AnonymousCounter = 0;
 
       public Sprite ModImage { get; private set; }
@@ -349,7 +284,7 @@ namespace ModMenu.Settings
       /// <param name="image"></param> Mod's icon to be displayed alongside the description
       /// <exception cref="ArgumentException"></exception> You are not allowed to provide a null UnityModManager.ModEntry when using this constructor
       public Info(
-        UnityModManager.ModEntry ummMod,
+        ModEntry ummMod,
         bool allowModDisabling,
         LocalizedString localizedModName = null,
         LocalizedString localizedModDescription = null,
@@ -415,5 +350,4 @@ namespace ModMenu.Settings
         }
       }
     }
-  }
 }

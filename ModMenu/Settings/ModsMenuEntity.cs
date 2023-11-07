@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using JetBrains.Annotations;
 using Kingmaker.Localization;
 using Kingmaker.UI.MVVM._PCView.Settings.Menu;
 using Kingmaker.UI.MVVM._VM.Settings;
@@ -31,35 +32,20 @@ namespace ModMenu.Settings
       get
       {
         _menuTitleString ??= Helpers.CreateString(
-          "ModsMenu.Title", "Mods", ruRU: "Моды");
+          "ModsMenu.Title", "Mods", ruRU: "Моды", zhCN: "模组", deDE: "Mods", frFR: "Mods");
         return _menuTitleString;
       }
     }
 
     internal static readonly List<ModsMenuEntry> ModEntries = new();
 
-#pragma warning disable CS0618 // Obsolete method which I myself marked as obsolete >_>
-    internal static void Add(UISettingsGroup uiSettingsGroup)
-    {
-      ModEntries.Add(new(uiSettingsGroup));
-      //if (ModEntries.Contains(ModsMenuEntry.EmptyInstance))
-      //  ModEntries.Remove(ModsMenuEntry.EmptyInstance);
-    }
-
-    internal static void Add(List<UISettingsGroup> uiSettingsGroup)
-    {
-      ModEntries.Add(new(uiSettingsGroup));
-      //if (ModEntries.Contains(ModsMenuEntry.EmptyInstance))
-      //  ModEntries.Remove(ModsMenuEntry.EmptyInstance);
-    }
-#pragma warning restore CS0618 // Тип или член устарел
+    
+    internal static void Add(Info modInfo, [NotNull] IEnumerable<UISettingsGroup> settingGroups)
+      => ModEntries.Add(new(modInfo, settingGroups));    
 
     internal static void Add(ModsMenuEntry modEntry)
-    {
-      ModEntries.Add(modEntry);
-      //if (ModEntries.Contains(ModsMenuEntry.EmptyInstance))
-      //  ModEntries.Remove(ModsMenuEntry.EmptyInstance);
-    }
+      => ModEntries.Add(modEntry);
+    
 
     internal static IEnumerable<UISettingsGroup> CollectSettingGroups =>
       UISettingsEntityDropdownModMenuEntry.instance.Setting.m_TempValue.ModSettings;

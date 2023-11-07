@@ -17,9 +17,9 @@ namespace ModMenu
     private static readonly List<LocalString> Strings = new();
     internal static LocalizedString EmptyString = CreateString("", "");
 
-    internal static LocalizedString CreateString(string key, string enGB, string ruRU = null)
+    internal static LocalizedString CreateString(string key, string enGB, string ruRU = null, string zhCN = null, string deDE = null, string frFR = null)
     {
-      var localString = new LocalString(key, enGB, ruRU);
+      var localString = new LocalString(key, enGB, ruRU, zhCN, deDE, frFR);
       Strings.Add(localString);
       if (LocalizationManager.Initialized)
         localString.Register();
@@ -43,13 +43,19 @@ namespace ModMenu
       public readonly LocalizedString LocalizedString;
       private readonly string enGB;
       private readonly string ruRU;
+      private readonly string zhCN;
+      private readonly string deDE;
+      private readonly string frFR;
       const string NullString = "<null>";
 
-      public LocalString(string key, string enGB, string ruRU)
+      public LocalString(string key, string enGB, string ruRU, string zhCN, string deDE, string frFR)
       {
         LocalizedString = new LocalizedString() { m_Key = key };
         this.enGB = enGB;
         this.ruRU = ruRU;
+        this.zhCN = zhCN;
+        this.deDE = deDE;
+        this.frFR = frFR;
       }
 
       public void Register()
@@ -64,6 +70,9 @@ namespace ModMenu
         localized = (LocalizationManager.CurrentPack.Locale) switch
         {
           Locale.ruRU => ruRU,
+          Locale.zhCN => zhCN,
+          Locale.deDE => deDE,
+          Locale.frFR => frFR,
           _ => ""
         };
 

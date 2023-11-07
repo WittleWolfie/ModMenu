@@ -1,4 +1,5 @@
-﻿using Kingmaker.Settings;
+﻿using JetBrains.Annotations;
+using Kingmaker.Settings;
 using Kingmaker.UI.SettingsUI;
 using ModMenu.Settings;
 using System;
@@ -35,7 +36,7 @@ namespace ModMenu
         }
         Settings.Add(setting.Key, setting.Value);
       }
-      ModsMenuEntity.Add(new ModsMenuEntry(result.info, result.groups));
+      ModsMenuEntity.Add(result.info, result.groups);
     }
 
     /// <summary>
@@ -47,6 +48,7 @@ namespace ModMenu
     /// <para>
     /// Using <see cref="AddSettings(SettingsBuilder)"/> is recommended. If you prefer to construct the settings
     /// on your own you can use this method, but better choose a less deprecated overload using ModsMenuEntry.
+    /// The name of the settings group will be used as the display name for the mod in the selection dropdown .
     /// </para>
     /// 
     /// <para>
@@ -54,8 +56,12 @@ namespace ModMenu
     /// <see cref="GetSettingValue{T}(string)"/>.
     /// </para>
     /// </remarks>
-    [Obsolete("Please, use AddSettings(ModsMenuEntry entry) instead")]
-    public static void AddSettings(UISettingsGroup settingsGroup) => ModsMenuEntity.Add(settingsGroup);
+    /// <exception cref="ArgumentException">
+    /// settingGroups argument must not be null, have at least 1 group in it and none can be null
+    /// </exception> 
+    [Obsolete("Please, use AddSettings(ModsMenuEntry modInfo) instead")]
+    public static void AddSettings([NotNull] UISettingsGroup settingsGroup) 
+      => ModsMenuEntity.Add(default, new UISettingsGroup[1] { settingsGroup });
 
     /// <summary>
     /// Adds a new entry containing groups of settings to the Mods menu dropdown. 
@@ -66,6 +72,7 @@ namespace ModMenu
     /// <para>
     /// Using <see cref="AddSettings(SettingsBuilder)"/> is recommended. If you prefer to construct the settings
     /// on your own you can use this method, but better choose a less deprecated overload using ModsMenuEntry.
+    /// The name of the first settings group from the list will be used as the display name for the mod in the selection dropdown .
     /// </para>
     /// 
     /// <para>
@@ -73,25 +80,67 @@ namespace ModMenu
     /// <see cref="GetSettingValue{T}(string)"/>.
     /// </para>
     /// </remarks>
-    [Obsolete("Please, use AddSettings(ModsMenuEntry entry) instead")]
-    public static void AddSettings(List<UISettingsGroup> settingsGroup) => ModsMenuEntity.Add(settingsGroup);
-    
+    /// <exception cref="ArgumentException">
+    /// settingGroups argument must not be null, have at least 1 group in it and none can be null
+    /// </exception> 
+    [Obsolete("Please, use AddSettings(ModsMenuEntry modInfo) instead")]
+    public static void AddSettings([NotNull] List<UISettingsGroup> settingsGroups)
+      => ModsMenuEntity.Add(default, settingsGroups);
+
     /// <summary>
     /// Adds a new entry containing groups of settings to the Mods menu page. 
     /// </summary>
     /// 
     /// <remarks>
     /// <para>
-    /// Use this method if you prefer to construct settings on your own you can use this method
+    /// Use this method if you prefer to construct settings on your own; you can use this method
     /// instead of using the recommended <see cref="AddSettings(SettingsBuilder)"/>. 
     /// </para>
+    /// 
+    /// <param name="modInfo"> Structure containing basic info about the mod - name, version, description, author name et cetera. 
+    /// This information will be displayed when user is choosing the mod from the dropdown
+    /// </param>
+    /// <param name="group"> Group of settings created with original Owlcat API. If you did not set any mod name inside the modInfo structure,
+    /// name of this settings group will be instead used as the display name of the mod.
+    /// </param>
     /// 
     /// <para>
     /// Settings added in this way cannot be retrieved using <see cref="GetSetting{T, TValue}(string)"/> or
     /// <see cref="GetSettingValue{T}(string)"/>.
     /// </para>
     /// </remarks>
-    public static void AddSetting(ModsMenuEntry entry) => ModsMenuEntity.Add(entry);
+    /// <exception cref="ArgumentException">
+    /// settingGroups argument must not be null, have at least 1 group in it and none can be null
+    /// </exception> 
+    /// 
+    public static void AddSettings(Info modInfo, [NotNull] UISettingsGroup group) 
+      => ModsMenuEntity.Add(modInfo, new UISettingsGroup[1] { group });
+
+    /// <summary>
+    /// Adds a new entry containing groups of settings to the Mods menu page. 
+    /// </summary>
+    /// 
+    /// <remarks>
+    /// <para>
+    /// Use this method if you prefer to construct settings on your own; you can use this method
+    /// instead of using the recommended <see cref="AddSettings(SettingsBuilder)"/>. 
+    /// 
+    /// Settings added in this way cannot be retrieved using <see cref="GetSetting{T, TValue}(string)"/> or
+    /// <see cref="GetSettingValue{T}(string)"/>.
+    /// </para>
+    /// </remarks>
+    /// 
+    /// <param name="modInfo"> Structure containing basic info about the mod - name, version, description, author name et cetera. 
+    /// This information will be displayed when user is choosing the mod from the dropdown
+    /// </param>param>
+    /// <param name="groups"> Groups of settings created with original Owlcat API. If you did not set any mod name inside the modInfo structure,
+    /// name of the first settings group from the list will be instead used as the display name of the mod.
+    /// </param>param>
+    /// <exception cref="ArgumentException">
+    /// settingGroups argument must not be null, have at least 1 group in it and none can be null
+    /// </exception> 
+    public static void AddSettings(Info modInfo, [NotNull] List<UISettingsGroup> groups) 
+      => ModsMenuEntity.Add(modInfo, groups);
 
     /// <returns>
     /// The setting with the specified <paramref name="key"/>, or null if it does not exist or has the wrong type.
