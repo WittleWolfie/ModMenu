@@ -1,8 +1,12 @@
 ﻿using Kingmaker.Localization;
+using Kingmaker.PubSubSystem;
+using Kingmaker.UI.MVVM._VM.Settings.Entities;
 using Kingmaker.UI.SettingsUI;
+using ModMenu.NewTypes;
 using System.Text;
 using UnityEngine;
 using static Kingmaker.UI.KeyboardAccess;
+using static ModMenu.Helpers;
 
 namespace ModMenu.Settings
 {
@@ -10,7 +14,7 @@ namespace ModMenu.Settings
   /// <summary>
   /// Test settings group shown on debug builds to validate usage.
   /// </summary>
-  internal class TestSettings
+  internal class TestSettings : ISettingsChanged
   {
     private static readonly string RootKey = "mod-menu.test-settings";
     private enum TestEnum
@@ -43,6 +47,10 @@ namespace ModMenu.Settings
             Toggle.New(GetKey("toggle"), defaultValue: true, CreateString("toggle-desc", "This is a toggle"))
               .ShowVisualConnection()
               .OnValueChanged(OnToggle))
+          .AddToggle(
+            Toggle.New(GetKey("toggle-updateable"), defaultValue: true, CreateString("toggle-updateable-desc", "This is a toggle changes the LongDescription text!"))
+              .ShowVisualConnection()
+              .OnTempValueChanged(OnToggleUDescriptionUpdate))
           .AddDropdown(
             Dropdown<TestEnum>.New(
                 GetKey("dropdown"),
@@ -55,7 +63,7 @@ namespace ModMenu.Settings
                 CreateString(
                   "dropdown-long-desc",
                   "This is a dropdown based on TestEnum. In order to change the value the connected toggle must be on."
-                  +" After switching it on or off exit and enter the menu again to lock/unlock it."))
+                  + " After switching it on or off exit and enter the menu again to lock/unlock it."))
               .DependsOnSave())
           .AddSubHeader(CreateString("sub-header", "Test Sliders"))
           .AddSliderFloat(
@@ -137,6 +145,8 @@ namespace ModMenu.Settings
                   CreateString("dropdown-button-3", "Button calls onClick(2)"),
                 })
               .OnTempValueChanged(value => Main.Logger.Log($"Currently selected dropdown button is {value}"))));
+
+      EventBus.Subscribe(this);
     }
 
     private void OnKeyPress()
@@ -168,6 +178,12 @@ namespace ModMenu.Settings
       return ModMenu.GetSettingValue<bool>(GetKey("toggle"));
     }
 
+    public void OnToggleUDescriptionUpdate(bool value)
+    {
+      SettingsDescriptionUpdater<SettingsEntityBoolVM> sdu = new();
+      sdu.TryUpdate("This is a toggle changes the LongDescription text!", $"Hey this value is now {value}");
+    }
+
     private void OnToggle(bool value)
     {
       Main.Logger.Log($"Toggle switched to {value}");
@@ -186,6 +202,11 @@ namespace ModMenu.Settings
     private static string GetKey(string partialKey)
     {
       return $"{RootKey}.{partialKey}";
+    }
+
+    public void HandleApplySettings()
+    {
+      Main.Logger.Log("'Apply' button in the settings window was pressed!");
     }
   }
 #endif

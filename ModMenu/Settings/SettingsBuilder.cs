@@ -325,6 +325,9 @@ namespace ModMenu.Settings
       return Add(entity.Key, entity, uiEntity);
     }
 
+    /// <summary>
+    /// Similar to DropdownList but includes a button on the setting which fires an event when clicked.
+    /// </summary>
     public SettingsBuilder AddDropdownButton(DropdownButton dropdown)
     {
       var (entity, uiEntity) = dropdown.Build();

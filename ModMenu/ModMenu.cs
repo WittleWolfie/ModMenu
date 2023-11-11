@@ -156,7 +156,7 @@ namespace ModMenu
       var setting = Settings[key] as T;
       if (setting is null)
       {
-        Main.Logger.Error($"Type mismatch. Setting {key} is a {setting.GetType()}, but {typeof(T)} was expected.");
+        Main.Logger.Error($"Type mismatch. Setting {key} is a {Settings[key].GetType()}, but {typeof(T)} was expected.");
         return null;
       }
       return setting;

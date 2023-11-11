@@ -6,6 +6,7 @@ using Kingmaker.Localization;
 using Kingmaker.Settings;
 using Kingmaker.UI.Common;
 using Kingmaker.UI.MVVM;
+using Kingmaker.PubSubSystem;
 using Kingmaker.UI.MVVM._PCView.ServiceWindows.Journal;
 using Kingmaker.UI.MVVM._PCView.Settings;
 using Kingmaker.UI.MVVM._PCView.Settings.Entities;
@@ -628,6 +629,17 @@ namespace ModMenu.NewTypes
       static string MakeMeDefaultButtonMessage()
       {
         return string.Format(newDefaultMessage, SettingsEntityModMenuEntry.instance.m_TempValue.ModInfo.ModName);
+      }
+
+      [HarmonyPatch(typeof(SettingsVM))]
+      static class ApplySettings_Patch
+      {
+        [HarmonyPatch(nameof(SettingsVM.ApplySettings)), HarmonyPostfix]
+        static void Postfix()
+        {
+          // Raise Event when Apply button is press in the settings UI
+          EventBus.RaiseEvent<ISettingsChanged>(h => h.HandleApplySettings());
+        }
       }
     }
   }
