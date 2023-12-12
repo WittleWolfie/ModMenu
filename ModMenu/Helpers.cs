@@ -2,6 +2,7 @@
 using Kingmaker;
 using Kingmaker.Localization;
 using Kingmaker.Localization.Shared;
+using Kingmaker.Utility;
 using Kingmaker.UI.MVVM._PCView.Settings.Entities;
 using Kingmaker.UI.MVVM._PCView.Settings;
 using Kingmaker.UI.MVVM._VM.Settings.Entities;
@@ -19,12 +20,14 @@ namespace ModMenu
   internal static class Helpers
   {
     private static readonly List<LocalString> Strings = new();
+    internal static LocalizedString EmptyString = CreateString("", "");
 
-    internal static LocalizedString CreateString(string key, string enGB, string ruRU = "")
+    internal static LocalizedString CreateString(string key, string enGB, string ruRU = null, string zhCN = null, string deDE = null, string frFR = null)
     {
-      var localString = new LocalString(key, enGB, ruRU);
+      var localString = new LocalString(key, enGB, ruRU, zhCN, deDE, frFR);
       Strings.Add(localString);
-      localString.Register();
+      if (LocalizationManager.Initialized)
+        localString.Register();
       return localString.LocalizedString;
     }
 
@@ -45,24 +48,43 @@ namespace ModMenu
       public readonly LocalizedString LocalizedString;
       private readonly string enGB;
       private readonly string ruRU;
+      private readonly string zhCN;
+      private readonly string deDE;
+      private readonly string frFR;
+      const string NullString = "<null>";
 
-      public LocalString(string key, string enGB, string ruRU)
+      public LocalString(string key, string enGB, string ruRU, string zhCN, string deDE, string frFR)
       {
         LocalizedString = new LocalizedString() { m_Key = key };
         this.enGB = enGB;
         this.ruRU = ruRU;
+        this.zhCN = zhCN;
+        this.deDE = deDE;
+        this.frFR = frFR;
       }
 
       public void Register()
       {
-        var localized = enGB;
-        switch (LocalizationManager.CurrentPack.Locale)
+        string localized;
+        if (LocalizationManager.CurrentPack.Locale == Locale.enGB)
         {
-          case Locale.ruRU:
-            if (!string.IsNullOrEmpty(ruRU))
-              localized = ruRU;
-            break;
+          localized = enGB;
+          goto putString;
         }
+
+        localized = (LocalizationManager.CurrentPack.Locale) switch
+        {
+          Locale.ruRU => ruRU,
+          Locale.zhCN => zhCN,
+          Locale.deDE => deDE,
+          Locale.frFR => frFR,
+          _ => ""
+        };
+
+        if (localized.IsNullOrEmpty() || localized == NullString)
+          localized = enGB;
+
+        ;putString:
         LocalizationManager.CurrentPack.PutString(LocalizedString.m_Key, localized);
       }
     }

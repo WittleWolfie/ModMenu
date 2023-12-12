@@ -7,8 +7,8 @@ using Owlcat.Runtime.UI.Controls.Button;
 using Owlcat.Runtime.UI.VirtualListSystem.ElementSettings;
 using System;
 using TMPro;
-using UnityEngine.EventSystems;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace ModMenu.NewTypes

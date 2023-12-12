@@ -100,7 +100,7 @@ namespace ModMenu.NewTypes
     public OwlcatMultiButton Button;
     public ExpandableCollapseMultiButtonPC ButtonPC;
 
-    protected override void BindViewImplementation()
+    public override void BindViewImplementation()
     {
       Title.text = UIUtility.GetSaberBookFormat(ViewModel.Tittle, size: GetFontSize());
       Button.OnLeftClick.RemoveAllListeners();
@@ -108,8 +108,8 @@ namespace ModMenu.NewTypes
       ViewModel.Init(ButtonPC);
     }
 
-    protected virtual int GetFontSize() { return 140; }
+    public virtual int GetFontSize() { return 140; }
 
-    protected override void DestroyViewImplementation() { }
+    public override void DestroyViewImplementation() { }
   }
 }

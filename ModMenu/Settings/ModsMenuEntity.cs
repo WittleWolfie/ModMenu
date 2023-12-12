@@ -1,11 +1,14 @@
 ﻿using HarmonyLib;
+using JetBrains.Annotations;
 using Kingmaker.Localization;
 using Kingmaker.UI.MVVM._PCView.Settings.Menu;
 using Kingmaker.UI.MVVM._VM.Settings;
 using Kingmaker.UI.SettingsUI;
 using Kingmaker.Utility;
+using ModMenu.NewTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
 
@@ -17,9 +20,11 @@ namespace ModMenu.Settings
   internal class ModsMenuEntity
   {
     // Random magic number representing our fake enum for UiSettingsManager.SettingsScreen
-    private const int SettingsScreenValue = 17;
+    internal const int SettingsScreenValue = 17;
     internal static readonly UISettingsManager.SettingsScreen SettingsScreenId =
       (UISettingsManager.SettingsScreen)SettingsScreenValue;
+
+    internal static SettingsVM settingVM;
 
     private static LocalizedString _menuTitleString;
     private static LocalizedString MenuTitleString
@@ -27,17 +32,23 @@ namespace ModMenu.Settings
       get
       {
         _menuTitleString ??= Helpers.CreateString(
-          "ModsMenu.Title", "Mods", ruRU: "Моды");
+          "ModsMenu.Title", "Mods", ruRU: "Моды", zhCN: "模组", deDE: "Mods", frFR: "Mods");
         return _menuTitleString;
       }
     }
 
-    private static readonly List<UISettingsGroup> ModSettings = new();
+    internal static readonly List<ModsMenuEntry> ModEntries = new();
 
-    internal static void Add(UISettingsGroup uiSettingsGroup)
-    {
-      ModSettings.Add(uiSettingsGroup);
-    }
+    
+    internal static void Add(Info modInfo, [NotNull] IEnumerable<UISettingsGroup> settingGroups)
+      => ModEntries.Add(new(modInfo, settingGroups));    
+
+    internal static void Add(ModsMenuEntry modEntry)
+      => ModEntries.Add(modEntry);
+    
+
+    internal static IEnumerable<UISettingsGroup> CollectSettingGroups =>
+      UISettingsEntityDropdownModMenuEntry.instance.Setting.m_TempValue.ModSettings;
 
     /// <summary>
     /// Patch to create the Mods Menu ViewModel.
@@ -85,6 +96,7 @@ namespace ModMenu.Settings
         try
         {
           settings.CreateMenuEntity(MenuTitleString, SettingsScreenId);
+          settingVM = settings;
           Main.Logger.NativeLog("Added Mods Menu ViewModel.");
         }
         catch (Exception e)
@@ -93,6 +105,7 @@ namespace ModMenu.Settings
         }
       }
     }
+
 
     /// <summary>
     /// Patch to create the Mods Menu View. Needed to show the menu in-game.
@@ -137,7 +150,7 @@ namespace ModMenu.Settings
           if (screenId is not null && screenId == SettingsScreenId)
           {
             Main.Logger.NativeLog($"Returning mod settings for screen {screenId}.");
-            __result = ModSettings;
+            __result = CollectSettingGroups.ToList();
           }
         }
         catch (Exception e)
