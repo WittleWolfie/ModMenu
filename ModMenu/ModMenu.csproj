@@ -7,7 +7,7 @@
 		-->
     <LangVersion>latest</LangVersion>
     <!-- Latest .NET version supported by Wrath / Unity -->
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net481</TargetFramework>
 
     <!-- Needed to use publicized assembly -->
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -76,7 +76,7 @@
 
     <!-- UMM & Harmony -->
     <Reference Include="0Harmony">
-      <HintPath>$(WrathPath)\Wrath_Data\Managed\UnityModManager\0Harmony.dll</HintPath>
+      <HintPath>$(WrathPath)\Wrath_Data\Managed\0Harmony.dll</HintPath>
     </Reference>
     <Reference Include="UnityModManager">
       <HintPath>$(WrathPath)\Wrath_Data\Managed\UnityModManager\UnityModManager.dll</HintPath>
@@ -98,7 +98,7 @@
     </ItemGroup>
 
     <PublicizeTask InputAssemblies="@(Assemblies)" OutputDir="$(SolutionDir)lib/" />
-    <Move SourceFiles="@(PublicAssembly)" DestinationFiles="@(RenamedAssembly)" />
+    <!--<Move SourceFiles="@(PublicAssembly)" DestinationFiles="@(RenamedAssembly)" />-->
   </Target>
 
   <!-- Automatically deploys the mod on build -->
