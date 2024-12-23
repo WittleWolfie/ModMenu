@@ -1,3 +1,5 @@
+# This mod is now maintained here: https://github.com/CasDragon/ModMenu/
+
 # ModMenu
 
 Adds a new page to the game options for mods. This allows mods to easily implement settings using native UI instead of UMM. This does not create a save dependency.
